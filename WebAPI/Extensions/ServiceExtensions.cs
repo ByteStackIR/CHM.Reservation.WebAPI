@@ -12,6 +12,8 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Threading.RateLimiting;
 using Entities;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Reflection;
 
 namespace WebAPI.Extensions
 {
@@ -237,15 +239,17 @@ namespace WebAPI.Extensions
         {
             services.AddSwaggerGen(s =>
             {
-                s.IncludeXmlComments(Directory.GetCurrentDirectory()+Path.DirectorySeparatorChar+ "WebAPI.swagger.xml", true);
+                string EntryProjectName = Assembly.GetEntryAssembly().FullName.Split(',')[0];
+
+                s.IncludeXmlComments(Directory.GetCurrentDirectory()+Path.DirectorySeparatorChar+ EntryProjectName + ".swagger.xml", true);
                 s.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "Code Maze API",
+                    Title = "Web API",
                     Version = "v1"
                 });
                 s.SwaggerDoc("v2", new OpenApiInfo
                 {
-                    Title = "Code Maze API",
+                    Title = "Web API",
                     Version = "v2"
                 });
                 s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
