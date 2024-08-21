@@ -1,0 +1,45 @@
+﻿using Entities.Models;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Entities.DataTransferObjects
+{
+   
+ 
+    public class Response
+    {
+        public string Status { get; set; }
+        public string Message { get; set; }
+        public List<string > Errors { get; set; }
+    }
+ 
+
+    public class KeyItemsDto<T> where T : class
+    {
+        public string ItemTitle { get; set; }
+        public string ItemDescription { get; set; } = string.Empty;
+
+        public List<T> Items { get; set; }
+    }
+
+
+    public class FileDto {
+        public string Key { get; set; }
+        public IFormFile? File { get; set; }
+
+    }
+    public class FilesDto
+    {
+
+        public List<FileDto> Files { get; set; }
+
+    }
+
+
+}
