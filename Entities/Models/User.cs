@@ -22,6 +22,9 @@ namespace Entities.Models
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
 
-
+        public ICollection<UserCompany> UserCompanies { get; set; } = new List<UserCompany>();
+        public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
+        public ICollection<Tx_Coupon> TxCoupons { get; set; } = new List<Tx_Coupon>();
+        public ICollection<Tx_User> TxUsers { get; set; } = new List<Tx_User>();
     }
 }
