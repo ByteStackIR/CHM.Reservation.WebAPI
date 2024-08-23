@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -9,8 +10,10 @@ namespace Entities.Models
 {
     public class CouponShare : ModelBase
     {
+        [Required]
         [ForeignKey(nameof(Period))]
         public Guid PeriodId { get; set; }
+        [Required]
         [ForeignKey(nameof(Relation))]
         public Guid RelationId { get; set; }
 

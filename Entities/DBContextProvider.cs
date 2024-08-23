@@ -56,7 +56,7 @@ namespace Entities
         public DbSet<Tx_User> Tx_Users { get; set; }
 
         public DbSet<UserCompany> UserCompanies { get; set; }
-        public DbSet<ParameterValues> Values { get; set; }
+        public DbSet<ParameterValues> ParameterValues { get; set; }
     }
 
 

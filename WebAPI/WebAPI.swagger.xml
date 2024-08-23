@@ -40,16 +40,16 @@
         <member name="M:WebAPI.Migrations.firsterd.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
-        <member name="T:WebAPI.Migrations.firsterd2">
+        <member name="T:WebAPI.Migrations.erdobjectstateswf">
             <inheritdoc />
         </member>
-        <member name="M:WebAPI.Migrations.firsterd2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:WebAPI.Migrations.erdobjectstateswf.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:WebAPI.Migrations.firsterd2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:WebAPI.Migrations.erdobjectstateswf.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:WebAPI.Migrations.firsterd2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+        <member name="M:WebAPI.Migrations.erdobjectstateswf.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
     </members>

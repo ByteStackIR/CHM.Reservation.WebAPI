@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -9,8 +10,10 @@ namespace Entities.Models
 {
     public class UserCompany : ModelBase
     {
+        [Required]
         [ForeignKey(nameof(User))]
         public string UserId { get; set; }
+        [Required]
         [ForeignKey(nameof(Company))]
         public Guid CompanyId { get; set; }
         public bool IsActive { get; set; }

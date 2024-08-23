@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -9,10 +11,20 @@ namespace Entities.Models
 {
     public class ParameterValues : ModelBase
     {
+        [Required]
         [ForeignKey(nameof(Parameter))]
         public Guid ParameterId { get; set; }
-        public string Value { get; set; } = string.Empty;
+
+        [Required]
+        [ForeignKey(nameof(Entity))]
         
+        public Guid EntityId { get; set; }
+        public string Value { get; set; } = string.Empty;
+        [DeleteBehavior(DeleteBehavior.NoAction)]
         public Parameter Parameter { get; set; } = new Parameter();
+
+        [DeleteBehavior(DeleteBehavior.Cascade)]
+        public Entity Entity { get; set; } 
+
     }
 }

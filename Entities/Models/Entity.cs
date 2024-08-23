@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.SqlTypes;
 using System.Linq;
@@ -11,11 +12,13 @@ namespace Entities.Models
     public class Entity : ModelBase
     {
         public string Title { get; set; } = string.Empty;
+        [Required]
         [ForeignKey(nameof(Category))]
         public Guid CategoryId { get; set; }
         public bool IsActive { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        [Required]
         [ForeignKey(nameof(Period))]
         public Guid PeriodId { get; set; }
         public Decimal PerPerson { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace Entities.Models
 {
     public class Parameter : ModelBase
     {
-
+        [Required]
         [ForeignKey(nameof(Category))]
         public Guid CategoryId { get; set; } 
         public string Title { get; set; } = string.Empty;
