@@ -52,5 +52,17 @@
         <member name="M:WebAPI.Migrations.erdobjectstateswf.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:WebAPI.Migrations.entitymanager">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.entitymanager.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.entitymanager.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.entitymanager.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
     </members>
 </doc>

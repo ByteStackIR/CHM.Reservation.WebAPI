@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -34,6 +35,12 @@ namespace Entities.Models
         public Int16 MaxReserveTimes { get; set; }
         public Int16 MinAge { get; set; }
         public Int16 DaysToCancel { get; set; }
+
+        [Required]
+        [ForeignKey(nameof(User))]
+        public string UserId { get; set; }
+        [DeleteBehavior(DeleteBehavior.NoAction)]
+        public User User { get; set; }
 
         public Category Category { get; set; } = new Category();
         public Period Period { get; set; } = new Period();

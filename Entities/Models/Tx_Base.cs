@@ -19,6 +19,7 @@ namespace Entities.Models
         [ForeignKey(nameof(Period))]
               [Required]
         public Guid PeriodId { get; set; }
+        [Required]
         [ForeignKey(nameof(User))]
         public string UserId { get; set; }
         public Decimal Amount { get; set; }
