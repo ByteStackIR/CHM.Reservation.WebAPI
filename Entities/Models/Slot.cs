@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Entities.Models
 {
-    public class Slots : ModelBase
+    public class Slot : ModelBase
     {
+        [ForeignKey(nameof(Entity))]
+
         public Guid EntityId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

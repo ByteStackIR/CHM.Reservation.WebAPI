@@ -31,7 +31,33 @@ namespace Entities
 
 
        // public DbSet<Transactions> Transactions { get; set; }
+       public DbSet<Category> Categories { get; set; }
+        public DbSet<Company> Companies { get; set; }
+        public DbSet<CouponShare> CouponShares { get; set; }
 
+        public DbSet<Entity> Entities { get; set; }
+        public DbSet<Parameter> Parameters { get; set; }
+        public DbSet<Period> Periods { get; set; }
 
+        public DbSet<Persons> Persons { get; set; }
+
+        public DbSet<Relation> Relations { get; set; }
+
+        public DbSet<Relatives> Relatives { get; set; }
+
+        public DbSet<Reservation> Reservations { get; set; }
+
+        public DbSet<SelectedRelatives> SelectedRelatives { get; set; }
+
+        public DbSet<Slot> Slots { get; set; }
+
+        public DbSet<Tx_Coupon> Tx_Coupons { get; set; }
+
+        public DbSet<Tx_User> Tx_Users { get; set; }
+
+        public DbSet<UserCompany> UserCompanies { get; set; }
+        public DbSet<ParameterValues> Values { get; set; }
     }
+
+
 }

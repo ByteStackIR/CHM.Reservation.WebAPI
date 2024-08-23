@@ -4,6 +4,7 @@ using Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace WebAPI.Migrations
 {
     [DbContext(typeof(DBContextProvider))]
-    partial class DBContextProviderModelSnapshot : ModelSnapshot
+    [Migration("20240823191054_first-erd")]
+    partial class firsterd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,7 +40,7 @@ namespace WebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Entities.Models.Company", b =>
@@ -55,7 +58,7 @@ namespace WebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies", (string)null);
+                    b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("Entities.Models.CouponShare", b =>
@@ -82,7 +85,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("RelationId");
 
-                    b.ToTable("CouponShares", (string)null);
+                    b.ToTable("CouponShares");
                 });
 
             modelBuilder.Entity("Entities.Models.Entity", b =>
@@ -140,7 +143,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("PeriodId");
 
-                    b.ToTable("Entities", (string)null);
+                    b.ToTable("Entities");
                 });
 
             modelBuilder.Entity("Entities.Models.Parameter", b =>
@@ -163,7 +166,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Parameters", (string)null);
+                    b.ToTable("Parameters");
                 });
 
             modelBuilder.Entity("Entities.Models.ParameterValues", b =>
@@ -186,7 +189,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("ParameterId");
 
-                    b.ToTable("Values", (string)null);
+                    b.ToTable("Values");
                 });
 
             modelBuilder.Entity("Entities.Models.Period", b =>
@@ -209,7 +212,7 @@ namespace WebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Periods", (string)null);
+                    b.ToTable("Periods");
                 });
 
             modelBuilder.Entity("Entities.Models.Persons", b =>
@@ -241,7 +244,7 @@ namespace WebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Persons", (string)null);
+                    b.ToTable("Persons");
                 });
 
             modelBuilder.Entity("Entities.Models.Relation", b =>
@@ -259,7 +262,7 @@ namespace WebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Relations", (string)null);
+                    b.ToTable("Relations");
                 });
 
             modelBuilder.Entity("Entities.Models.Relatives", b =>
@@ -286,7 +289,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("RelationId");
 
-                    b.ToTable("Relatives", (string)null);
+                    b.ToTable("Relatives");
                 });
 
             modelBuilder.Entity("Entities.Models.Reservation", b =>
@@ -317,7 +320,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reservations", (string)null);
+                    b.ToTable("Reservations");
                 });
 
             modelBuilder.Entity("Entities.Models.SelectedRelatives", b =>
@@ -341,7 +344,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("ReservationId");
 
-                    b.ToTable("SelectedRelatives", (string)null);
+                    b.ToTable("SelectedRelatives");
                 });
 
             modelBuilder.Entity("Entities.Models.Slot", b =>
@@ -369,7 +372,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("EntityId");
 
-                    b.ToTable("Slots", (string)null);
+                    b.ToTable("Slots");
                 });
 
             modelBuilder.Entity("Entities.Models.Tx_Coupon", b =>
@@ -402,7 +405,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tx_Coupons", (string)null);
+                    b.ToTable("Tx_Coupons");
                 });
 
             modelBuilder.Entity("Entities.Models.Tx_User", b =>
@@ -435,7 +438,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tx_Users", (string)null);
+                    b.ToTable("Tx_Users");
                 });
 
             modelBuilder.Entity("Entities.Models.User", b =>
@@ -549,7 +552,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserCompanies", (string)null);
+                    b.ToTable("UserCompanies");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

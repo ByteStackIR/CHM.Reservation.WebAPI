@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Entities.Models
 {
-    public class Tx_Coupon : ModelBase
+    public class Tx_Coupon : Tx_Base
     {
 
     }

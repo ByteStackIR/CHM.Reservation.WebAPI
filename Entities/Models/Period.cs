@@ -12,8 +12,8 @@ namespace Entities.Models
         public DateTime EndDate { get; set; }
         public Decimal Stipend { get; set; }
 
-        public ICollection<CouponShare> CouponShare { get; set; } = new List<CouponShare>();
-        public ICollection<Tx_Coupon> TxCoupons { get; set; } = new List<Tx_Coupon>();
-        public ICollection<Tx_User> TxUsers { get; set; } = new List<Tx_User>();
+        public ICollection<CouponShare> CouponShare { get; set; } 
+        public ICollection<Tx_Coupon> TxCoupons { get; set; } 
+        public ICollection<Tx_User> TxUsers { get; set; }
     }
 }

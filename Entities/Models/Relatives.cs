@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Entities.Models
 {
-    public class Relatives
+    public class Relatives : ModelBase
     {
+        [ForeignKey(nameof(Person))]
         public Guid PersonId { get; set; }
+        [ForeignKey(nameof(Relation))]
         public Guid RelationId { get; set; }
         public bool IsConfirmed { get; set; }
 
