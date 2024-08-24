@@ -78,7 +78,7 @@ namespace Repositories.Repositories
             return _dbContextProvider.Set<T>().Where(expression).Include(include);
         }
 
-        public IIncludableQueryable<T, TProperty> GetPagedWithByAndInclude<TOrderBy, TProperty>(Expression<Func<T, bool>> expression, Expression<Func<T, TOrderBy>> order, Expression<Func<T, TProperty>> include, bool isASC)
+        public IIncludableQueryable<T, TProperty> GetWithByAndInclude<TOrderBy, TProperty>(Expression<Func<T, bool>> expression, Expression<Func<T, TOrderBy>> order, Expression<Func<T, TProperty>> include, bool isASC)
         {
             var query = FindByCondition(expression, false);
             if (isASC)
@@ -93,7 +93,7 @@ namespace Repositories.Repositories
             return query.Include(include);
 
         }
-        public  IQueryable<T> GetPagedWithBy<TOrderBy>(Expression<Func<T, bool>> expression, Expression<Func<T, TOrderBy>> order, bool isASC)
+        public  IQueryable<T> GetWithBy<TOrderBy>(Expression<Func<T, bool>> expression, Expression<Func<T, TOrderBy>> order, bool isASC)
         {
             var query = FindByCondition(expression, false);
             if (isASC)

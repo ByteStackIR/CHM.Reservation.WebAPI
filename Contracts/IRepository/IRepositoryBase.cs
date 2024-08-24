@@ -20,8 +20,8 @@ namespace Contracts.IRepository
         IIncludableQueryable<T, TProperty> GetByWithIncludes<TProperty>(Expression<Func<T, bool>> expression, Expression<Func<T, TProperty>> include);
        
         void SaveChanges();
-        IIncludableQueryable<T, TProperty> GetPagedWithByAndInclude<TOrderBy, TProperty>(Expression<Func<T, bool>> expression, Expression<Func<T, TOrderBy>> order, Expression<Func<T, TProperty>> include, bool isASC);
-        IQueryable<T> GetPagedWithBy<TOrderBy>(Expression<Func<T, bool>> expression, Expression<Func<T, TOrderBy>> order,bool isASC);
+        IIncludableQueryable<T, TProperty> GetWithByAndInclude<TOrderBy, TProperty>(Expression<Func<T, bool>> expression, Expression<Func<T, TOrderBy>> order, Expression<Func<T, TProperty>> include, bool isASC);
+        IQueryable<T> GetWithBy<TOrderBy>(Expression<Func<T, bool>> expression, Expression<Func<T, TOrderBy>> order,bool isASC);
 
 
     }
