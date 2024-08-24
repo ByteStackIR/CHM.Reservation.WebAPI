@@ -18,6 +18,7 @@ namespace Entities.Models
         [ForeignKey(nameof(Category))]
         public Guid CategoryId { get; set; }
 
+        public bool Cancellable { get; set; }
         public bool ToForward { get; set; }
         public bool ToBackward { get; set; }
 

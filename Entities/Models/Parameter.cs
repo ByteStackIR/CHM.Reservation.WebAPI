@@ -13,7 +13,7 @@ namespace Entities.Models
         [Required]
         [ForeignKey(nameof(Category))]
         public Guid CategoryId { get; set; } 
-        public string Title { get; set; } = string.Empty;
+        public string Title { get; set; }
 
         public Category Category { get; set; } = new Category();
         public ICollection<ParameterValues> Values { get; set; } = new List<ParameterValues>();
