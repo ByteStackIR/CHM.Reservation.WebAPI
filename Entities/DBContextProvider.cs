@@ -23,8 +23,9 @@ namespace Entities
            // modelBuilder.ApplyConfiguration(new DefinitionsConfiguration());
             base.OnModelCreating(modelBuilder);
 
-            //modelBuilder.ApplyConfiguration(new RoleConfiguration());
-           
+            modelBuilder.ApplyConfiguration(new RoleConfiguration());
+            modelBuilder.ApplyConfiguration(new RelationsConfiguration());
+            modelBuilder.ApplyConfiguration(new CategoriesConfiguration());
         }
 
 
