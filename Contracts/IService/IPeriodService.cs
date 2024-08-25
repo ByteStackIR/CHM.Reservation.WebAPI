@@ -9,6 +9,7 @@ namespace Contracts.IService
 {
     public interface IPeriodService
     {
-        public bool AddPeriod(PeriodDto dto);
+        bool AddPeriod(PeriodDto dto);
+        Task<PeriodDto> UpdatePeriod(PeriodDto dto);
     }
 }

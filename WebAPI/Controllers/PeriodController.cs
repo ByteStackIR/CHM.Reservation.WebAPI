@@ -18,6 +18,11 @@ namespace WebAPI.Controllers
             _periodService = periodService;
         }
 
+        /// <summary>
+        /// This Endpoint is used to Cread a new Period model
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPost("[action]")]
         public async Task<IActionResult> AddPeriod(PeriodDto dto)
         {
@@ -36,6 +41,32 @@ namespace WebAPI.Controllers
             catch
             {
                 return BadRequest();
+            }
+        }
+
+        /// <summary>
+        /// This Endpoint is used to update an existing Period model
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        [HttpPut("[action]")]
+        public async Task<IActionResult> UpdatePeriod(PeriodDto dto)
+        {
+            try
+            {
+                var result = await _periodService.UpdatePeriod(dto);
+                if(result is not null)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

@@ -8,6 +8,7 @@ using LoggerService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -46,6 +47,31 @@ namespace Services.Services
                 return false;
             }
         }
-        
+
+        public async Task<PeriodDto> UpdatePeriod(PeriodDto dto)
+        {
+            try
+            {
+                Period? periodModel = await _repositoryManager.Period.GetByIdAsync(dto.Id);
+                if (periodModel is not null)
+                {
+                    periodModel.StartDate = dto.StartDate;
+                    periodModel.EndDate = dto.EndDate;
+                    periodModel.Stipend = dto.Stipend;
+                    _repositoryManager.Period.Update(periodModel);
+                    _repositoryManager.Save();
+                    return dto;
+                }
+                else
+                {
+                    throw new Exception($"Period With Id of {dto.Id} Not Found");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An Error Occured While Updating Period With Id of {dto.Id}");
+            }
+        }
+
     }
 }

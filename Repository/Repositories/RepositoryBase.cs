@@ -23,6 +23,11 @@ namespace Repositories.Repositories
             _dbContextProvider = repositoryContext;
         }
 
+        public async Task<T?> GetByIdAsync<TKey>(TKey Id) where TKey : notnull
+        {
+            return await _dbContextProvider.Set<T>().FindAsync(Id);
+        }
+
         public IQueryable<T> FindAll(bool trackChanges)
         {
             return !trackChanges ? _dbContextProvider.Set<T>().AsNoTracking() :

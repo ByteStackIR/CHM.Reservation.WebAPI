@@ -4,6 +4,20 @@
         <name>WebAPI</name>
     </assembly>
     <members>
+        <member name="M:WebAPI.Controllers.PeriodController.AddPeriod(Entities.DataTransferObjects.PeriodDto)">
+            <summary>
+            This Endpoint is used to Cread a new Period model
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WebAPI.Controllers.PeriodController.UpdatePeriod(Entities.DataTransferObjects.PeriodDto)">
+            <summary>
+            This Endpoint is used to update an existing Period model
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+        </member>
         <member name="T:WebAPI.Migrations.FirstIdentity">
             <inheritdoc />
         </member>

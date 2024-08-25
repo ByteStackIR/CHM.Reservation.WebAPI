@@ -12,6 +12,7 @@ namespace Contracts.IRepository
 {
     public interface IRepositoryBase<T>
     {
+        Task<T?> GetByIdAsync<TKey>(TKey Id) where TKey : notnull;
         IQueryable<T> FindAll(bool trackChanges);
         IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression, bool trackChanges);
         void Create(T entity);
