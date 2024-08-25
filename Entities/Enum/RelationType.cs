@@ -9,21 +9,30 @@ namespace Entities.Enum
 {
     public enum RelationType : sbyte
     {
+
+        [Description("تحت تکفل")]
+        DEPENDENTS = -1,
+
+
+
         /// <summary>
         /// خود
         /// </summary>
         [Description("خود")]
         SELF = 0,
-        /// <summary>
-        /// فرزند
-        /// </summary>
-        [Description("فرزند")]
-        FARZAND = 2,
+
         /// <summary>
         /// همسر
         /// </summary>
         [Description("همسر")]
         HAMSAR = 1,
+
+
+        /// <summary>
+        /// فرزند
+        /// </summary>
+        [Description("فرزند")]
+        FARZAND = 2,
 
         /// <summary>
         /// پدر
@@ -45,6 +54,14 @@ namespace Entities.Enum
         /// </summary>
         [Description("مادر زن")]
         MADAR2 = 6,
+
+
+
+
+
+        [Description("آزاد")]
+        INDEPENDENTS = -2,
+
         /// <summary>
         /// برادر
         /// </summary>
