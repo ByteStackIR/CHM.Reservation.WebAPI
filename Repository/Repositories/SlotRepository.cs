@@ -1,4 +1,5 @@
-﻿using Contracts.IRepository;
+﻿using Contracts.IMarker;
+using Contracts.IRepository;
 using Entities;
 using Entities.Models;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Repositories.Repositories
 {
-    public class SlotRepository : RepositoryBase<Slot> , ISlotRepository
+    public class SlotRepository : RepositoryBase<Slot> , ISlotRepository, IScopeMarker
     {
         public SlotRepository(DBContextProvider context) : base(context)
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Contracts.IMarker
 {
-    internal interface IScopeMarker
+    public interface IScopeMarker
     {
     }
 }

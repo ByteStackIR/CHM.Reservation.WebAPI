@@ -79,9 +79,9 @@ public class Program
         builder.Services.AddScoped<ILoggerManager, LoggerManager>();
         builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
        // builder.Services.AddScoped<IDapperRepositoryManager, DapperRepositoryManager>();
-        builder.Services.RegisterServices();
+       // builder.Services.RegisterServices();
         builder.Services.RegisterPaymentGateway();
-
+        builder.Services.ConfigureDenpdencyInjectionByMarker();
 
         //ActionFilter on level of controller and actions
         builder.Services.AddScoped<ValidationFilterAttribute>();

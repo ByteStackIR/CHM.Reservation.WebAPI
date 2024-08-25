@@ -1,4 +1,5 @@
 ﻿using Contracts.IDapperRepository;
+using Contracts.IMarker;
 using Contracts.IRepository;
 using Entities;
 using Entities.Models;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Repositories.Repositories
 {
-    public class TransactionRepository : RepositoryBase<Transactions>, ITransactionRepository
+    public class TransactionRepository : RepositoryBase<Transactions>, ITransactionRepository, IScopeMarker
     {
         public TransactionRepository(DBContextProvider dBContextProvider) : base(dBContextProvider) { }
 

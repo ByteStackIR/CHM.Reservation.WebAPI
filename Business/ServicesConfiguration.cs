@@ -18,17 +18,17 @@ namespace Services
 
         public static void RegisterServices(this IServiceCollection services)
         {
-            (typeof(ServiceBase)).Assembly.GetTypes().Where(x => x.IsSubclassOf(typeof(ServiceBase)) && !x.IsAbstract).ToList().ForEach(service =>
-            {
-                var interfaceService = service.GetInterfaces().FirstOrDefault(x => x.FullName.EndsWith(service.Name));
+            //(typeof(ServiceBase)).Assembly.GetTypes().Where(x => x.IsSubclassOf(typeof(ServiceBase)) && !x.IsAbstract).ToList().ForEach(service =>
+            //{
+            //    var interfaceService = service.GetInterfaces().FirstOrDefault(x => x.FullName.EndsWith(service.Name));
 
 
 
-                if (interfaceService != null)
-                    services.AddScoped(interfaceService, service);
+            //    if (interfaceService != null)
+            //        services.AddScoped(interfaceService, service);
 
 
-            });
+            //});
 
 
             services.AddDistributedMemoryCache();

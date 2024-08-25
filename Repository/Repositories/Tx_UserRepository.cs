@@ -1,4 +1,5 @@
-﻿using Contracts.IRepository;
+﻿using Contracts.IMarker;
+using Contracts.IRepository;
 using Entities;
 using Entities.Models;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Repositories.Repositories
 {
-    public class Tx_UserRepository : RepositoryBase<Tx_User> , ITx_UserRepository
+    public class Tx_UserRepository : RepositoryBase<Tx_User> , ITx_UserRepository, IScopeMarker
     {
         public Tx_UserRepository(DBContextProvider context) : base(context)
         {

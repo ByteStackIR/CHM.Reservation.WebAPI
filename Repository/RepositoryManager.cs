@@ -1,4 +1,5 @@
-﻿using Contracts.IRepository;
+﻿using Contracts.IMarker;
+using Contracts.IRepository;
 using Contracts.IRepository;
 using Entities;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Repositories
 {
-    public sealed class RepositoryManager : IRepositoryManager
+    public sealed class RepositoryManager : IRepositoryManager, IScopeMarker
     {
         private readonly DBContextProvider _context;
 

@@ -1,4 +1,5 @@
-﻿using Contracts.IRepository;
+﻿using Contracts.IMarker;
+using Contracts.IRepository;
 using Entities;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Repositories.Repositories
 {
-    public class Tx_CouponRepository : RepositoryBase<Tx_Coupon> , ITx_CouponRepository
+    public class Tx_CouponRepository : RepositoryBase<Tx_Coupon> , ITx_CouponRepository, IScopeMarker
     {
         public Tx_CouponRepository(DBContextProvider context) : base(context)
         {

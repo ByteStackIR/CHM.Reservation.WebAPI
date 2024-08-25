@@ -1,4 +1,5 @@
-﻿using Contracts.IRepository;
+﻿using Contracts.IMarker;
+using Contracts.IRepository;
 using Entities;
 using Entities.Models;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Repositories.Repositories
 {
-    public class RelationRepository : RepositoryBase<Relation> , IRelationRepository
+    public class RelationRepository : RepositoryBase<Relation> , IRelationRepository, IScopeMarker
     {
         public RelationRepository(DBContextProvider context) : base(context)
         {
