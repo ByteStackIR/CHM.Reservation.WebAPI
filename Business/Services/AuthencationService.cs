@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Contracts.IMarker;
 using Contracts.IRepository;
 using Contracts.IService;
 using Entities;
@@ -26,7 +27,7 @@ using WebAPI.Configuration;
 
 namespace Services.Services
 {
-    public class AuthenticationService : ServiceBase, IAuthenticationService
+    public class AuthenticationService : ServiceBase, IAuthenticationService ,IScopeMarker
     {
 
         private readonly UserManager<User> _userManager;
