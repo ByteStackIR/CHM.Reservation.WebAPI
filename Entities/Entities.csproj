@@ -18,4 +18,8 @@
     <ProjectReference Include="..\Features\Features.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DataTransferObjects\Models\" />
+  </ItemGroup>
+
 </Project>

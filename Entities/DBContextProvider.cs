@@ -24,7 +24,7 @@ namespace Entities
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new RoleConfiguration());
-            modelBuilder.ApplyConfiguration(new RelationsConfiguration());
+           modelBuilder.ApplyConfiguration(new RelationsConfiguration());
             modelBuilder.ApplyConfiguration(new CategoriesConfiguration());
         }
 
@@ -40,7 +40,7 @@ namespace Entities
         public DbSet<Parameter> Parameters { get; set; }
         public DbSet<Period> Periods { get; set; }
 
-        public DbSet<Persons> Persons { get; set; }
+
 
         public DbSet<Relation> Relations { get; set; }
 

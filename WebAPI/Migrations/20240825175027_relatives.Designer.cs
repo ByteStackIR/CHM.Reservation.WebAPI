@@ -4,6 +4,7 @@ using Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace WebAPI.Migrations
 {
     [DbContext(typeof(DBContextProvider))]
-    partial class DBContextProviderModelSnapshot : ModelSnapshot
+    [Migration("20240825175027_relatives")]
+    partial class relatives
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,22 +45,6 @@ namespace WebAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("cd97c448-da11-4553-93e3-cac2976eb64f"),
-                            CreatedDate = new DateTime(2024, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified),
-                            Description = "هتل به فارسی",
-                            Title = "Hotel"
-                        },
-                        new
-                        {
-                            Id = new Guid("bd97c448-da11-4553-93e3-cac2976eb64f"),
-                            CreatedDate = new DateTime(2024, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified),
-                            Description = "تور به فارسی",
-                            Title = "Tour"
-                        });
                 });
 
             modelBuilder.Entity("Entities.Models.Company", b =>
@@ -308,150 +295,6 @@ namespace WebAPI.Migrations
                     b.HasIndex("ParentId");
 
                     b.ToTable("Relations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("00000000-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(6936),
-                            Title = "تحت تکفل",
-                            Type = (short)-1
-                        },
-                        new
-                        {
-                            Id = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(6950),
-                            Title = "سایر",
-                            Type = (short)-2
-                        },
-                        new
-                        {
-                            Id = new Guid("10f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(6953),
-                            ParentId = new Guid("00000000-9d33-4279-aed3-8f372907f27e"),
-                            Title = "خود",
-                            Type = (short)0
-                        },
-                        new
-                        {
-                            Id = new Guid("11f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(6955),
-                            ParentId = new Guid("00000000-9d33-4279-aed3-8f372907f27e"),
-                            Title = "همسر",
-                            Type = (short)1
-                        },
-                        new
-                        {
-                            Id = new Guid("12f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(6957),
-                            ParentId = new Guid("00000000-9d33-4279-aed3-8f372907f27e"),
-                            Title = "فرزند",
-                            Type = (short)2
-                        },
-                        new
-                        {
-                            Id = new Guid("13f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(6969),
-                            ParentId = new Guid("00000000-9d33-4279-aed3-8f372907f27e"),
-                            Title = "پدر",
-                            Type = (short)3
-                        },
-                        new
-                        {
-                            Id = new Guid("14f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(6971),
-                            ParentId = new Guid("00000000-9d33-4279-aed3-8f372907f27e"),
-                            Title = "مادر",
-                            Type = (short)4
-                        },
-                        new
-                        {
-                            Id = new Guid("15f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(6973),
-                            ParentId = new Guid("00000000-9d33-4279-aed3-8f372907f27e"),
-                            Title = "پدر همسر",
-                            Type = (short)5
-                        },
-                        new
-                        {
-                            Id = new Guid("16f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(6975),
-                            ParentId = new Guid("00000000-9d33-4279-aed3-8f372907f27e"),
-                            Title = "مادر همسر",
-                            Type = (short)6
-                        },
-                        new
-                        {
-                            Id = new Guid("17f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(6978),
-                            ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
-                            Title = "عروس",
-                            Type = (short)9
-                        },
-                        new
-                        {
-                            Id = new Guid("18f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(6980),
-                            ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
-                            Title = "داماد",
-                            Type = (short)10
-                        },
-                        new
-                        {
-                            Id = new Guid("19f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(6986),
-                            ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
-                            Title = "خواهر",
-                            Type = (short)8
-                        },
-                        new
-                        {
-                            Id = new Guid("20f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(6998),
-                            ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
-                            Title = "برادر",
-                            Type = (short)7
-                        },
-                        new
-                        {
-                            Id = new Guid("21f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(7001),
-                            ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
-                            Title = "عمه",
-                            Type = (short)14
-                        },
-                        new
-                        {
-                            Id = new Guid("22f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(7003),
-                            ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
-                            Title = "خاله",
-                            Type = (short)13
-                        },
-                        new
-                        {
-                            Id = new Guid("23f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(7005),
-                            ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
-                            Title = "دایی",
-                            Type = (short)12
-                        },
-                        new
-                        {
-                            Id = new Guid("24f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(7007),
-                            ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
-                            Title = "عمو",
-                            Type = (short)11
-                        },
-                        new
-                        {
-                            Id = new Guid("25f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 8, 25, 21, 21, 17, 23, DateTimeKind.Local).AddTicks(7009),
-                            ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
-                            Title = "بدون نسبت",
-                            Type = (short)26
-                        });
                 });
 
             modelBuilder.Entity("Entities.Models.Relatives", b =>
@@ -838,32 +681,6 @@ namespace WebAPI.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "04be803b-87c2-44e8-9bc9-fb395960b252",
-                            Name = "User",
-                            NormalizedName = "User"
-                        },
-                        new
-                        {
-                            Id = "8b1e25dc-1685-4ec0-890d-f1da2102b949",
-                            Name = "Administrator",
-                            NormalizedName = "ADMINISTRATOR"
-                        },
-                        new
-                        {
-                            Id = "88700665-080b-431a-a8df-b9c6d26cf215",
-                            Name = "Operator",
-                            NormalizedName = "OPERATOR"
-                        },
-                        new
-                        {
-                            Id = "10366cec-9175-4b87-a7ca-16a486aaafa6",
-                            Name = "Manager",
-                            NormalizedName = "MANAGER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

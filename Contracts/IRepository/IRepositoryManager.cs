@@ -20,7 +20,6 @@ namespace Contracts.IRepository
         IParameterRepository Parameter { get; }
         IParameterValuesRepository ParameterValues { get; }
         IPeriodRepository Period { get; }
-        IPersonsRepository Persons { get; }
         IRelationRepository Relation { get; }
         IRelativesRepository Relatives { get; }
         IReservationRepository Reservation { get; }
