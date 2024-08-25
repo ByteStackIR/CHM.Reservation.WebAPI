@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Repositories.Repositories
 {
-    public class Tx_UserRepository : Tx_BaseRepository<Tx_User> , ITx_UserRepository
+    public class Tx_UserRepository : RepositoryBase<Tx_User> , ITx_UserRepository
     {
         public Tx_UserRepository(DBContextProvider context) : base(context)
         {

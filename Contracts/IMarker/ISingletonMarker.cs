@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Contracts.IRepository
+namespace Contracts.IMarker
 {
-    public interface ITx_BaseRepository<T> : IRepositoryBase<T>
+    internal interface ISingletonMarker
     {
     }
 }

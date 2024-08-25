@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Repositories.Repositories
 {
-    public class Tx_CouponRepository : Tx_BaseRepository<Tx_Coupon> , ITx_CouponRepository
+    public class Tx_CouponRepository : RepositoryBase<Tx_Coupon> , ITx_CouponRepository
     {
         public Tx_CouponRepository(DBContextProvider context) : base(context)
         {
