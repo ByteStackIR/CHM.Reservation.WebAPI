@@ -27,7 +27,6 @@ namespace Repositories
         private readonly Lazy<IParameterRepository> _parameterRepository;
         private readonly Lazy<IParameterValuesRepository> _parameterValuesRepository;
         private readonly Lazy<IPeriodRepository> _periodRepository;
-        private readonly Lazy<IPersonsRepository> _personsRepository;
         private readonly Lazy<IRelationRepository> _relationRepository;
         private readonly Lazy<IRelativesRepository> _relativesRepository;
         private readonly Lazy<IReservationRepository> _reservationRepository;
@@ -53,7 +52,7 @@ namespace Repositories
             _parameterRepository = new Lazy<IParameterRepository>(() => new ParameterRepository(context));
             _parameterValuesRepository = new Lazy<IParameterValuesRepository>(() => new ParameterValuesRepository(context));
             _periodRepository = new Lazy<IPeriodRepository>(() => new PeriodRepository(context));
-            _personsRepository = new Lazy<IPersonsRepository>(() => new PersonsRepository(context));
+  
             _relationRepository = new Lazy<IRelationRepository>(() => new RelationRepository(context));
             _relativesRepository = new Lazy<IRelativesRepository>(() => new RelativesRepository(context));
             _reservationRepository = new Lazy<IReservationRepository>(() => new ReservationRepository(context));
@@ -76,7 +75,6 @@ namespace Repositories
         public IParameterRepository Parameter => _parameterRepository.Value;
         public IParameterValuesRepository ParameterValues => _parameterValuesRepository.Value;
         public IPeriodRepository Period => _periodRepository.Value;
-        public IPersonsRepository Persons => _personsRepository.Value;
         public IRelationRepository Relation => _relationRepository.Value;
         public IRelativesRepository Relatives => _relativesRepository.Value;
         public IReservationRepository Reservation => _reservationRepository.Value;
