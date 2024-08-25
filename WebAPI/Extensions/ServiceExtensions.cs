@@ -14,6 +14,8 @@ using System.Threading.RateLimiting;
 using Entities;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Reflection;
+using Contracts.IRepository;
+using Repositories;
 
 namespace WebAPI.Extensions
 {
@@ -293,6 +295,11 @@ namespace WebAPI.Extensions
             });
 
            
+        }
+
+        public static void ConfigureRepositoryManager(this IServiceCollection services)
+        {
+            services.AddScoped<IRepositoryManager, RepositoryManager>();
         }
     }
 }

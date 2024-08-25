@@ -11,6 +11,26 @@ namespace Contracts.IRepository
 
         ITransactionRepository ITransactionRepository { get; }
 
+        ICategoryRepository Category { get; }
+        ICompanyRepository Company { get; }
+        ICouponShareRepository CouponShare { get; }
+        IEntityManagerRepository EntityManager { get; }
+        IEntityRepository Entity { get; }
+        IObjectStatesRepository ObjectStates { get; }
+        IParameterRepository Parameter { get; }
+        IParameterValuesRepository ParameterValues { get; }
+        IPeriodRepository Period { get; }
+        IPersonsRepository Persons { get; }
+        IRelationRepository Relation { get; }
+        IRelativesRepository Relatives { get; }
+        IReservationRepository Reservation { get; }
+        IReservationStatesRepository ReservationStates { get; }
+        ISelectedRelativesRepository SelectedRelatives { get; }
+        ISlotRepository Slot { get; }
+        ITx_CouponRepository Tx_Coupon { get; }
+        ITx_UserRepository Tx_User { get; }
+        IUserCompanyRepository UserCompany { get; }
+
         void Save();
     }
 }

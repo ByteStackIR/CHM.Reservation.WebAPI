@@ -47,6 +47,8 @@ public class Program
         
 
         builder.Services.ConfigureCors();
+        builder.Services.ConfigureRepositoryManager();
+
 
         //builder.Services.AddControllers();
         builder.Services.ConfigureVersioning();

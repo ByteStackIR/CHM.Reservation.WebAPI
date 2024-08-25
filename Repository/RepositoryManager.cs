@@ -11,33 +11,82 @@ using System.Threading.Tasks;
 
 namespace Repositories
 {
-    public class RepositoryManager : IRepositoryManager
+    public sealed class RepositoryManager : IRepositoryManager
     {
-        private DBContextProvider _context;
-
+        private readonly DBContextProvider _context;
 
         private readonly Lazy<ITransactionRepository> _ITransactionRepository;
 
-        public RepositoryManager(DBContextProvider Context)
+        private readonly Lazy<ICategoryRepository> _categoryRepository;
+        private readonly Lazy<ICompanyRepository> _companyRepository;
+        private readonly Lazy<ICouponShareRepository> _couponShareRepository;
+        private readonly Lazy<IEntityManagerRepository> _entityManagerRepository;
+        private readonly Lazy<IEntityRepository> _entityRepository;
+        private readonly Lazy<IObjectStatesRepository> _objectStatesRepository;
+        private readonly Lazy<IParameterRepository> _parameterRepository;
+        private readonly Lazy<IParameterValuesRepository> _parameterValuesRepository;
+        private readonly Lazy<IPeriodRepository> _periodRepository;
+        private readonly Lazy<IPersonsRepository> _personsRepository;
+        private readonly Lazy<IRelationRepository> _relationRepository;
+        private readonly Lazy<IRelativesRepository> _relativesRepository;
+        private readonly Lazy<IReservationRepository> _reservationRepository;
+        private readonly Lazy<IReservationStatesRepository> _reservationStatesRepository;
+        private readonly Lazy<ISelectedRelativesRepository> _selectedRelativesRepository;
+        private readonly Lazy<ISlotRepository> _slotRepository;
+        private readonly Lazy<ITx_CouponRepository> _tx_CouponRepository;
+        private readonly Lazy<ITx_UserRepository> _tx_UserRepository;
+        private readonly Lazy<IUserCompanyRepository> _userCompanyRepository;
+
+        public RepositoryManager(DBContextProvider context)
         {
-            _context = Context;
+            _context = context;
 
+            _ITransactionRepository = new Lazy<ITransactionRepository>(() => new TransactionRepository(context));
 
-
-     _ITransactionRepository = new Lazy<ITransactionRepository>(() => new TransactionRepository(_context));
-
+            _categoryRepository = new Lazy<ICategoryRepository>(() => new CategoryRepository(context));
+            _companyRepository = new Lazy<ICompanyRepository>(() => new CompanyRepository(context));
+            _couponShareRepository = new Lazy<ICouponShareRepository>(() => new CouponShareRepository(context));
+            _entityManagerRepository = new Lazy<IEntityManagerRepository>(() => new EntityManagerRepository(context));
+            _entityRepository = new Lazy<IEntityRepository>(() => new EntityRepository(context));
+            _objectStatesRepository = new Lazy<IObjectStatesRepository>(() => new ObjectStatesRepository(context));
+            _parameterRepository = new Lazy<IParameterRepository>(() => new ParameterRepository(context));
+            _parameterValuesRepository = new Lazy<IParameterValuesRepository>(() => new ParameterValuesRepository(context));
+            _periodRepository = new Lazy<IPeriodRepository>(() => new PeriodRepository(context));
+            _personsRepository = new Lazy<IPersonsRepository>(() => new PersonsRepository(context));
+            _relationRepository = new Lazy<IRelationRepository>(() => new RelationRepository(context));
+            _relativesRepository = new Lazy<IRelativesRepository>(() => new RelativesRepository(context));
+            _reservationRepository = new Lazy<IReservationRepository>(() => new ReservationRepository(context));
+            _reservationStatesRepository = new Lazy<IReservationStatesRepository>(() => new ReservationStatesRepository(context));
+            _selectedRelativesRepository = new Lazy<ISelectedRelativesRepository>(() => new SelectedRelativesRepository(context));
+            _slotRepository = new Lazy<ISlotRepository>(() => new SlotRepository(context));
+            _tx_CouponRepository = new Lazy<ITx_CouponRepository>(() => new Tx_CouponRepository(context));
+            _tx_UserRepository = new Lazy<ITx_UserRepository>(() => new Tx_UserRepository(context));
+            _userCompanyRepository = new Lazy<IUserCompanyRepository>(() => new UserCompanyRepository(context));
         }
-
-
-
 
         public ITransactionRepository ITransactionRepository => _ITransactionRepository.Value;
 
+        public ICategoryRepository Category => _categoryRepository.Value;
+        public ICompanyRepository Company => _companyRepository.Value;
+        public ICouponShareRepository CouponShare => _couponShareRepository.Value;
+        public IEntityManagerRepository EntityManager => _entityManagerRepository.Value;
+        public IEntityRepository Entity => _entityRepository.Value;
+        public IObjectStatesRepository ObjectStates => _objectStatesRepository.Value;
+        public IParameterRepository Parameter => _parameterRepository.Value;
+        public IParameterValuesRepository ParameterValues => _parameterValuesRepository.Value;
+        public IPeriodRepository Period => _periodRepository.Value;
+        public IPersonsRepository Persons => _personsRepository.Value;
+        public IRelationRepository Relation => _relationRepository.Value;
+        public IRelativesRepository Relatives => _relativesRepository.Value;
+        public IReservationRepository Reservation => _reservationRepository.Value;
+        public IReservationStatesRepository ReservationStates => _reservationStatesRepository.Value;
+        public ISelectedRelativesRepository SelectedRelatives => _selectedRelativesRepository.Value;
+        public ISlotRepository Slot => _slotRepository.Value;
+        public ITx_CouponRepository Tx_Coupon => _tx_CouponRepository.Value;
+        public ITx_UserRepository Tx_User => _tx_UserRepository.Value;
+        public IUserCompanyRepository UserCompany => _userCompanyRepository.Value;
 
-        public void Save()
-        {
-            _context.SaveChanges();
-        }
+        public void Save() => _context.SaveChanges();
     }
 }
 
