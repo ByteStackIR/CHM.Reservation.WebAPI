@@ -16,7 +16,7 @@ namespace Entities.Models
         [Required]
         [ForeignKey(nameof(Category))]
         public Guid CategoryId { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         [Required]

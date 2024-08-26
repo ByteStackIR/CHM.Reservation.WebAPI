@@ -47,14 +47,14 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<RelativeDto> GetById(Guid Id)
     {
 
-        var userRelatives = await _repositoryManager.Relatives.FindByCondition(x => x.Id == Id, false).ToListAsync();
+        var userRelatives = await _repositoryManager.Relatives.FindByCondition(x => x.Id == Id , false).ToListAsync();
 
         return _mapper.Map<RelativeDto>(userRelatives);
     }
 
     public async Task<List<RelativeDto>> GetConfirmedRelatives(Guid UserId)
     {
-        var userRelatives = await _repositoryManager.Relatives.FindByCondition(x => x.UserId == UserId.ToString() && x.IsChecked && x.IsConfirmed, false).ToListAsync();
+        var userRelatives = await _repositoryManager.Relatives.FindByCondition(x => x.UserId == UserId.ToString() && x.IsChecked && x.IsConfirmed && !x.IsDeleted, false).ToListAsync();
 
         return _mapper.Map<List<RelativeDto>>(userRelatives);
     }
@@ -69,7 +69,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
           .UserCompany
           .FindByCondition(x => x.IsActive, false)
           .Include(y => y.User)
-          .ThenInclude(z => z.Relatives.Where(x => !x.IsChecked)).Include(x => x.Company).OrderByDescending(x => x.CreatedDate);
+          .ThenInclude(z => z.Relatives.Where(x => !x.IsChecked && !x.IsDeleted)).Include(x => x.Company).OrderByDescending(x => x.CreatedDate);
 
         var data = await query.GetPage(request).ToListAsync();
         List<UserRelativesDto> res = new();
@@ -106,7 +106,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
            .UserCompany
            .FindByCondition(x => x.IsActive && x.CompanyId==_systemContext.UserCompany.Id, false)
            .Include(y => y.User)
-           .ThenInclude(z => z.Relatives.Where(x => !x.IsChecked)).Include(x => x.Company).OrderByDescending(x => x.CreatedDate);
+           .ThenInclude(z => z.Relatives.Where(x => !x.IsChecked && !x.IsDeleted)).Include(x => x.Company).OrderByDescending(x => x.CreatedDate);
 
         var data = await query.GetPage(request).ToListAsync();
         List<UserRelativesDto> res = new();
@@ -139,9 +139,10 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         model.UserId = _systemContext.CurrentUser.FindFirstValue(ClaimTypes.NameIdentifier);
         model.Id = Guid.NewGuid();
         model.CreatedDate = DateTime.Now;
+        model.IsDeleted = false;
         model.IsChecked = true;
         model.IsConfirmed = true;
-
+        
         bool mustBeChecked= await _relationsService.NeedConfirmation(dto.RelationId);
   
         if (mustBeChecked)
@@ -171,6 +172,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
             model.UserId = _systemContext.CurrentUser.FindFirstValue(ClaimTypes.NameIdentifier);
             model.Id = Guid.NewGuid();
             model.CreatedDate = DateTime.Now;
+            model.IsDeleted = false;
             model.IsChecked = true;
             model.IsConfirmed = true;
 
@@ -202,6 +204,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
             Relatives model = _mapper.Map<Relatives>(item);
             model.UserId = dto.UserId.ToString();
             model.Id = Guid.NewGuid();
+            model.IsDeleted = false;
             model.CreatedDate = DateTime.Now;
             model.IsChecked = true;
             model.IsConfirmed = true;
@@ -225,6 +228,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
             Relatives model = _mapper.Map<Relatives>(item);
             model.UserId = dto.UserId.ToString();
             model.Id = Guid.NewGuid();
+            model.IsDeleted = false;
             model.CreatedDate = DateTime.Now;
             model.IsChecked = true;
             model.IsConfirmed = true;
@@ -324,6 +328,20 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<RelativeDto> ToggleByUser(Guid Id)
     {
         var model = await _repositoryManager.Relatives.FindByCondition(x => x.Id == Id && x.UserId == _systemContext.CurrentUser.FindFirstValue(ClaimTypes.NameIdentifier), false).FirstOrDefaultAsync();
+        model.IsDeleted = !model.IsDeleted;
+
+        if (!model.IsDeleted)
+        {
+
+            bool mustBeChecked = await _relationsService.NeedConfirmation(model.RelationId);
+
+            if (mustBeChecked)
+            {
+                model.IsChecked = false;
+                model.IsConfirmed = false;
+            }
+        }
+
 
         return _mapper.Map<RelativeDto>(model);
     }
@@ -331,14 +349,14 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<RelativeDto> ToggleByCompany(Guid UserId,Guid Id)
     {
         var model = await _repositoryManager.Relatives.FindByCondition(x => x.Id == Id && x.UserId == UserId.ToString(), false).FirstOrDefaultAsync();
-
+        model.IsDeleted = !model.IsDeleted;
         return _mapper.Map<RelativeDto>(model);
     }
 
     public async Task<RelativeDto> ToggleByAdmin(Guid UserId, Guid Id)
     {
         var model = await _repositoryManager.Relatives.FindByCondition(x => x.Id == Id && x.UserId == UserId.ToString(), false).FirstOrDefaultAsync();
-
+        model.IsDeleted = !model.IsDeleted;
         return _mapper.Map<RelativeDto>(model);
     }
 

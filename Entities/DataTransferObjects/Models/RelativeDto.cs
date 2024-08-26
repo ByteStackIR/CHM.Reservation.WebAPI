@@ -28,7 +28,7 @@ namespace Entities.DataTransferObjects.Models
         public bool IsChecked { get; set; }
         public bool IsConfirmed { get; set; }
 
-    
+        public bool IsDeleted { get; set; }
     
     
     }

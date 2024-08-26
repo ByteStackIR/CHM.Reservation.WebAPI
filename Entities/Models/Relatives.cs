@@ -35,7 +35,7 @@ namespace Entities.Models
         [DeleteBehavior(DeleteBehavior.NoAction)]
         public User User { get; set; }
         public Relation Relation { get; set; } = new Relation();
-
+        public bool IsDeleted { get; set; }
         public ICollection<SelectedRelatives> SelectedRelatives { get; set; } = new List<SelectedRelatives>();
     }
 }
