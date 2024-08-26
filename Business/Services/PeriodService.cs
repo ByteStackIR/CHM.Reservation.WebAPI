@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
+using Contracts.IContext;
 using Contracts.IMarker;
 using Contracts.IRepository;
 using Contracts.IService;
 using Entities.DataTransferObjects;
 using Entities.Models;
 using LoggerService;
+using Microsoft.AspNetCore.Http;
+using Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -137,4 +140,4 @@ using System.Threading.Tasks;
             }
         }
     }
-}
+
