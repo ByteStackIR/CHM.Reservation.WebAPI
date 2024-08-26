@@ -1,4 +1,5 @@
 ﻿using Entities.DataTransferObjects;
+using Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,9 @@ namespace Contracts.IService
 {
     public interface IPeriodService
     {
+        Task<PeriodDto> GetById(Guid periodId);
         bool AddPeriod(PeriodDto dto);
         Task<PeriodDto> UpdatePeriod(PeriodDto dto);
+        Task<PeriodDto> DeletePeriod(Guid Id);
     }
 }
