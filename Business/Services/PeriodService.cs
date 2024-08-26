@@ -1,27 +1,46 @@
-﻿using AutoMapper;
-using Contracts.IMarker;
-using Contracts.IRepository;
-using Contracts.IService;
-using Entities.DataTransferObjects;
-using Entities.Models;
-using LoggerService;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Services.Services
+﻿namespace Services.Services
 {
-    public class PeriodService : ServiceBase , IPeriodService , IScopeMarker
+    using AutoMapper;
+    using Contracts.IContext;
+    using Contracts.IMarker;
+    using Contracts.IRepository;
+    using Contracts.IService;
+    using Entities.DataTransferObjects;
+    using Entities.Models;
+    using LoggerService;
+    using Microsoft.AspNetCore.Http;
+    using System;
+    using System.Threading.Tasks;
+
+    /// <summary>
+    /// Defines the <see cref="PeriodService" />
+    /// </summary>
+    public class PeriodService : ServiceBase, IPeriodService, IScopeMarker
     {
-        private readonly ILoggerManager _logger;
-        public PeriodService(IRepositoryManager repositoryManager, ILoggerManager logger ,IMapper mapper) : base(repositoryManager,mapper)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PeriodService"/> class.
+        /// </summary>
+        /// <param name="mapper">The mapper<see cref="IMapper"/></param>
+        /// <param name="repoManger">The repoManger<see cref="IRepositoryManager"/></param>
+        /// <param name="httpContextAccessor">The httpContextAccessor<see cref="IHttpContextAccessor"/></param>
+        /// <param name="systemContext">The systemContext<see cref="ISystemContext"/></param>
+        /// <param name="logger">The logger<see cref="ILoggerManager"/></param>
+        public PeriodService(
+            IMapper mapper,
+            IRepositoryManager repoManger,
+            IHttpContextAccessor httpContextAccessor,
+            ISystemContext systemContext,
+            ILoggerManager logger
+        )
+            : base(repoManger, mapper, httpContextAccessor, systemContext, logger)
         {
-            _logger = logger;
         }
 
+        /// <summary>
+        /// The AddPeriod
+        /// </summary>
+        /// <param name="dto">The dto<see cref="PeriodDto"/></param>
+        /// <returns>The <see cref="bool"/></returns>
         public bool AddPeriod(PeriodDto dto)
         {
             try
@@ -40,7 +59,6 @@ namespace Services.Services
                 _repositoryManager.Period.Create(periodModel);
                 _repositoryManager.Save();
                 return true;
-                
             }
             catch
             {
@@ -48,6 +66,11 @@ namespace Services.Services
             }
         }
 
+        /// <summary>
+        /// The UpdatePeriod
+        /// </summary>
+        /// <param name="dto">The dto<see cref="PeriodDto"/></param>
+        /// <returns>The <see cref="Task{PeriodDto}"/></returns>
         public async Task<PeriodDto> UpdatePeriod(PeriodDto dto)
         {
             try
@@ -72,6 +95,5 @@ namespace Services.Services
                 throw new Exception($"An Error Occured While Updating Period With Id of {dto.Id}");
             }
         }
-
     }
 }

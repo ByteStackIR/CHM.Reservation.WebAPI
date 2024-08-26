@@ -23,6 +23,7 @@ namespace WebAPI.Extensions
     {
         public static void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
             services.ConfigureCors();
             services.ConfigureIISIntegration();
             services.AddControllers();

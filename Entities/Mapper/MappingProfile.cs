@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Entities.DataTransferObjects;
+using Entities.DataTransferObjects.Models;
 using Entities.Models;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,11 @@ namespace Entities.Mapper
             ConfigureCompany(); // Model <-> Dto
             ConfigureEmplyee(); // Model <-> Dto
             ConfigureIdentity();
+
+            CreateMap<Company, CompanyDto>().ReverseMap();
+            CreateMap<Relatives,RelativeDto>().ReverseMap();
+           
+
 
         }
 

@@ -1,4 +1,5 @@
-﻿using Entities.Models;
+﻿using Entities.DataTransferObjects.Models;
+using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -10,15 +11,15 @@ using System.Threading.Tasks;
 
 namespace Entities.DataTransferObjects
 {
-   
- 
+
+
     public class Response
     {
         public string Status { get; set; }
         public string Message { get; set; }
-        public List<string > Errors { get; set; }
+        public List<string> Errors { get; set; }
     }
- 
+
 
     public class KeyItemsDto<T> where T : class
     {
@@ -29,7 +30,8 @@ namespace Entities.DataTransferObjects
     }
 
 
-    public class FileDto {
+    public class FileDto
+    {
         public string Key { get; set; }
         public IFormFile? File { get; set; }
 
@@ -44,6 +46,22 @@ namespace Entities.DataTransferObjects
 
 
 
-   
+    public class UserRelativesDto
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
 
+        public string CompanyTitle { get; set; }
+
+
+        public KeyItemsDto<RelativeDto> Relatives { get; set; }
+
+    }
+
+
+    public class UserRelativesCreationDto
+    {
+        public Guid UserId { get; set; }
+        public List<RelativeDto> Relatives { get; set; }
+    }
 }
