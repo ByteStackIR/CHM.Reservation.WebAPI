@@ -17,7 +17,7 @@ namespace Entities.Mapper
             ConfigureCompany(); // Model <-> Dto
             ConfigureEmplyee(); // Model <-> Dto
             ConfigureIdentity();
-
+            ConfigurePeriod();
         }
 
         public void ConfigureCompany()
@@ -41,7 +41,11 @@ namespace Entities.Mapper
             CreateMap<UserForRegistrationDto, User>();
         }
 
-        
+        public void ConfigurePeriod()
+        {
+            CreateMap<Period, PeriodDto>();
+        }
+
     }
 
 }

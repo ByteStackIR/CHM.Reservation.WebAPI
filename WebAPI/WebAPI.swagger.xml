@@ -4,6 +4,13 @@
         <name>WebAPI</name>
     </assembly>
     <members>
+        <member name="M:WebAPI.Controllers.PeriodController.GetPeriod(System.Guid)">
+            <summary>
+            This Endpoint gets a single Period by its primary key periodId
+            </summary>
+            <param name="periodId"></param>
+            <returns></returns>
+        </member>
         <member name="M:WebAPI.Controllers.PeriodController.AddPeriod(Entities.DataTransferObjects.PeriodDto)">
             <summary>
             This Endpoint is used to Cread a new Period model
@@ -16,6 +23,13 @@
             This Endpoint is used to update an existing Period model
             </summary>
             <param name="dto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WebAPI.Controllers.PeriodController.DeletePeriod(System.Guid)">
+            <summary>
+            This Endpoint is used to soft delete the Period by getting its Id
+            </summary>
+            <param name="periodId"></param>
             <returns></returns>
         </member>
         <member name="T:WebAPI.Migrations.FirstIdentity">
@@ -148,6 +162,18 @@
             <inheritdoc />
         </member>
         <member name="M:WebAPI.Migrations.data.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:WebAPI.Migrations.periodSoftDelete">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.periodSoftDelete.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.periodSoftDelete.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.periodSoftDelete.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
     </members>
