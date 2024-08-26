@@ -249,7 +249,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         var model = await _repositoryManager.Relatives.FindByCondition(x=>x.Id==dto.Id && x.UserId == dto.UserId,false).FirstOrDefaultAsync();
 
         if (model is null)
-            throw new Exception("Invalid Data!");
+            throw new Exception($"Relation with Id {dto.Id} was not found!");
 
         model.RelationId = dto.RelationId;
         model.BirthDate = dto.BirthDate;
@@ -279,9 +279,9 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<RelativeDto> UpdateByCompany(RelativeDto dto)
     {
         var model = await _repositoryManager.Relatives.FindByCondition(x => x.Id == dto.Id && x.UserId == dto.UserId, false).FirstOrDefaultAsync();
-
+       
         if (model is null)
-            throw new Exception("Invalid Data!");
+            throw new Exception($"Relation with Id {dto.Id} was not found!");
 
         model.RelationId = dto.RelationId;
         model.BirthDate = dto.BirthDate;
@@ -304,7 +304,8 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         var model = await _repositoryManager.Relatives.FindByCondition(x => x.Id == dto.Id && x.UserId == dto.UserId, false).FirstOrDefaultAsync();
 
         if (model is null)
-            throw new Exception("Invalid Data!");
+            throw new Exception($"Relation with Id {dto.Id} was not found!");
+
 
         model.RelationId = dto.RelationId;
         model.BirthDate = dto.BirthDate;
@@ -328,6 +329,10 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<RelativeDto> ToggleByUser(Guid Id)
     {
         var model = await _repositoryManager.Relatives.FindByCondition(x => x.Id == Id && x.UserId == _systemContext.CurrentUser.FindFirstValue(ClaimTypes.NameIdentifier), false).FirstOrDefaultAsync();
+        if (model is null)
+            throw new Exception($"Relation with Id {Id} was not found!");
+
+
         model.IsDeleted = !model.IsDeleted;
 
         if (!model.IsDeleted)
@@ -342,23 +347,51 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
             }
         }
 
-
+        _repositoryManager.Relatives.Update(model);
+        _repositoryManager.Save();
         return _mapper.Map<RelativeDto>(model);
     }
 
     public async Task<RelativeDto> ToggleByCompany(Guid UserId,Guid Id)
     {
         var model = await _repositoryManager.Relatives.FindByCondition(x => x.Id == Id && x.UserId == UserId.ToString(), false).FirstOrDefaultAsync();
+        if (model is null)
+            throw new Exception($"Relation with Id {Id} was not found!");
+
         model.IsDeleted = !model.IsDeleted;
+        _repositoryManager.Relatives.Update(model);
+        _repositoryManager.Save();
         return _mapper.Map<RelativeDto>(model);
     }
 
     public async Task<RelativeDto> ToggleByAdmin(Guid UserId, Guid Id)
     {
         var model = await _repositoryManager.Relatives.FindByCondition(x => x.Id == Id && x.UserId == UserId.ToString(), false).FirstOrDefaultAsync();
+
+        if (model is null)
+            throw new Exception($"Relation with Id {Id} was not found!");
+
         model.IsDeleted = !model.IsDeleted;
+        _repositoryManager.Relatives.Update(model);
+        _repositoryManager.Save();
         return _mapper.Map<RelativeDto>(model);
     }
 
+
+    public async Task<RelativeDto> ResultOfReviewRelative(Guid UserId, Guid Id,bool Accept)
+    {
+        var model = await _repositoryManager.Relatives.FindByCondition(x => x.Id == Id && x.UserId == UserId.ToString(), false).FirstOrDefaultAsync();
+        if (model is null)
+            throw new Exception($"Relation with Id {Id} was not found!");
+        
+        model.IsChecked = true;
+        model.IsConfirmed = Accept;
+        _repositoryManager.Relatives.Update(model);
+        _repositoryManager.Save();
+        return _mapper.Map<RelativeDto>(model);
+    }
+
+
+    
 }
 
