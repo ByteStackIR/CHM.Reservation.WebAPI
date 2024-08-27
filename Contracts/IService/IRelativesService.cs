@@ -29,6 +29,9 @@ namespace Contracts.IService
         Task<RelativeDto> ToggleByUser(Guid Id);
         Task<RelativeDto> ToggleByCompany(Guid UserId, Guid Id);
         Task<RelativeDto> ToggleByAdmin(Guid UserId, Guid Id);
-        Task<RelativeDto> ResultOfReviewRelative(Guid UserId, Guid Id, bool Accept);
+
+        Task<RelativeDto> ResultOfReviewRelativeByAdmin(Guid UserId, Guid Id, bool Accept);
+        Task<RelativeDto> ResultOfReviewRelativeByCompany(Guid UserId, Guid Id, bool Accept);
+
     }
 }

@@ -5,6 +5,7 @@ using Contracts.IRepository;
 using Contracts.IService;
 using Entities.DataTransferObjects;
 using Entities.DataTransferObjects.Models;
+using Entities.IdentityExtensions;
 using Entities.Models;
 using Entities.QueryExtensions;
 using Features.CustomRequest;
@@ -136,7 +137,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<RelativeDto> InsertByUser(RelativeDto dto)
     {
         Relatives model = _mapper.Map<Relatives>(dto);
-        model.UserId = _systemContext.CurrentUser.FindFirstValue(ClaimTypes.NameIdentifier);
+        model.UserId = _systemContext.CurrentUser.GetUserId().Value.ToString();
         model.Id = Guid.NewGuid();
         model.CreatedDate = DateTime.Now;
         model.IsDeleted = false;
@@ -169,7 +170,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
 
 
             Relatives model = _mapper.Map<Relatives>(item);
-            model.UserId = _systemContext.CurrentUser.FindFirstValue(ClaimTypes.NameIdentifier);
+            model.UserId = _systemContext.CurrentUser.GetUserId().Value.ToString();
             model.Id = Guid.NewGuid();
             model.CreatedDate = DateTime.Now;
             model.IsDeleted = false;
@@ -195,8 +196,16 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
 
     public async Task<List<RelativeDto>> BulkInsertByCompany(UserRelativesCreationDto dto)
     {
+
         if (dto.UserId == Guid.Empty)
             throw new Exception();
+
+
+        var EndUserCompany = await _repositoryManager.UserCompany.FindByCondition(x => x.UserId == dto.UserId.ToString() && x.IsActive, false).FirstOrDefaultAsync();
+
+        if (EndUserCompany == null || EndUserCompany.CompanyId != _systemContext.UserCompany.Id)
+            throw new Exception("You are not allowed!");
+
 
         List<RelativeDto> res = new();
         foreach (var item in dto.Relatives)
@@ -257,7 +266,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         model.FamilyName = dto.FamilyName;
         model.IdentityCode = dto.IdentityCode;
         model.Gender = dto.Gender;
-        model.UserId = _systemContext.CurrentUser.FindFirstValue(ClaimTypes.NameIdentifier);
+        model.UserId = _systemContext.CurrentUser.GetUserId().Value.ToString();
         model.IsChecked = true;
         model.IsConfirmed = true;
 
@@ -278,6 +287,12 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
 
     public async Task<RelativeDto> UpdateByCompany(RelativeDto dto)
     {
+        var EndUserCompany = await _repositoryManager.UserCompany.FindByCondition(x => x.UserId == dto.UserId && x.IsActive, false).FirstOrDefaultAsync();
+
+        if (EndUserCompany == null || EndUserCompany.CompanyId != _systemContext.UserCompany.Id)
+            throw new Exception("You are not allowed!");
+
+
         var model = await _repositoryManager.Relatives.FindByCondition(x => x.Id == dto.Id && x.UserId == dto.UserId, false).FirstOrDefaultAsync();
        
         if (model is null)
@@ -328,7 +343,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
 
     public async Task<RelativeDto> ToggleByUser(Guid Id)
     {
-        var model = await _repositoryManager.Relatives.FindByCondition(x => x.Id == Id && x.UserId == _systemContext.CurrentUser.FindFirstValue(ClaimTypes.NameIdentifier), false).FirstOrDefaultAsync();
+        var model = await _repositoryManager.Relatives.FindByCondition(x => x.Id == Id && x.UserId == _systemContext.CurrentUser.GetUserId().Value.ToString(), false).FirstOrDefaultAsync();
         if (model is null)
             throw new Exception($"Relation with Id {Id} was not found!");
 
@@ -354,9 +369,18 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
 
     public async Task<RelativeDto> ToggleByCompany(Guid UserId,Guid Id)
     {
+
+
+        var EndUserCompany = await _repositoryManager.UserCompany.FindByCondition(x => x.UserId == UserId.ToString() && x.IsActive, false).FirstOrDefaultAsync();
+
+        if (EndUserCompany == null || EndUserCompany.CompanyId != _systemContext.UserCompany.Id)
+            throw new Exception("You are not allowed!");
+
+
         var model = await _repositoryManager.Relatives.FindByCondition(x => x.Id == Id && x.UserId == UserId.ToString(), false).FirstOrDefaultAsync();
         if (model is null)
             throw new Exception($"Relation with Id {Id} was not found!");
+
 
         model.IsDeleted = !model.IsDeleted;
         _repositoryManager.Relatives.Update(model);
@@ -378,7 +402,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     }
 
 
-    public async Task<RelativeDto> ResultOfReviewRelative(Guid UserId, Guid Id,bool Accept)
+    public async Task<RelativeDto> ResultOfReviewRelativeByAdmin(Guid UserId, Guid Id,bool Accept)
     {
         var model = await _repositoryManager.Relatives.FindByCondition(x => x.Id == Id && x.UserId == UserId.ToString(), false).FirstOrDefaultAsync();
         if (model is null)
@@ -391,7 +415,28 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         return _mapper.Map<RelativeDto>(model);
     }
 
+    public async Task<RelativeDto> ResultOfReviewRelativeByCompany(Guid UserId, Guid Id, bool Accept)
+    {
+        var EndUserCompany = await _repositoryManager.UserCompany.FindByCondition(x => x.UserId == UserId.ToString() && x.IsActive, false).FirstOrDefaultAsync();
 
-    
+        if (EndUserCompany == null || EndUserCompany.CompanyId != _systemContext.UserCompany.Id)
+            throw new Exception("You are not allowed!");
+
+
+        var model = await _repositoryManager.Relatives.FindByCondition(x => x.Id == Id && x.UserId == UserId.ToString(), false).FirstOrDefaultAsync();
+        if (model is null)
+            throw new Exception($"Relation with Id {Id} was not found!");
+
+
+
+        model.IsChecked = true;
+        model.IsConfirmed = Accept;
+        _repositoryManager.Relatives.Update(model);
+        _repositoryManager.Save();
+        return _mapper.Map<RelativeDto>(model);
+    }
+
+
+   
 }
 

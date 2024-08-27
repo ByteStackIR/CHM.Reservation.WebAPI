@@ -3,6 +3,7 @@ using Contracts.IContext;
 using Contracts.IMarker;
 using Contracts.IRepository;
 using Entities.DataTransferObjects.Models;
+using Entities.IdentityExtensions;
 using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +30,7 @@ namespace Services
 
             if (CurrentUser.Identity.IsAuthenticated)
             {
-                var userCompany = repositoryManager.UserCompany.FindByCondition(x => x.IsActive && x.UserId == CurrentUser.FindFirstValue(ClaimTypes.NameIdentifier), false).Include(x => x.Company).FirstOrDefault();
+                var userCompany = repositoryManager.UserCompany.FindByCondition(x => x.IsActive && x.UserId == CurrentUser.GetUserId().Value.ToString(), false).Include(x => x.Company).FirstOrDefault();
 
                 UserCompany = mapper.Map<CompanyDto>(userCompany.Company);
             }

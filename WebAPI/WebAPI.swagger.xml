@@ -32,6 +32,130 @@
             <param name="periodId"></param>
             <returns></returns>
         </member>
+        <member name="M:WebAPI.Controllers.RelativesController.GetRelatives">
+            <summary>
+            گرفتن اطلاعات ثبت شده برای کاربر درخواست دهنده
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.AddRelative(Entities.DataTransferObjects.Models.RelativeDto)">
+            <summary>
+            افزودن نسبت برای کاربر درخواست دهنده
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.AddRelatives(System.Collections.Generic.List{Entities.DataTransferObjects.Models.RelativeDto})">
+            <summary>
+            افزودن نسبت ها برای کاربر درخواست دهنده
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.AdminAddRelatives(Entities.DataTransferObjects.UserRelativesCreationDto)">
+            <summary>
+            افزودن نسبت ها برای کاربر -- در سطح ادمین
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.CompanyAddRelatives(Entities.DataTransferObjects.UserRelativesCreationDto)">
+            <summary>
+            افزودن نسبت ها برای کاربر -- در سطح شرکت
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.UpdateRelative(Entities.DataTransferObjects.Models.RelativeDto)">
+            <summary>
+            ویرایش نسبت ها برای کاربر درخواست دهنده
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.AdminUpdateRelative(Entities.DataTransferObjects.Models.RelativeDto)">
+            <summary>
+            ویرایش نسبت ها برای کاربر -- در سطح ادمین
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.CompanyUpdateRelative(Entities.DataTransferObjects.Models.RelativeDto)">
+            <summary>
+            ویرایش نسبت ها برای کاربر -- در سطح شرکت
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.ToggleRelative(Entities.DataTransferObjects.Models.RelativeDto)">
+            <summary>
+            فعال و غیرفعال سازی نسبت برای کاربر درخواست دهنده
+            </summary>
+            <param name="dto">Id</param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.AdminToggleRelative(Entities.DataTransferObjects.Models.RelativeDto)">
+            <summary>
+            فعال و غیرفعال سازی نسبت برای کاربر -- در سطح ادمین
+            </summary>
+            <param name="dto">UserId - Id</param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.CompanyToggleRelative(Entities.DataTransferObjects.Models.RelativeDto)">
+            <summary>
+            فعال و غیرفعال سازی نسبت  برای کاربر -- در سطح شرکت
+            </summary>
+            <param name="dto">UserId - Id</param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.GetConfirmedRelatives">
+            <summary>
+            گرفتن اطلاعات نسبت های تایید شده برای کاربر درخواست دهنده
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.GetAllNotCheckedRelatives(Features.CustomRequest.ListNotCheckedRelativesRequest)">
+            <summary>
+            گرفتن اطلاعات نسبت های بررسی نشده - سطح ادمین
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.GetCompanyNotCheckedRelatives(Features.CustomRequest.ListNotCheckedRelativesRequest)">
+            <summary>
+            گرفتن اطلاعات نسبت های بررسی نشده - سطح شرکت
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.AdminCheckRelative(Entities.DataTransferObjects.Models.RelativeDto)">
+            <summary>
+            تعیین وضعیت نسبت  برای کاربر -- در سطح ادمین
+            </summary>
+            <param name="dto">userId - Id - IsConfirmed</param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.CompanyCheckRelative(Entities.DataTransferObjects.Models.RelativeDto)">
+            <summary>
+            تعیین وضعیت نسبت  برای کاربر -- در سطح شرکت
+            </summary>
+            <param name="dto">userId - Id - IsConfirmed</param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
         <member name="T:WebAPI.Migrations.FirstIdentity">
             <inheritdoc />
         </member>
