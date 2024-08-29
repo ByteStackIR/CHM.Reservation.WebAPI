@@ -5,6 +5,7 @@ using Contracts.IRepository;
 using Contracts.IService;
 using Entities.DataTransferObjects;
 using Entities.DataTransferObjects.Models;
+using Entities.Enum;
 using Entities.IdentityExtensions;
 using Entities.Models;
 using Entities.QueryExtensions;
@@ -12,6 +13,7 @@ using Features.CustomRequest;
 using Features.RequestFeatures;
 using LoggerService;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Numerics;
@@ -22,8 +24,9 @@ namespace Services.Services;
 public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
 {
     private IRelationsService _relationsService;
+    private UserManager<User> _userManager;
     public RelativesService(IMapper mapper,
-        ILoggerManager logger,
+        UserManager<User> userManager,ILoggerManager logger,
         IRepositoryManager repoManger,
         IHttpContextAccessor httpContextAccessor,
         ISystemContext systemContext,
@@ -35,6 +38,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
             logger)
     {
         _relationsService = relationsService;
+        _userManager = userManager;
     }
 
     public async Task<List<RelativeDto>> GetbyUserId(Guid UserId)
@@ -526,8 +530,43 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     }
 
 
-    
-    
-   
+
+    #region [Self]
+
+    public async Task<RelativeDto> AddSelf(UserForRegistrationDto user)
+    {
+
+        var relation =await _relationsService.GetByType(RelationType.SELF);
+        var userModel = await _userManager.Users.FirstOrDefaultAsync(x=>x.PhoneNumber==user.PhoneNumber);
+
+        Relatives model = new()
+        {
+            BirthDate = user.BrithDate,
+            CreatedDate = DateTime.Now,
+            FamilyName = user.LastName,
+            FirstName = user.FirstName,
+            Gender = user.Gender,
+            Id = Guid.NewGuid(),
+            IdentityCode = user.IdentityCode,
+            IsChecked = true,
+            IsConfirmed = true,
+            IsDeleted = false,
+            RelationId = relation.Id,
+            UserId = userModel.Id,
+        };
+
+
+        _repositoryManager.Relatives.Create(model);
+        _repositoryManager.Save();
+
+        return _mapper.Map<RelativeDto>(model);
+    }
+
+    //public async Task<RelativeDto> UpdateSelf()
+    //{
+
+    //}
+    #endregion
+
 }
 

@@ -3,6 +3,8 @@ using Contracts.IContext;
 using Contracts.IMarker;
 using Contracts.IRepository;
 using Contracts.IService;
+using Entities.DataTransferObjects.Models;
+using Entities.Enum;
 using LoggerService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +31,20 @@ namespace Services.Services
         {
 
         }
+
+
+
+
+
+        public async Task<RelationDto> GetByType(RelationType type)
+        {
+
+            var model =await  _repositoryManager.Relation.FindByCondition(x=>x.Type==type,false).FirstOrDefaultAsync();
+
+            return _mapper.Map<RelationDto>(model);
+
+        }
+
 
 
         /// <summary>

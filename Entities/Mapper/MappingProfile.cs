@@ -22,7 +22,7 @@ namespace Entities.Mapper
             CreateMap<Company, CompanyDto>().ReverseMap();
             CreateMap<Relatives,RelativeDto>().ReverseMap();
             CreateMap<UserCompany, UserCompanyDto>().ReverseMap();
-
+            CreateMap<RelationDto,Relation>().ReverseMap();
 
             ConfigurePeriod();
         }

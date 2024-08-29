@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -16,7 +17,11 @@ namespace Entities.Models
         [Required]
         [ForeignKey(nameof(Company))]
         public Guid CompanyId { get; set; }
+        [DefaultValue(false)]
         public bool IsActive { get; set; }
+
+        [Required]
+        public string PersonnelCode { get; set; }
         
         public User User { get; set; } = new User();
         public Company Company { get; set; } = new Company();

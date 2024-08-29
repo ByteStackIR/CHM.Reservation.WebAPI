@@ -32,6 +32,6 @@ namespace Contracts.IService
 
         Task<RelativeDto> ResultOfReviewRelativeByAdmin(Guid UserId, Guid Id, bool Accept);
         Task<RelativeDto> ResultOfReviewRelativeByCompany(Guid UserId, Guid Id, bool Accept);
-
+        Task<RelativeDto>  AddSelf(UserForRegistrationDto user);
     }
 }

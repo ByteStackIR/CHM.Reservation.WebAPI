@@ -22,20 +22,7 @@ namespace WebAPI.Controllers
         
         }
 
-        [HttpPost("register")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> RegisterUser([FromBody] UserForRegistrationDto userForRegistration)
-        {
-            var result = await _Authenticationservice.RegisterUser(userForRegistration);
-
-            if (!result.Succeeded) {
-                foreach (var error in result.Errors) {
-                    ModelState.TryAddModelError(error.Code, error.Description);
-                } 
-                return BadRequest(ModelState);
-            }
-            return StatusCode(201);
-        }
+      
 
 
 
