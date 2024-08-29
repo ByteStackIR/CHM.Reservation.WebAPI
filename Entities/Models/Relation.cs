@@ -16,7 +16,7 @@ namespace Entities.Models
         [ForeignKey(nameof(Parent))]
         public Guid? ParentId { get; set; }
 
-
+        public int? Maximum {  get; set; }
         public Relation Parent { get; set; }
 
 

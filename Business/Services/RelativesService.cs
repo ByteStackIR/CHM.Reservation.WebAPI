@@ -136,7 +136,18 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
 
     public async Task<RelativeDto> InsertByUser(RelativeDto dto)
     {
+        if (!(await _relationsService.CheckMaximumLimit(dto.RelationId, _systemContext.CurrentUser.GetUserId().Value)))
+            throw new Exception("Cannot be inserted because of limit!");
+
+        var oldModel = await _repositoryManager.Relatives.FindByCondition(x => x.IdentityCode == dto.IdentityCode && x.UserId == _systemContext.CurrentUser.GetUserId().Value.ToString(), false).FirstOrDefaultAsync();
+
+        if(oldModel!= null)
+            throw new Exception("There is person with this IdentityCode!");
+
+
         Relatives model = _mapper.Map<Relatives>(dto);
+        
+       
         model.UserId = _systemContext.CurrentUser.GetUserId().Value.ToString();
         model.Id = Guid.NewGuid();
         model.CreatedDate = DateTime.Now;
@@ -162,12 +173,16 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<List<RelativeDto>> BulkInsertByUser(List<RelativeDto> dto)
     {
 
-
         List<RelativeDto> res = new();
         foreach (var item in dto)
         {
+            if (!(await _relationsService.CheckMaximumLimit(item.RelationId, _systemContext.CurrentUser.GetUserId().Value)))
+                throw new Exception("Cannot be inserted because of limit!");
 
+            var oldModel = await _repositoryManager.Relatives.FindByCondition(x => x.IdentityCode == item.IdentityCode && x.UserId == _systemContext.CurrentUser.GetUserId().Value.ToString(), false).FirstOrDefaultAsync();
 
+            if (oldModel != null)
+                throw new Exception("There is person with this IdentityCode!");
 
             Relatives model = _mapper.Map<Relatives>(item);
             model.UserId = _systemContext.CurrentUser.GetUserId().Value.ToString();
@@ -210,6 +225,15 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         List<RelativeDto> res = new();
         foreach (var item in dto.Relatives)
         {
+
+            if (!(await _relationsService.CheckMaximumLimit(item.RelationId, dto.UserId)))
+                throw new Exception("Cannot be inserted because of limit!");
+
+            var oldModel = await _repositoryManager.Relatives.FindByCondition(x => x.IdentityCode == item.IdentityCode && x.UserId == dto.UserId.ToString(), false).FirstOrDefaultAsync();
+
+            if (oldModel != null)
+                throw new Exception("There is person with this IdentityCode!");
+
             Relatives model = _mapper.Map<Relatives>(item);
             model.UserId = dto.UserId.ToString();
             model.Id = Guid.NewGuid();
@@ -234,6 +258,17 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         List<RelativeDto> res = new();
         foreach (var item in dto.Relatives)
         {
+
+            if (!(await _relationsService.CheckMaximumLimit(item.RelationId, dto.UserId)))
+                throw new Exception("Cannot be inserted because of limit!");
+
+
+            var oldModel = await _repositoryManager.Relatives.FindByCondition(x => x.IdentityCode == item.IdentityCode && x.UserId == dto.UserId.ToString(), false).FirstOrDefaultAsync();
+
+            if (oldModel != null)
+                throw new Exception("There is person with this IdentityCode!");
+
+
             Relatives model = _mapper.Map<Relatives>(item);
             model.UserId = dto.UserId.ToString();
             model.Id = Guid.NewGuid();
@@ -259,6 +294,21 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
 
         if (model is null)
             throw new Exception($"Relation with Id {dto.Id} was not found!");
+
+
+        if (model.RelationId != dto.RelationId)
+            if (!(await _relationsService.CheckMaximumLimit(dto.RelationId, _systemContext.CurrentUser.GetUserId().Value)))
+                throw new Exception("Cannot be inserted because of limit!");
+
+
+        if (model.IdentityCode != dto.IdentityCode)
+        {
+            var oldModel = await _repositoryManager.Relatives.FindByCondition(x => x.IdentityCode == dto.IdentityCode && x.UserId == _systemContext.CurrentUser.GetUserId().Value.ToString(), false).FirstOrDefaultAsync();
+
+            if (oldModel != null)
+                throw new Exception("There is person with this IdentityCode!");
+        }
+           
 
         model.RelationId = dto.RelationId;
         model.BirthDate = dto.BirthDate;
@@ -292,11 +342,22 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         if (EndUserCompany == null || EndUserCompany.CompanyId != _systemContext.UserCompany.Id)
             throw new Exception("You are not allowed!");
 
-
         var model = await _repositoryManager.Relatives.FindByCondition(x => x.Id == dto.Id && x.UserId == dto.UserId, false).FirstOrDefaultAsync();
-       
+
         if (model is null)
             throw new Exception($"Relation with Id {dto.Id} was not found!");
+
+        if (model.RelationId != dto.RelationId)
+            if (!(await _relationsService.CheckMaximumLimit(dto.RelationId, _systemContext.CurrentUser.GetUserId().Value)))
+                throw new Exception("Cannot be inserted because of limit!");
+
+        if (model.IdentityCode != dto.IdentityCode)
+        {
+            var oldModel = await _repositoryManager.Relatives.FindByCondition(x => x.IdentityCode == dto.IdentityCode && x.UserId == model.UserId.ToString(), false).FirstOrDefaultAsync();
+
+            if (oldModel != null)
+                throw new Exception("There is person with this IdentityCode!");
+        }
 
         model.RelationId = dto.RelationId;
         model.BirthDate = dto.BirthDate;
@@ -320,6 +381,21 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
 
         if (model is null)
             throw new Exception($"Relation with Id {dto.Id} was not found!");
+
+
+        if (model.RelationId != dto.RelationId)
+        if (!(await _relationsService.CheckMaximumLimit(dto.RelationId, _systemContext.CurrentUser.GetUserId().Value)))
+            throw new Exception("Cannot be inserted because of limit!");
+
+
+
+        if (model.IdentityCode != dto.IdentityCode)
+        {
+            var oldModel = await _repositoryManager.Relatives.FindByCondition(x => x.IdentityCode == dto.IdentityCode && x.UserId == model.UserId.ToString(), false).FirstOrDefaultAsync();
+
+            if (oldModel != null)
+                throw new Exception("There is person with this IdentityCode!");
+        }
 
 
         model.RelationId = dto.RelationId;
@@ -346,6 +422,11 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         var model = await _repositoryManager.Relatives.FindByCondition(x => x.Id == Id && x.UserId == _systemContext.CurrentUser.GetUserId().Value.ToString(), false).FirstOrDefaultAsync();
         if (model is null)
             throw new Exception($"Relation with Id {Id} was not found!");
+
+
+        if(!(await _relationsService.CanBeDeleted(model.RelationId)))
+            throw new Exception($"This Item can be deleted!");
+
 
 
         model.IsDeleted = !model.IsDeleted;
@@ -381,6 +462,8 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         if (model is null)
             throw new Exception($"Relation with Id {Id} was not found!");
 
+        if (!(await _relationsService.CanBeDeleted(model.RelationId)))
+            throw new Exception($"This Item can be deleted!");
 
         model.IsDeleted = !model.IsDeleted;
         _repositoryManager.Relatives.Update(model);
@@ -394,6 +477,12 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
 
         if (model is null)
             throw new Exception($"Relation with Id {Id} was not found!");
+
+        if (!(await _relationsService.CanBeDeleted(model.RelationId)))
+            throw new Exception($"This Item can be deleted!");
+
+        if (!(await _relationsService.CanBeDeleted(model.RelationId)))
+            throw new Exception($"This Item can be deleted!");
 
         model.IsDeleted = !model.IsDeleted;
         _repositoryManager.Relatives.Update(model);
@@ -437,6 +526,8 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     }
 
 
+    
+    
    
 }
 

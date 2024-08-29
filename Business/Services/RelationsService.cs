@@ -49,5 +49,50 @@ namespace Services.Services
             return Rel.Parent.Type == Entities.Enum.RelationType.DEPENDENTS;
 
         }
+
+
+
+        /// <summary>
+        /// تعداد افراد مجاز برای هر نسبت
+        /// </summary>
+        /// <param name="RelationId"></param>
+        /// <returns></returns>
+        public async Task<bool> CheckMaximumLimit(Guid RelationId,Guid UserId)
+        {
+            var Rel = await _repositoryManager.Relation.FindByCondition(x => x.Id == RelationId && x.Maximum != null, false)
+                .FirstOrDefaultAsync();
+
+
+
+            if (Rel is null)
+                return true;
+            else
+            {
+                int count = await _repositoryManager.Relatives
+                    .FindByCondition(x => x.RelationId == RelationId && x.IsDeleted!= true && x.UserId == UserId.ToString() && (x.IsChecked && x.IsConfirmed || !x.IsChecked  )    , false)
+               .CountAsync();
+
+
+                if(Rel.Maximum <= count)
+                    return false;
+
+
+                return true;
+
+            }
+
+
+
+        }
+
+        public async Task<bool> CanBeDeleted(Guid RelationId)
+        {
+            var Rel = await _repositoryManager.Relation.FindByCondition(x => x.Id == RelationId, false)
+                .FirstOrDefaultAsync();
+
+            return Rel.Type != Entities.Enum.RelationType.SELF;
+
+        }
+
     }
 }

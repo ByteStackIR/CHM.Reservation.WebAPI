@@ -9,5 +9,7 @@ namespace Contracts.IService
     public interface IRelationsService
     {
         Task<bool> NeedConfirmation(Guid Id);
+        Task<bool> CheckMaximumLimit(Guid RelationId, Guid UserId);
+        Task<bool> CanBeDeleted(Guid RelationId);
     }
 }

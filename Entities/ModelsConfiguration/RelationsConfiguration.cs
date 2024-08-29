@@ -23,13 +23,13 @@
 
 
 
-                  new Relation() { Id = Guid.Parse("10f944bb-9d33-4279-aed3-8f372907f27e"), Title = "خود", ParentId = Guid.Parse("00000000-9d33-4279-aed3-8f372907f27e"), Type = RelationType.SELF, CreatedDate = DateTime.Now },
-                  new Relation() { Id = Guid.Parse("11f944bb-9d33-4279-aed3-8f372907f27e"), Title = "همسر", ParentId = Guid.Parse("00000000-9d33-4279-aed3-8f372907f27e"), Type = RelationType.HAMSAR, CreatedDate = DateTime.Now },
+                  new Relation() { Id = Guid.Parse("10f944bb-9d33-4279-aed3-8f372907f27e"), Title = "خود", ParentId = Guid.Parse("00000000-9d33-4279-aed3-8f372907f27e"),Maximum=1, Type = RelationType.SELF, CreatedDate = DateTime.Now },
+                  new Relation() { Id = Guid.Parse("11f944bb-9d33-4279-aed3-8f372907f27e"), Title = "همسر", ParentId = Guid.Parse("00000000-9d33-4279-aed3-8f372907f27e"), Maximum = 1, Type = RelationType.HAMSAR, CreatedDate = DateTime.Now },
                   new Relation() { Id = Guid.Parse("12f944bb-9d33-4279-aed3-8f372907f27e"), Title = "فرزند", ParentId = Guid.Parse("00000000-9d33-4279-aed3-8f372907f27e"), Type = RelationType.FARZAND, CreatedDate = DateTime.Now },
-                  new Relation() { Id = Guid.Parse("13f944bb-9d33-4279-aed3-8f372907f27e"), Title = "پدر", ParentId = Guid.Parse("00000000-9d33-4279-aed3-8f372907f27e"), Type = RelationType.PEDAR, CreatedDate = DateTime.Now },
-                  new Relation() { Id = Guid.Parse("14f944bb-9d33-4279-aed3-8f372907f27e"), Title = "مادر", ParentId = Guid.Parse("00000000-9d33-4279-aed3-8f372907f27e"), Type = RelationType.MADAR, CreatedDate = DateTime.Now },
-                  new Relation() { Id = Guid.Parse("15f944bb-9d33-4279-aed3-8f372907f27e"), Title = "پدر همسر", ParentId = Guid.Parse("00000000-9d33-4279-aed3-8f372907f27e"), Type = RelationType.PEDAR2, CreatedDate = DateTime.Now },
-                  new Relation() { Id = Guid.Parse("16f944bb-9d33-4279-aed3-8f372907f27e"), Title = "مادر همسر", ParentId = Guid.Parse("00000000-9d33-4279-aed3-8f372907f27e"), Type = RelationType.MADAR2, CreatedDate = DateTime.Now },
+                  new Relation() { Id = Guid.Parse("13f944bb-9d33-4279-aed3-8f372907f27e"), Title = "پدر", ParentId = Guid.Parse("00000000-9d33-4279-aed3-8f372907f27e"), Maximum = 1, Type = RelationType.PEDAR, CreatedDate = DateTime.Now },
+                  new Relation() { Id = Guid.Parse("14f944bb-9d33-4279-aed3-8f372907f27e"), Title = "مادر", ParentId = Guid.Parse("00000000-9d33-4279-aed3-8f372907f27e"), Maximum = 1, Type = RelationType.MADAR, CreatedDate = DateTime.Now },
+                  new Relation() { Id = Guid.Parse("15f944bb-9d33-4279-aed3-8f372907f27e"), Title = "پدر همسر", ParentId = Guid.Parse("00000000-9d33-4279-aed3-8f372907f27e"), Maximum = 1, Type = RelationType.PEDAR2, CreatedDate = DateTime.Now },
+                  new Relation() { Id = Guid.Parse("16f944bb-9d33-4279-aed3-8f372907f27e"), Title = "مادر همسر", ParentId = Guid.Parse("00000000-9d33-4279-aed3-8f372907f27e"), Maximum = 1, Type = RelationType.MADAR2, CreatedDate = DateTime.Now },
 
                   new Relation() { Id = Guid.Parse("17f944bb-9d33-4279-aed3-8f372907f27e"), Title = "عروس", ParentId = Guid.Parse("11111111-9d33-4279-aed3-8f372907f27e"), Type = RelationType.AROS, CreatedDate = DateTime.Now },
                   new Relation() { Id = Guid.Parse("18f944bb-9d33-4279-aed3-8f372907f27e"), Title = "داماد", ParentId = Guid.Parse("11111111-9d33-4279-aed3-8f372907f27e"), Type = RelationType.DAMAD, CreatedDate = DateTime.Now },
