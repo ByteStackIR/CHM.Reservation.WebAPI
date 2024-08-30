@@ -18,13 +18,8 @@ namespace Entities.Mapper
             ConfigureCompany(); // Model <-> Dto
             ConfigureEmplyee(); // Model <-> Dto
             ConfigureIdentity();
-
-            CreateMap<Company, CompanyDto>().ReverseMap();
-            CreateMap<Relatives,RelativeDto>().ReverseMap();
-            CreateMap<UserCompany, UserCompanyDto>().ReverseMap();
-            CreateMap<RelationDto,Relation>().ReverseMap();
-
             ConfigurePeriod();
+            ConfigureEntity();
         }
 
         public void ConfigureCompany()
@@ -51,6 +46,19 @@ namespace Entities.Mapper
         public void ConfigurePeriod()
         {
             CreateMap<Period, PeriodDto>();
+        }
+
+        public void ConfigureEntity()
+        {
+            CreateMap<Entity, EntityDto>();
+            CreateMap<Entity, EntityDto>().ReverseMap().ForMember(dest => dest.ParameterValues, opt => opt.Ignore());
+            CreateMap<ParameterValues, ParameterValuesDto>();
+            CreateMap<ParameterValues, ParameterValuesDto>().ReverseMap();
+        }
+
+        public void ConfigureParameterValues()
+        {
+
         }
 
     }

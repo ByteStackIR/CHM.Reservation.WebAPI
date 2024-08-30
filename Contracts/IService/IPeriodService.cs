@@ -1,4 +1,4 @@
-﻿using Entities.DataTransferObjects;
+﻿using Entities.DataTransferObjects.Models;
 using Entities.Models;
 using System;
 using System.Collections.Generic;

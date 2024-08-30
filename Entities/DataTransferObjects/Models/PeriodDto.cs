@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.DataTransferObjects
+namespace Entities.DataTransferObjects.Models
 {
     public class PeriodDto
     {
-        public Guid Id { get; set; } 
+        public Guid Id { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public Decimal Stipend { get; set; }
+        public decimal Stipend { get; set; }
     }
 }

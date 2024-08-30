@@ -3,7 +3,7 @@ using Contracts.IContext;
 using Contracts.IMarker;
 using Contracts.IRepository;
 using Contracts.IService;
-using Entities.DataTransferObjects;
+using Entities.DataTransferObjects.Models;
 using Entities.Models;
 using LoggerService;
 using Microsoft.AspNetCore.Http;
@@ -16,10 +16,10 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-    /// <summary>
-    /// Defines the <see cref="PeriodService" />
-    /// </summary>
-    public class PeriodService : ServiceBase, IPeriodService, IScopeMarker
+/// <summary>
+/// Defines the <see cref="PeriodService" />
+/// </summary>
+public class PeriodService : ServiceBase, IPeriodService, IScopeMarker
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PeriodService"/> class.

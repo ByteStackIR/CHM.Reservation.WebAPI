@@ -4,6 +4,27 @@
         <name>WebAPI</name>
     </assembly>
     <members>
+        <member name="M:WebAPI.Controllers.EntityController.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Contracts.IService.IEntityService)">
+            <summary>
+            Constructor of EntityController
+            </summary>
+            <param name="configuration"></param>
+            <param name="entitySevice"></param>
+        </member>
+        <member name="M:WebAPI.Controllers.EntityController.GetEntity(System.Guid)">
+            <summary>
+            گرفتن یک موجودیت خاص از طریق این اندپوینت انجام میشود.
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WebAPI.Controllers.EntityController.AddEntity(Entities.DataTransferObjects.Models.EntityDto)">
+            <summary>
+            برای ساخت یک موجودیت جدید(هتل، تور) از این اندپوینت استفاده می‌شود
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+        </member>
         <member name="M:WebAPI.Controllers.PeriodController.GetPeriod(System.Guid)">
             <summary>
             This Endpoint gets a single Period by its primary key periodId
@@ -11,14 +32,14 @@
             <param name="periodId"></param>
             <returns></returns>
         </member>
-        <member name="M:WebAPI.Controllers.PeriodController.AddPeriod(Entities.DataTransferObjects.PeriodDto)">
+        <member name="M:WebAPI.Controllers.PeriodController.AddPeriod(Entities.DataTransferObjects.Models.PeriodDto)">
             <summary>
             This Endpoint is used to Cread a new Period model
             </summary>
             <param name="dto"></param>
             <returns></returns>
         </member>
-        <member name="M:WebAPI.Controllers.PeriodController.UpdatePeriod(Entities.DataTransferObjects.PeriodDto)">
+        <member name="M:WebAPI.Controllers.PeriodController.UpdatePeriod(Entities.DataTransferObjects.Models.PeriodDto)">
             <summary>
             This Endpoint is used to update an existing Period model
             </summary>

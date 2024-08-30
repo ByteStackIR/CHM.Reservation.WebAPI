@@ -1,6 +1,6 @@
 ﻿using Asp.Versioning;
 using Contracts.IService;
-using Entities.DataTransferObjects;
+using Entities.DataTransferObjects.Models;
 using Entities.Models;
 using Humanizer;
 using Microsoft.AspNetCore.Http;

@@ -45,5 +45,6 @@ namespace Entities.Models
         public Category Category { get; set; } = new Category();
         public Period Period { get; set; } = new Period();
         public ICollection<Slot> Slots { get; set; } = new List<Slot>();
+        public ICollection<ParameterValues> ParameterValues { get; set; } = new List<ParameterValues>();
     }
 }

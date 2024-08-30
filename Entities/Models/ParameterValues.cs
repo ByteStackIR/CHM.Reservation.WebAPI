@@ -17,14 +17,17 @@ namespace Entities.Models
 
         [Required]
         [ForeignKey(nameof(Entity))]
-        
         public Guid EntityId { get; set; }
+
         public string Value { get; set; } = string.Empty;
+
+
+
         [DeleteBehavior(DeleteBehavior.NoAction)]
         public Parameter Parameter { get; set; } = new Parameter();
 
         [DeleteBehavior(DeleteBehavior.Cascade)]
-        public Entity Entity { get; set; } 
+        public Entity Entity { get; set; } = new Entity();
 
     }
 }

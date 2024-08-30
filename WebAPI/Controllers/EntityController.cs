@@ -1,0 +1,75 @@
+﻿using Contracts.IService;
+using Entities.DataTransferObjects.Models;
+using Entities.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore;
+using Services.Services;
+
+namespace WebAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class EntityController : ControllerBase
+    {
+        private readonly IConfiguration _configuration;
+        private readonly IEntityService _entityService;
+
+        /// <summary>
+        /// Constructor of EntityController
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="entitySevice"></param>
+        public EntityController(IConfiguration configuration, IEntityService entityService)
+        {
+            _configuration = configuration;
+            _entityService = entityService;
+        }
+
+        /// <summary>
+        /// گرفتن یک موجودیت خاص از طریق این اندپوینت انجام میشود.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetEntity(Guid entityId)
+        {
+            try
+            {
+                var result = await _entityService.GetEntityByIdAsync(entityId);
+                if (result is not null)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// برای ساخت یک موجودیت جدید(هتل، تور) از این اندپوینت استفاده می‌شود
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        [HttpPost("[action]")]
+        public async Task<IActionResult> AddEntity(EntityDto dto)
+        {
+            try
+            {
+                var createdEntity = await _entityService.AddEntityAsync(dto);
+                return CreatedAtAction(nameof(GetEntity), new { id = createdEntity.Id }, createdEntity);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+    }
+}
