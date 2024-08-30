@@ -59,8 +59,10 @@ namespace Services.Services
             var entity = _mapper.Map<Entity>(entityDto);
             entity.Id = Guid.NewGuid();
             entity.CreatedDate = DateTime.Now;
+            entity.UserId = _systemContext.CurrentUser.ToString();
 
-            foreach (var paramValueDto in entityDto.ParameterValues)
+            entity.ParameterValues = new List<ParameterValues>();
+            foreach (var paramValueDto in entityDto.ParameterValues) 
             {
                 var parameter = await _repositoryManager.Parameter.GetByIdAsync(paramValueDto.ParameterId);
                 if (parameter == null)

@@ -20,6 +20,7 @@ namespace Entities.Mapper
             ConfigureIdentity();
             ConfigurePeriod();
             ConfigureEntity();
+            ConfigureParameterValues();
         }
 
         public void ConfigureCompany()
@@ -51,14 +52,13 @@ namespace Entities.Mapper
         public void ConfigureEntity()
         {
             CreateMap<Entity, EntityDto>();
-            CreateMap<Entity, EntityDto>().ReverseMap().ForMember(dest => dest.ParameterValues, opt => opt.Ignore());
-            CreateMap<ParameterValues, ParameterValuesDto>();
-            CreateMap<ParameterValues, ParameterValuesDto>().ReverseMap();
+            CreateMap<Entity, EntityDto>().ReverseMap();
         }
 
         public void ConfigureParameterValues()
         {
-
+            CreateMap<ParameterValues, ParameterValuesDto>();
+            CreateMap<ParameterValues, ParameterValuesDto>().ReverseMap();
         }
 
     }

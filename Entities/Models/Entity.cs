@@ -42,9 +42,9 @@ namespace Entities.Models
         [DeleteBehavior(DeleteBehavior.NoAction)]
         public User User { get; set; }
 
-        public Category Category { get; set; } = new Category();
-        public Period Period { get; set; } = new Period();
-        public ICollection<Slot> Slots { get; set; } = new List<Slot>();
-        public ICollection<ParameterValues> ParameterValues { get; set; } = new List<ParameterValues>();
+        public Category Category { get; set; }
+        public Period Period { get; set; }
+        public ICollection<Slot> Slots { get; set; }
+        public ICollection<ParameterValues> ParameterValues { get; set; }
     }
 }

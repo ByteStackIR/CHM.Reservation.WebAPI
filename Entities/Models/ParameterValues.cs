@@ -24,10 +24,10 @@ namespace Entities.Models
 
 
         [DeleteBehavior(DeleteBehavior.NoAction)]
-        public Parameter Parameter { get; set; } = new Parameter();
+        public Parameter Parameter { get; set; }
 
         [DeleteBehavior(DeleteBehavior.Cascade)]
-        public Entity Entity { get; set; } = new Entity();
+        public Entity Entity { get; set; }
 
     }
 }

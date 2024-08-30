@@ -11,7 +11,7 @@ namespace Entities.Models
     {
         public string Title { get; set; }
         public string Description { get; set; }
-        public ICollection<Parameter> Parameters { get; set; } = new List<Parameter>();
-        public ICollection<Entity> Entities { get; set; } = new List<Entity>();
+        public ICollection<Parameter> Parameters { get; set; }
+        public ICollection<Entity> Entities { get; set; }
     }
 }

@@ -18,8 +18,8 @@ namespace Entities.Models
         public DateTime EndDate { get; set; }
         public int Capacity { get; set; }
 
-        public Entity Entity { get; set; } = new Entity();
-        public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
+        public Entity Entity { get; set; }
+        public ICollection<Reservation> Reservations { get; set; }
 
     }
 }
