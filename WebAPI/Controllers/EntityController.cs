@@ -27,6 +27,7 @@ namespace WebAPI.Controllers
             _entityService = entityService;
         }
 
+
         /// <summary>
         /// گرفتن یک موجودیت خاص از طریق این اندپوینت انجام میشود.
         /// </summary>
@@ -65,6 +66,26 @@ namespace WebAPI.Controllers
             {
                 var createdEntity = await _entityService.AddEntityAsync(dto);
                 return CreatedAtAction(nameof(GetEntity), new { id = createdEntity.Id }, createdEntity);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
+        /// <summary>
+        /// گرفتن یک موجودیت خاص از طریق این اندپوینت انجام میشود.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("[action]")]
+        public async Task<IActionResult> DeleteEntity(Guid entityId)
+        {
+            try
+            {
+                await _entityService.DeleteEntityByIdAsync(entityId);
+                return NoContent();
             }
             catch (Exception ex)
             {

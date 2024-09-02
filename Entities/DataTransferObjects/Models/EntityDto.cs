@@ -8,6 +8,7 @@ namespace Entities.DataTransferObjects.Models
 {
     public class EntityDto
     {
+        public string Title { get; set; }
         public Guid? Id { get; set; } = null;
         public Guid CategoryId { get; set; }
         public DateTime StartDate { get; set; }
@@ -21,6 +22,7 @@ namespace Entities.DataTransferObjects.Models
         public Int16 MinAge { get; set; }
         public Int16 DaysToCancel { get; set; }
 
+        public List<SlotDto> Slots { get; set; }
         public List<ParameterValuesDto> ParameterValues { get; set; } = new List<ParameterValuesDto>();
     }
 }

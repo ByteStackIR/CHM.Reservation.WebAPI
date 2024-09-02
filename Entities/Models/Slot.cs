@@ -12,7 +12,6 @@ namespace Entities.Models
     {
         [Required]
         [ForeignKey(nameof(Entity))]
-
         public Guid EntityId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

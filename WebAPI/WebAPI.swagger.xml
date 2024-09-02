@@ -25,6 +25,13 @@
             <param name="dto"></param>
             <returns></returns>
         </member>
+        <member name="M:WebAPI.Controllers.EntityController.DeleteEntity(System.Guid)">
+            <summary>
+            گرفتن یک موجودیت خاص از طریق این اندپوینت انجام میشود.
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:WebAPI.Controllers.PeriodController.GetPeriod(System.Guid)">
             <summary>
             This Endpoint gets a single Period by its primary key periodId
