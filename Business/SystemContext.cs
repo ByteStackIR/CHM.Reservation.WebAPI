@@ -22,6 +22,7 @@ namespace Services
         public ClaimsPrincipal CurrentUser { get; set; }
 
         public CompanyDto UserCompany { get; set; } = null;
+        public PeriodDto Period { get; set; } = null;
 
         public async Task InitializeSystemContext(IRepositoryManager repositoryManager,IHttpContextAccessor httpContextAccessor,IMapper mapper)
         {
@@ -34,6 +35,12 @@ namespace Services
 
                 UserCompany = mapper.Map<CompanyDto>(userCompany.Company);
             }
+
+
+            var periodModel = repositoryManager.Period.FindByCondition(x => !x.IsDeleted && (x.StartDate >= DateTime.Now && x.EndDate <= DateTime.Now), false).FirstOrDefault();
+            if(periodModel != null)
+                this.Period = mapper.Map<PeriodDto>(periodModel);
+
             return;
         }
 

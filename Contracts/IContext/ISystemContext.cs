@@ -18,6 +18,8 @@ namespace Contracts.IContext
 
         public CompanyDto UserCompany { get; set; }
 
+        public PeriodDto Period { get; set; }
+
         Task InitializeSystemContext(IRepositoryManager repositoryManager, IHttpContextAccessor httpContextAccessor, IMapper mapper);
     }
 }
