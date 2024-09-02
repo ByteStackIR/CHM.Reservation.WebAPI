@@ -33,7 +33,14 @@ namespace Services.Services
         }
 
 
+        public async Task<List<RelationDto>> GetRelations()
+        {
+            var res = await _repositoryManager.Relation.FindAll( false).ToListAsync();
 
+            res.ForEach(r => { r.Maximum = null; });
+
+            return _mapper.Map < List < RelationDto >> (res);
+        }
 
 
         public async Task<RelationDto> GetByType(RelationType type)

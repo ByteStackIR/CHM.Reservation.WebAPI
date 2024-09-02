@@ -15,7 +15,7 @@ namespace Entities.Mapper
     {
         public MappingProfile()
         {
-            ConfigureCompany(); // Model <-> Dto
+            ConfigureBaseInfo(); // Model <-> Dto
             ConfigureRelation(); // Model <-> Dto
             ConfigureIdentity();
             ConfigurePeriod();
@@ -24,12 +24,14 @@ namespace Entities.Mapper
             ConfigureCouponShare();
         }
 
-        public void ConfigureCompany()
+        public void ConfigureBaseInfo()
         {
+            CreateMap<Category, CategoryDto>().ReverseMap();
+            CreateMap<Parameter, ParameterDto>().ReverseMap();
             //CreateMap<CompanyModel, CompanyDto>()
-             //   .ForMember(c => c.FullAddress,opt => opt.MapFrom(x => string.Join(' ', x.Address, x.Country)));
+            //   .ForMember(c => c.FullAddress,opt => opt.MapFrom(x => string.Join(' ', x.Address, x.Country)));
 
-          //  CreateMap<CompanyForCreationDto, CompanyModel>();//.ForMember(c=>c.Id,opt=>opt.MapFrom(val=>new Guid()));
+            //  CreateMap<CompanyForCreationDto, CompanyModel>();//.ForMember(c=>c.Id,opt=>opt.MapFrom(val=>new Guid()));
         }
         public void ConfigureSlot()
         {

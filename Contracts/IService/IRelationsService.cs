@@ -10,6 +10,8 @@ namespace Contracts.IService
 {
     public interface IRelationsService
     {
+
+        Task<List<RelationDto>> GetRelations();
         Task<RelationDto> GetByType(RelationType type);
         Task<bool> NeedConfirmation(Guid Id);
         Task<bool> CheckMaximumLimit(Guid RelationId, Guid UserId);
