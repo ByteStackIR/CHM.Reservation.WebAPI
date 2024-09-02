@@ -16,11 +16,12 @@ namespace Entities.Mapper
         public MappingProfile()
         {
             ConfigureCompany(); // Model <-> Dto
-            ConfigureEmplyee(); // Model <-> Dto
+            ConfigureRelation(); // Model <-> Dto
             ConfigureIdentity();
             ConfigurePeriod();
             ConfigureEntity();
             ConfigureParameterValues();
+            ConfigureCouponShare();
         }
 
         public void ConfigureCompany()
@@ -31,11 +32,15 @@ namespace Entities.Mapper
           //  CreateMap<CompanyForCreationDto, CompanyModel>();//.ForMember(c=>c.Id,opt=>opt.MapFrom(val=>new Guid()));
         }
 
-        public void ConfigureEmplyee()
+        public void ConfigureRelation()
         {
-          //  CreateMap<EmployeeModel, EmployeeDto>().ReverseMap();
-           // CreateMap<EmployeeModel,EmployeeForCreationDto>().ReverseMap();
-           // CreateMap<EmployeeModel,EmployeeForUpdateDto>().ReverseMap();
+
+            CreateMap<Relation, RelationDto>().ReverseMap();
+            CreateMap<RelativeDto, Relatives>().ReverseMap();
+
+            //  CreateMap<EmployeeModel, EmployeeDto>().ReverseMap();
+            // CreateMap<EmployeeModel,EmployeeForCreationDto>().ReverseMap();
+            // CreateMap<EmployeeModel,EmployeeForUpdateDto>().ReverseMap();
 
         }
 
@@ -46,9 +51,12 @@ namespace Entities.Mapper
 
         public void ConfigurePeriod()
         {
-            CreateMap<Period, PeriodDto>();
+            CreateMap<Period, PeriodDto>().ReverseMap();
         }
-
+        public void ConfigureCouponShare()
+        {
+            CreateMap<CouponShare, CouponShareDto>().ReverseMap();
+        }
         public void ConfigureEntity()
         {
             CreateMap<Entity, EntityDto>();
