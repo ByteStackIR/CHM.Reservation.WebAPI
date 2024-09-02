@@ -23,9 +23,9 @@
     /// <summary>
     /// Defines the <see cref="UsersService" />
     /// </summary>
-    public class ParamterService : ServiceBase, IParameterService, IScopeMarker
+    public class ParameterService : ServiceBase, IParameterService, IScopeMarker
     {
-        public ParamterService(
+        public ParameterService(
             IMapper mapper,
             ILoggerManager logger,
             IRepositoryManager repoManger,
