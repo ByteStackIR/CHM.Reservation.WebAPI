@@ -17,7 +17,7 @@ namespace Entities.Models
         [ForeignKey(nameof(Relative))]
         public Guid RelativeId { get; set; }
 
-        public Reservation Reservation { get; set; } = new Reservation();
-        public Relatives Relative { get; set; } = new Relatives(); 
+        public Reservation Reservation { get; set; }
+        public Relatives Relative { get; set; } 
     }
 }

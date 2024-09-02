@@ -25,8 +25,8 @@ namespace Entities.Models
         public Decimal Amount { get; set; }
 
         [DeleteBehavior(DeleteBehavior.NoAction)]
-        public Reservation Reservation { get; set; } = new Reservation();
-        public Period Period { get; set; } = new Period();
-        public User User { get; set; } = new User();
+        public Reservation Reservation { get; set; } 
+        public Period Period { get; set; } 
+        public User User { get; set; } 
     }
 }

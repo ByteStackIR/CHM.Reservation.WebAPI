@@ -10,6 +10,6 @@ namespace Entities.Models
     {
         public string Title { get; set; } = string.Empty;
         public bool IsDeleted {  get; set; } 
-        public ICollection<UserCompany> UserCompanies { get; set; } = new List<UserCompany>();
+        public ICollection<UserCompany> UserCompanies { get; set; } 
     }
 }

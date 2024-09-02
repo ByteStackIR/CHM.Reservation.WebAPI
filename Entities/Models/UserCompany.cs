@@ -23,7 +23,7 @@ namespace Entities.Models
         [Required]
         public string PersonnelCode { get; set; }
         
-        public User User { get; set; } = new User();
-        public Company Company { get; set; } = new Company();
+        public User User { get; set; } 
+        public Company Company { get; set; } 
     }
 }

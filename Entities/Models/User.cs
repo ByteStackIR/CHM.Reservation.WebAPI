@@ -23,10 +23,10 @@ namespace Entities.Models
         public DateTime RefreshTokenExpiryTime { get; set; }
 
         public string PersonnelCode { get; set; }
-        public ICollection<UserCompany> UserCompanies { get; set; } = new List<UserCompany>();
-        public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
-        public ICollection<Tx_Coupon> TxCoupons { get; set; } = new List<Tx_Coupon>();
-        public ICollection<Tx_User> TxUsers { get; set; } = new List<Tx_User>();
+        public ICollection<UserCompany> UserCompanies { get; set; } 
+        public ICollection<Reservation> Reservations { get; set; } 
+        public ICollection<Tx_Coupon> TxCoupons { get; set; } 
+        public ICollection<Tx_User> TxUsers { get; set; } 
 
         public ICollection<Relatives> Relatives { get; set; }   
     }

@@ -15,8 +15,8 @@ namespace Entities.Models
         public Guid CategoryId { get; set; } 
         public string Title { get; set; }
 
-        public Category Category { get; set; } = new Category();
-        public ICollection<ParameterValues> Values { get; set; } = new List<ParameterValues>();
+        public Category Category { get; set; } 
+        public ICollection<ParameterValues> Values { get; set; } 
 
     }
 }

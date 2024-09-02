@@ -24,7 +24,7 @@ namespace Entities.Models
         public ICollection<Relation> Children { get; set; }
 
 
-        public ICollection<CouponShare> CouponShare { get; set;} = new List<CouponShare>();
-        public ICollection<Relatives> Relatives { get; set; } = new List<Relatives>();
+        public ICollection<CouponShare> CouponShare { get; set;} 
+        public ICollection<Relatives> Relatives { get; set; } 
     }
 }

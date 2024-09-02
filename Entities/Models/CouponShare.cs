@@ -20,7 +20,7 @@ namespace Entities.Models
         [Column(TypeName ="decimal(4,2)")]
         public Decimal Entitlement { get; set; }
         
-        public Period Period { get; set; } = new Period();
-        public Relation Relation { get; set; } = new Relation();
+        public Period Period { get; set; } 
+        public Relation Relation { get; set; } 
     }
 }
