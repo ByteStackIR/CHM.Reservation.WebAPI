@@ -80,40 +80,6 @@
             Settings = _settings;
         }
 
-        /// <summary>
-        /// The RegisterUser
-        /// </summary>
-        /// <param name="userForRegistration">The userForRegistration<see cref="UserForRegistrationDto"/></param>
-        /// <returns>The <see cref="Task{IdentityResult}"/></returns>
-        public async Task<IdentityResult> RegisterUser(UserForRegistrationDto userForRegistration)
-        {
-
-            IdentityResult result = new();
-
-            if (_userManager.Users.Any(x => x.PhoneNumber == userForRegistration.PhoneNumber))
-                return IdentityResult.Failed(new IdentityError()
-                {
-                    Code = "DuplicatePhoneNumber",
-                    Description = "An existing user with the new PhoneNumber already exists."
-                });
-
-            var user = _mapper.Map<User>(userForRegistration);
-            try
-            {
-
-                result = await _userManager.CreateAsync(user, userForRegistration.Password);
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return IdentityResult.Failed(new IdentityError()
-                {
-                    Code = "unexpctedError",
-                    Description = ex.Message
-                });
-            }
-        }
 
         /// <summary>
         /// The ValidateUser

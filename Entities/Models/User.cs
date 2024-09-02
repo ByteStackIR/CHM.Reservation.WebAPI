@@ -17,12 +17,10 @@ namespace Entities.Models
         public string FirstName { get; set; }
         public string LastName { get; set;}
 
-        public GenderType? Gender { get; set; }
+        public GenderType Gender { get; set; }
         public override string PhoneNumber { get => base.PhoneNumber; set => base.PhoneNumber = value; }
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
-
-        public string PersonnelCode { get; set; }
         public ICollection<UserCompany> UserCompanies { get; set; } 
         public ICollection<Reservation> Reservations { get; set; } 
         public ICollection<Tx_Coupon> TxCoupons { get; set; } 

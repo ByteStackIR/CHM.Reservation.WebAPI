@@ -562,10 +562,26 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         return _mapper.Map<RelativeDto>(model);
     }
 
-    //public async Task<RelativeDto> UpdateSelf()
-    //{
+    public async Task<RelativeDto> UpdateSelf(UserUpdateDto dto)
+    {
+        var relation = await _relationsService.GetByType(RelationType.SELF);
+        var userModel = await _userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber == dto.PhoneNumber);
+        var model =await _repositoryManager.Relatives.FindByCondition(x=>x.UserId==userModel.Id && x.RelationId == relation.Id,false).FirstOrDefaultAsync();
 
-    //}
+        model.BirthDate = dto.BrithDate;
+        model.FirstName = dto.FirstName;
+        model.FamilyName = dto.LastName;
+        model.IdentityCode = dto.IdentityCode;
+        model.Gender = dto.Gender;
+        model.IsDeleted = false;
+        model.IsChecked = true;
+        model.IsConfirmed = true;
+
+        _repositoryManager.Relatives.Update(model);
+        _repositoryManager.Save();
+
+        return _mapper.Map<RelativeDto>(model);
+    }
     #endregion
 
 }
