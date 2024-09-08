@@ -18,6 +18,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:WebAPI.Controllers.EntityController.GetPagedCurrentEntities(Features.CustomRequest.PublicEntitiesTableRequest)">
+            <summary>
+            گرفتن تمام موجودیت هایی که در زمان حال فعال هستند به صورت صفحه بندی شده
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
         <member name="M:WebAPI.Controllers.EntityController.AddEntity(Entities.DataTransferObjects.Models.EntityDto)">
             <summary>
             برای ساخت یک موجودیت جدید(هتل، تور) از این اندپوینت استفاده می‌شود

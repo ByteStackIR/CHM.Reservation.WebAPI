@@ -1,6 +1,8 @@
 ﻿using Contracts.IService;
 using Entities.DataTransferObjects.Models;
 using Entities.Models;
+using Features.CustomRequest;
+using Features.RequestFeatures;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -39,6 +41,32 @@ namespace WebAPI.Controllers
             try
             {
                 var result = await _entityService.GetEntityByIdAsync(entityId);
+                if (result is not null)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// گرفتن تمام موجودیت هایی که در زمان حال فعال هستند به صورت صفحه بندی شده
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("[action]")]
+        public async Task<IActionResult> GetPagedCurrentEntities(PublicEntitiesTableRequest request)
+        {
+            try
+            {
+                var result = await _entityService.GetPagedCurrentEntitiesAsync(request);
                 if (result is not null)
                 {
                     return Ok(result);

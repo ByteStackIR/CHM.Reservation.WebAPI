@@ -1,4 +1,5 @@
 ﻿using Entities.DataTransferObjects.Models;
+using Entities.Models;
 using Features.CustomRequest;
 using Features.RequestFeatures;
 using System;
@@ -12,6 +13,7 @@ namespace Contracts.IService
     public interface IEntityService
     {
         Task<PagedData<List<EntityDto>>> GetPagedEntities(AdminEntitiesTableRequest request);
+        Task<PagedData<List<EntityDto>>> GetPagedCurrentEntitiesAsync(PublicEntitiesTableRequest request);
         Task<EntityDto> AddEntityAsync(EntityDto dto);
         Task<EntityDto> GetEntityByIdAsync(Guid entityId);
         Task DeleteEntityByIdAsync(Guid entityId);

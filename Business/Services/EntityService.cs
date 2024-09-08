@@ -49,6 +49,18 @@ namespace Services.Services
             return new(new(count, request.PageNumber, request.PageSize), dataDto);
         }
 
+        public async Task<PagedData<List<EntityDto>>> GetPagedCurrentEntitiesAsync(PublicEntitiesTableRequest request)
+        {
+            var now = DateTime.Now;
+            var query = _repositoryManager.Entity.FindByCondition(e => e.StartDate <= now && e.EndDate >= now,
+                                                                  false).Include(e => e.Category).Include(e => e.ParameterValues);
+                                                                                
+            var count = await query.CountAsync();
+            var data = await query.GetPage(request).ToListAsync();
+            var dataDto = _mapper.Map<List<EntityDto>>(data);
+            return new(new(count, request.PageNumber, request.PageSize), dataDto);
+        }
+
         public async Task<EntityDto> GetEntityByIdAsync(Guid entityId)
         {
             try
@@ -109,7 +121,7 @@ namespace Services.Services
             var entity = _mapper.Map<Entity>(entityDto);
             entity.Id = Guid.NewGuid();
             entity.CreatedDate = DateTime.Now;
-            entity.UserId = _systemContext.CurrentUser.GetUserId().ToString();
+            entity.UserId = "b9ca9610-42bd-4211-9d75-f9b675983562";
             entity.Slots = new List<Slot>();
             entity.ParameterValues = new List<ParameterValues>();
 
