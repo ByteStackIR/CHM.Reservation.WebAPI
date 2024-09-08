@@ -110,6 +110,7 @@ namespace Services.Services
             entity.Id = Guid.NewGuid();
             entity.CreatedDate = DateTime.Now;
             entity.UserId = _systemContext.CurrentUser.GetUserId().ToString();
+            entity.Slots = new List<Slot>();
             entity.ParameterValues = new List<ParameterValues>();
 
             foreach (var Slot in entityDto.Slots)
@@ -119,7 +120,7 @@ namespace Services.Services
                 model.CreatedDate = DateTime.Now;
                 model.EntityId = entity.Id;
 
-                _repositoryManager.Slot.Create(model);
+                entity.Slots.Add(model);
             }
 
             foreach (var paramValueDto in entityDto.ParameterValues)

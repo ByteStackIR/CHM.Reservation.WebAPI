@@ -20,6 +20,7 @@ namespace Entities.Mapper
             ConfigureIdentity();
             ConfigurePeriod();
             ConfigureEntity();
+            ConfigureSlot();
             ConfigureParameterValues();
             ConfigureCouponShare();
         }
@@ -35,6 +36,7 @@ namespace Entities.Mapper
         }
         public void ConfigureSlot()
         {
+            CreateMap<Slot, SlotDto>();
             CreateMap<Slot, SlotDto>().ReverseMap();
             //CreateMap<CompanyModel, CompanyDto>()
             //   .ForMember(c => c.FullAddress,opt => opt.MapFrom(x => string.Join(' ', x.Address, x.Country)));

@@ -22,7 +22,7 @@ namespace Entities.DataTransferObjects.Models
         public Int16 MinAge { get; set; }
         public Int16 DaysToCancel { get; set; }
 
-        public List<SlotDto> Slots { get; set; }
+        public List<SlotDto> Slots { get; set; } = new List<SlotDto>();
         public List<ParameterValuesDto> ParameterValues { get; set; } = new List<ParameterValuesDto>();
     }
 }
