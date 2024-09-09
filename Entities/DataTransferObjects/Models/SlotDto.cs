@@ -14,5 +14,6 @@ namespace Entities.DataTransferObjects.Models
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int Capacity { get; set; }
+        public int? Occupancy { get; set; } = null;
     }
 }
