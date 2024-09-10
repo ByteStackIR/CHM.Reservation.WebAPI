@@ -64,4 +64,10 @@ namespace Entities.DataTransferObjects
         public Guid UserId { get; set; }
         public List<RelativeDto> Relatives { get; set; }
     }
+
+
+
+
+   
+
 }

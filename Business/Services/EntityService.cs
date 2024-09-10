@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using AutoMapper;
 using Contracts.IContext;
 using Contracts.IMarker;
 using Contracts.IRepository;
 using Contracts.IService;
+using Entities.DataTransferObjects;
 using Entities.DataTransferObjects.Models;
 using Entities.IdentityExtensions;
 using Entities.Models;
@@ -31,6 +33,86 @@ namespace Services.Services
         )
             : base(repoManger, mapper, httpContextAccessor, systemContext, logger) { }
 
+        //===========PUBLIC AREA
+
+        public async Task<PagedData<List<EntityDto>>> GetPagedCurrentEntitiesAsync(
+            PublicEntitiesTableRequest request
+        )
+        {
+            var now = DateTime.Now;
+            var query = _repositoryManager
+                .Entity.FindByCondition(e => e.StartDate <= now && e.EndDate >= now, false)
+                .Include(e => e.Category)
+                .Include(e => e.ParameterValues);
+
+            var count = await query.CountAsync();
+            var data = await query.GetPage(request).ToListAsync();
+            var dataDto = _mapper.Map<List<EntityDto>>(data);
+            return new(new(count, request.PageNumber, request.PageSize), dataDto);
+        }
+
+        public async Task<EntityDataDto> GetSpecifiedEntityAsync(Guid EntityId)
+        {
+            //TODO: Add State Condition
+            var now = DateTime.Now;
+            var query = _repositoryManager
+                .Entity.FindByCondition(e => e.Id == EntityId, false)
+                .Include(e => e.Category)
+                .Include(e => e.ParameterValues)
+                .ThenInclude(x => x.Parameter)
+                .Include(e => e.Slots)
+                .ThenInclude(x => x.Reservations.Where(x => true))
+                .ThenInclude(x => x.SelectedRelatives);
+
+
+            var data = await query.FirstOrDefaultAsync();
+            var SLots = _mapper.Map<List<SlotDto>>(data.Slots);
+
+            foreach (var item in SLots)
+            {
+                item.Occupancy = data.Slots.FirstOrDefault(y => y.Id == item.Id).Reservations.Count;
+            }
+
+            EntityDataDto res =
+                new()
+                {
+                    Id = data.Id,
+                    Title = data.Title,
+                    Slots = SLots,
+                    Category = _mapper.Map<CategoryDto>(data.Category),
+                    Attributes = new(),
+                };
+
+            foreach (var item in data.ParameterValues)
+            {
+                res.Attributes.Add(
+                    new()
+                    {
+                        PrameterId = item.ParameterId,
+                        Title = item.Parameter.Title,
+                        Value = item.Value,
+                        ValueId = item.Id,
+                    }
+                );
+            }
+
+            return res;
+        }
+
+        //====================================END OF PUBLIC AREA
+
+
+
+
+
+
+
+
+
+
+
+
+
         /// <summary>
         /// گرفتن هتل/تورها به صورت صفحه بندی شده -- سطح ادمین
         /// </summary>
@@ -44,18 +126,6 @@ namespace Services.Services
 
             var count = await query.CountAsync();
 
-            var data = await query.GetPage(request).ToListAsync();
-            var dataDto = _mapper.Map<List<EntityDto>>(data);
-            return new(new(count, request.PageNumber, request.PageSize), dataDto);
-        }
-
-        public async Task<PagedData<List<EntityDto>>> GetPagedCurrentEntitiesAsync(PublicEntitiesTableRequest request)
-        {
-            var now = DateTime.Now;
-            var query = _repositoryManager.Entity.FindByCondition(e => e.StartDate <= now && e.EndDate >= now,
-                                                                  false).Include(e => e.Category).Include(e => e.ParameterValues);
-                                                                                
-            var count = await query.CountAsync();
             var data = await query.GetPage(request).ToListAsync();
             var dataDto = _mapper.Map<List<EntityDto>>(data);
             return new(new(count, request.PageNumber, request.PageSize), dataDto);
@@ -95,7 +165,9 @@ namespace Services.Services
                 if (entity is not null)
                 {
                     var dto = _mapper.Map<EntityDto>(entity);
-                    dto.ParameterValues = _mapper.Map<List<ParameterValuesDto>>(entity.ParameterValues);
+                    dto.ParameterValues = _mapper.Map<List<ParameterValuesDto>>(
+                        entity.ParameterValues
+                    );
                     dto.Slots = _mapper.Map<List<SlotDto>>(entity.Slots);
                     return dto;
                 }
@@ -163,7 +235,6 @@ namespace Services.Services
             return _mapper.Map<EntityDto>(entity);
         }
 
-
         public async Task<EntityDto> UpdateEntityAsync(EntityDto entityDto)
         {
             var category = await _repositoryManager.Category.GetByIdAsync(entityDto.CategoryId);
@@ -172,9 +243,9 @@ namespace Services.Services
                 throw new Exception("Category not found");
             }
 
-            var entity =await _repositoryManager.Entity.GetByIdAsync(entityDto.Id);
+            var entity = await _repositoryManager.Entity.GetByIdAsync(entityDto.Id);
             entity.StartDate = entityDto.StartDate;
-            entity.EndDate = entityDto.EndDate; 
+            entity.EndDate = entityDto.EndDate;
             entity.CategoryId = category.Id;
             entity.PeriodId = entity.PeriodId;
             entity.DaysToCancel = entityDto.DaysToCancel;
@@ -198,20 +269,20 @@ namespace Services.Services
                 }
                 else
                 {
-                    var model =await _repositoryManager.Slot.GetByIdAsync(Slot.Id);
-                    model.StartDate =Slot.StartDate;
+                    var model = await _repositoryManager.Slot.GetByIdAsync(Slot.Id);
+                    model.StartDate = Slot.StartDate;
                     model.EndDate = Slot.EndDate;
                     model.Capacity = Slot.Capacity;
-                   
-                   _repositoryManager.Slot.Update(model);   
+
+                    _repositoryManager.Slot.Update(model);
                 }
             }
 
             foreach (var paramValueDto in entityDto.ParameterValues)
             {
                 var parameter = await _repositoryManager.Parameter.GetByIdAsync(
-                        paramValueDto.ParameterId
-                    );
+                    paramValueDto.ParameterId
+                );
                 if (parameter == null)
                 {
                     throw new Exception($"Parameter with ID {paramValueDto.ParameterId} not found");
@@ -231,11 +302,12 @@ namespace Services.Services
                 }
                 else
                 {
-                    var paramValue = await _repositoryManager.ParameterValues.GetByIdAsync(paramValueDto.Id);
+                    var paramValue = await _repositoryManager.ParameterValues.GetByIdAsync(
+                        paramValueDto.Id
+                    );
                     paramValue.Value = paramValueDto.Value;
                     _repositoryManager.Entity.Update(entity);
                 }
-             
             }
 
             _repositoryManager.Entity.Update(entity);
@@ -243,7 +315,6 @@ namespace Services.Services
 
             return _mapper.Map<EntityDto>(entity);
         }
-
 
         public async Task DeleteEntityByIdAsync(Guid entityId)
         {

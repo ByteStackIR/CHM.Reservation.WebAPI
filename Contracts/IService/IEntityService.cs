@@ -1,4 +1,5 @@
-﻿using Entities.DataTransferObjects.Models;
+﻿using Entities.DataTransferObjects;
+using Entities.DataTransferObjects.Models;
 using Entities.Models;
 using Features.CustomRequest;
 using Features.RequestFeatures;
@@ -19,5 +20,9 @@ namespace Contracts.IService
         Task DeleteEntityByIdAsync(Guid entityId);
         Task<EntityDto> UpdateEntityAsync(EntityDto entityDto);
         Task<EntityDto> GetEntityInformationByIdAsync(Guid entityId);
+
+
+        //===========PUBLIC AREA
+        Task<EntityDataDto> GetSpecifiedEntityAsync(Guid EntityId);
     }
 }

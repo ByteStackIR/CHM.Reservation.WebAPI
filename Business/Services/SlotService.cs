@@ -48,5 +48,11 @@ namespace Services.Services
             return new(new(count, request.PageNumber, request.PageSize), dataDto);
         }
 
+
+        public async Task<SlotDto> GetOccupancyBySlotId(Guid Id)
+        {
+            return default;
+        }
+
     }
 }

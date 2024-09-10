@@ -13,5 +13,6 @@ namespace Contracts.IService
     public interface ISlotService
     {
         Task<PagedData<List<SlotDto>>> GetPagedAvailableSlotsAsync(SlotRequest request);
+        Task<SlotDto> GetOccupancyBySlotId(Guid Id);
     }
 }
