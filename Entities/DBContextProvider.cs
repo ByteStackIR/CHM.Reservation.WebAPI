@@ -26,13 +26,15 @@ namespace Entities
             modelBuilder.ApplyConfiguration(new RoleConfiguration());
            modelBuilder.ApplyConfiguration(new RelationsConfiguration());
             modelBuilder.ApplyConfiguration(new CategoriesConfiguration());
+            modelBuilder.ApplyConfiguration(new ObjectStatesConfiguration());
+
         }
 
 
 
 
-       // public DbSet<Transactions> Transactions { get; set; }
-       public DbSet<Category> Categories { get; set; }
+        // public DbSet<Transactions> Transactions { get; set; }
+        public DbSet<Category> Categories { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<CouponShare> CouponShares { get; set; }
 
