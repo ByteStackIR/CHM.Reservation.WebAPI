@@ -36,6 +36,7 @@ namespace Repositories
         private readonly Lazy<ITx_CouponRepository> _tx_CouponRepository;
         private readonly Lazy<ITx_UserRepository> _tx_UserRepository;
         private readonly Lazy<IUserCompanyRepository> _userCompanyRepository;
+        private readonly Lazy<IAttachmentsRepository> _IAttachmentsRepository;
 
         public RepositoryManager(DBContextProvider context)
         {
@@ -62,6 +63,8 @@ namespace Repositories
             _tx_CouponRepository = new Lazy<ITx_CouponRepository>(() => new Tx_CouponRepository(context));
             _tx_UserRepository = new Lazy<ITx_UserRepository>(() => new Tx_UserRepository(context));
             _userCompanyRepository = new Lazy<IUserCompanyRepository>(() => new UserCompanyRepository(context));
+            _IAttachmentsRepository = new Lazy<IAttachmentsRepository>(() => new AttachmentsRepository(_context));
+
         }
 
         public ITransactionRepository ITransactionRepository => _ITransactionRepository.Value;
@@ -84,6 +87,7 @@ namespace Repositories
         public ITx_CouponRepository Tx_Coupon => _tx_CouponRepository.Value;
         public ITx_UserRepository Tx_User => _tx_UserRepository.Value;
         public IUserCompanyRepository UserCompany => _userCompanyRepository.Value;
+        public IAttachmentsRepository AttachmentsRepository => _IAttachmentsRepository.Value;
 
         public void Save() => _context.SaveChanges();
     }

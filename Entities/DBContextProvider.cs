@@ -58,6 +58,8 @@ namespace Entities
 
         public DbSet<UserCompany> UserCompanies { get; set; }
         public DbSet<ParameterValues> ParameterValues { get; set; }
+        public DbSet<Attachments> Attachments { get; set; }
+
     }
 
 

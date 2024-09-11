@@ -29,7 +29,7 @@ namespace Contracts.IRepository
         ITx_CouponRepository Tx_Coupon { get; }
         ITx_UserRepository Tx_User { get; }
         IUserCompanyRepository UserCompany { get; }
-
+        IAttachmentsRepository AttachmentsRepository {  get; }
         void Save();
     }
 }
