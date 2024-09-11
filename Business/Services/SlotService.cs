@@ -36,10 +36,11 @@ namespace Services.Services
 
             foreach ( var slot in dataDto )
             {
-                // a condtion for states should be added too
+                //TODO: a condtion for states should be added too
+                //FIX: test
                 var reserves = _repositoryManager.Reservation.FindByCondition(
                     r => r.SlotId == slot.Id,
-                    false).Include(r => r.ObjectState).ThenInclude(o => o.ReservationStates); //condition to be added!!! filter only on those that are final
+                    false).Include(r => r.ObjectState).ThenInclude(o => o.ReservationStates); //TODO: condition to be added!!! filter only on those that are final
 
                 var occupancy = await reserves.CountAsync();
                 slot.Occupancy = occupancy;

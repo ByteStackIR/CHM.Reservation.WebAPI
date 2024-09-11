@@ -54,6 +54,7 @@ namespace Services.Services
         public async Task<EntityDataDto> GetSpecifiedEntityAsync(Guid EntityId)
         {
             //TODO: Add State Condition
+            //NOTE: NOTE
             var now = DateTime.Now;
             var query = _repositoryManager
                 .Entity.FindByCondition(e => e.Id == EntityId, false)

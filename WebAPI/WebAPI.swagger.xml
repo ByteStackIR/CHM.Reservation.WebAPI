@@ -191,6 +191,13 @@
             <returns></returns>
             <exception cref="T:System.Exception"></exception>
         </member>
+        <member name="M:WebAPI.Controllers.SlotController.GetPagedAvailableSlots(Features.CustomRequest.SlotRequest)">
+            <summary>
+            گرفتن تمام اسلات های یک موجودیت خاص همراه با میزان اشغال به صورت صفحه بندی شده
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
         <member name="T:WebAPI.Migrations.FirstIdentity">
             <inheritdoc />
         </member>
