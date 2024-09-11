@@ -23,16 +23,21 @@ namespace Entities.Mapper
             ConfigureSlot();
             ConfigureParameterValues();
             ConfigureCouponShare();
+            ConfigureObjectState();
         }
 
+
+        public void ConfigureObjectState()
+        {
+            CreateMap<ObjectStateDto, ObjectStates>().ReverseMap();
+           
+
+        }
         public void ConfigureBaseInfo()
         {
             CreateMap<Category, CategoryDto>().ReverseMap();
             CreateMap<Parameter, ParameterDto>().ReverseMap();
-            //CreateMap<CompanyModel, CompanyDto>()
-            //   .ForMember(c => c.FullAddress,opt => opt.MapFrom(x => string.Join(' ', x.Address, x.Country)));
 
-            //  CreateMap<CompanyForCreationDto, CompanyModel>();//.ForMember(c=>c.Id,opt=>opt.MapFrom(val=>new Guid()));
         }
         public void ConfigureSlot()
         {

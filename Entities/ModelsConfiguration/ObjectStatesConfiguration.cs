@@ -46,6 +46,7 @@
                     CancelNode = -1,
                     NextNode = 1,
                     PreviousNode = 1,
+                    IsStartNode = true
                 },
                 new ObjectStates()
                 {
@@ -92,6 +93,7 @@
                     IsFinalNode = false,
                     CancelNode = -1,
                     NextNode = 1,
+                    IsStartNode = true
                 },
                 new ObjectStates()
                 {
