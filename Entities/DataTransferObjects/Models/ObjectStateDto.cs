@@ -13,6 +13,9 @@ namespace Entities.DataTransferObjects.Models
 {
     public class ObjectStateDto
     {
+        public Guid Id { get; set; }
+
+        public DateTime CreatedDate { get; set; }
         public int Code { get; set; }
 
         public int? NextNode { get; set; }

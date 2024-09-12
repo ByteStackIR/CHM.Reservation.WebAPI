@@ -9,5 +9,7 @@ namespace Contracts.IRepository
 {
     public interface IRelationRepository : IRepositoryBase<Relation>
     {
+
+       
     }
 }

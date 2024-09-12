@@ -66,8 +66,14 @@ namespace Entities.DataTransferObjects
     }
 
 
+    public class ReservationCreationDto
+    {
+        public Guid UserId { get; set; }
+        public Guid SlotId { get; set; }
+        public List<Guid> Relatives { get; set; }
 
+        
 
-   
+    }
 
 }

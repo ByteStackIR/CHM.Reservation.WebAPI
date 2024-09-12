@@ -18,9 +18,11 @@ namespace Repositories.Repositories
     public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
         protected DBContextProvider _dbContextProvider;
+        protected DbSet<T> _dbSet;
         public RepositoryBase(DBContextProvider repositoryContext)
         {
             _dbContextProvider = repositoryContext;
+            _dbSet = repositoryContext.Set<T>();
         }
 
         public async Task<T?> GetByIdAsync<TKey>(TKey Id) where TKey : notnull

@@ -2,6 +2,7 @@
 using Contracts.IRepository;
 using Entities;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,10 @@ namespace Repositories.Repositories
         {
 
         }
+        public async Task<IEnumerable<Relatives>> GetRelatives(List<Guid> Ids)
+        {
+            return await _dbSet.Where(x => Ids.Contains(x.Id) && x.IsChecked && x.IsConfirmed && !x.IsDeleted).ToListAsync();
+        }
+
     }
 }

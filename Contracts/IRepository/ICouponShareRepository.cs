@@ -9,5 +9,6 @@ namespace Contracts.IRepository
 {
     public interface ICouponShareRepository : IRepositoryBase<CouponShare>
     {
+        Task<IEnumerable<CouponShare>> GetRelationSharesInPeriod(List<Guid> RelationIds, Guid PeriodId);
     }
 }
