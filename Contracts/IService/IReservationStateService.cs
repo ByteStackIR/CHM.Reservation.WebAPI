@@ -8,5 +8,8 @@ namespace Contracts.IService
 {
     public interface IReservationStateService
     {
+        Task<bool> GoToNextStep(Guid ReservationId);
+        Task<bool> GoToPreviousStep(Guid ReservationId);
+
     }
 }

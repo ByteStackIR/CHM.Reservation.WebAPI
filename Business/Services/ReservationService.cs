@@ -21,11 +21,11 @@ namespace Services.Services
 {
     public class ReservationService : ServiceBase, IReservationService
     {
-        public ISlotService _slotService;
-        public IObjectStateService _ObjectStateService;
-        public IRelationsService _relationsService;
-
-
+        private ISlotService _slotService;
+        private IObjectStateService _ObjectStateService;
+        private IRelationsService _relationsService;
+        private IUserTransactionService _userTxService ;
+        private ICouponTransactionService _couponTxService;
         public ReservationService(
             IMapper mapper,
             ILoggerManager logger,
@@ -34,13 +34,17 @@ namespace Services.Services
             ISystemContext systemContext,
             ISlotService slotService,
             IObjectStateService ObjectStateService,
-             IRelationsService RelationsService
+             IRelationsService RelationsService,
+             IUserTransactionService userTx,
+             ICouponTransactionService couponTx
         )
             : base(repoManger, mapper, httpContextAccessor, systemContext, logger)
         {
             _slotService = slotService;
             _ObjectStateService = ObjectStateService;
             _relationsService = RelationsService;
+            _userTxService = userTx;
+            _couponTxService = couponTx;
         }
 
         public async Task<Internal_ReservationDto> InitReservation(ReservationCreationDto dto)
@@ -226,8 +230,31 @@ namespace Services.Services
 
             ReservationModel.ObjectStateId = NextState.Id;
 
+
+            await _couponTxService.AddTransaction(new()
+            {
+                Amount = ReservationModel.Amount - ReservationModel.BillAmount,
+                CreatedDate = DateTime.Now,
+                Id = Guid.NewGuid(),
+                PeriodId = _systemContext.Period.Id,
+                ReservationId = ReservationModel.Id,
+                UserId = _systemContext.CurrentUser.GetUserId().Value.ToString()
+            });
+
+
+            await _couponTxService.AddTransaction(new()
+            {
+                Amount =  ReservationModel.BillAmount,
+                CreatedDate = DateTime.Now,
+                Id = Guid.NewGuid(),
+                PeriodId = _systemContext.Period.Id,
+                ReservationId = ReservationModel.Id,
+                UserId = _systemContext.CurrentUser.GetUserId().Value.ToString()
+            });
             _repositoryManager.Reservation.Update(ReservationModel);
             _repositoryManager.Save();
+
+
 
             return true;
 
