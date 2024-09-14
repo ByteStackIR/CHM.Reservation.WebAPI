@@ -1,5 +1,7 @@
 ﻿using Entities.DataTransferObjects;
+using Entities.DataTransferObjects.External;
 using Entities.DataTransferObjects.Internal;
+using Entities.DataTransferObjects.Models;
 
 
 namespace Contracts.IService
@@ -8,5 +10,14 @@ namespace Contracts.IService
     {
 
         Task<Internal_ReservationDto> InitReservation(ReservationCreationDto dto);
+        Task<Internal_ReservationDto> CreateTemporaryReservation(Internal_ReservationDto dto);
+        Task<Internal_ShareDto> CalculateShare(RelativeDto Relative, EntityDto Entity);
+
+        Task<List<Internal_ShareDto>> CalculateShares(
+            List<RelativeDto> Relatives,
+            EntityDto Entity
+        );
+        Task<External_TempReservationDto> AddReservation(ReservationCreationDto dto);
+        Task<bool> FinalizeReservation(Guid Id);
     }
 }

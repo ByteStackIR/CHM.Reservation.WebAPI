@@ -8,18 +8,23 @@ using Contracts.IContext;
 using Contracts.IRepository;
 using Contracts.IService;
 using Entities.DataTransferObjects;
+using Entities.DataTransferObjects.External;
 using Entities.DataTransferObjects.Internal;
 using Entities.DataTransferObjects.Models;
 using Entities.IdentityExtensions;
 using Entities.Models;
 using LoggerService;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace Services.Services
 {
     public class ReservationService : ServiceBase, IReservationService
     {
         public ISlotService _slotService;
+        public IObjectStateService _ObjectStateService;
+        public IRelationsService _relationsService;
+
 
         public ReservationService(
             IMapper mapper,
@@ -27,11 +32,15 @@ namespace Services.Services
             IRepositoryManager repoManger,
             IHttpContextAccessor httpContextAccessor,
             ISystemContext systemContext,
-            ISlotService slotService
+            ISlotService slotService,
+            IObjectStateService ObjectStateService,
+             IRelationsService RelationsService
         )
             : base(repoManger, mapper, httpContextAccessor, systemContext, logger)
         {
             _slotService = slotService;
+            _ObjectStateService = ObjectStateService;
+            _relationsService = RelationsService;
         }
 
         public async Task<Internal_ReservationDto> InitReservation(ReservationCreationDto dto)
@@ -55,8 +64,6 @@ namespace Services.Services
 
             EntityDto Entity = _mapper.Map<EntityDto>(EntityModel);
 
-            List<SelectedRelatives> selectedRelatives = new List<SelectedRelatives>();
-
             var relatives = await _repositoryManager.Relatives.GetRelatives(dto.Relatives);
 
             if (
@@ -66,7 +73,7 @@ namespace Services.Services
             )
                 throw new Exception($"There are invalid relatives!");
 
-            var Shares = await CalculateShares(_mapper.Map<List<RelativeDto>>(relatives),Entity);
+            var Shares = await CalculateShares(_mapper.Map<List<RelativeDto>>(relatives), Entity);
 
             Internal_ReservationDto result = new Internal_ReservationDto()
             {
@@ -77,14 +84,157 @@ namespace Services.Services
                 CreatedDate = DateTime.Now,
                 Shares = Shares,
                 SlotId = SlotItem.Id,
-                UserId = _systemContext.CurrentUser.GetUserId().ToString()
+                CategoryId = Entity.CategoryId,
+                EntityId = Entity.Id.Value,
+                UserId = _systemContext.CurrentUser.GetUserId().ToString(),
             };
 
-            
             return result;
         }
 
-        private async Task<Internal_ShareDto> CalculateShare(RelativeDto Relative, EntityDto Entity)
+        public async Task<Internal_ReservationDto> CreateTemporaryReservation(
+            Internal_ReservationDto dto
+        )
+        {
+            dto.Id = Guid.NewGuid();
+
+            List<SelectedRelatives> selectedRelatives = new List<SelectedRelatives>();
+
+            foreach (var Share in dto.Shares)
+            {
+                SelectedRelatives Person =
+                    new()
+                    {
+                        Id = Guid.NewGuid(),
+                        RelativeId = Share.Relative.Id,
+                        ReservationId = dto.Id.Value,
+                        CreatedDate = DateTime.Now,
+                    };
+
+                selectedRelatives.Add(Person);
+            }
+
+            dto.IsFinalized = false;
+            dto.ExpirationDate = DateTime.Now.AddMinutes(15);
+
+            dto.ObjectStateId = (
+                await _ObjectStateService.GetStartStateByCategoryId(dto.CategoryId)
+            ).Id;
+
+            ReservationDto Intermediate = _mapper.Map<ReservationDto>(dto);
+
+            Reservation model = _mapper.Map<Reservation>(Intermediate);
+
+            model.SelectedRelatives = selectedRelatives;
+
+            _repositoryManager.Reservation.Create(model);
+            _repositoryManager.Reservation.SaveChanges();
+
+            return dto;
+        }
+
+        public async Task<External_TempReservationDto> AddReservation(ReservationCreationDto dto)
+        {
+            var interResult = await InitReservation(dto);
+
+            var res = await CreateTemporaryReservation(interResult);
+
+            External_TempReservationDto result = new()
+            {
+                Amount = interResult.Amount,
+                BillAmount = interResult.BillAmount,
+                ExpirationDate = res.ExpirationDate,
+                Id =res.Id.Value,
+                Relatives = new()
+            };
+
+            var AllRelations = await _relationsService.GetRelations();
+            interResult.Shares.ForEach(share =>
+            {
+
+                
+                result.Relatives.Add(new()
+                {
+                    Amount = share.CompanyShare+share.UserShare,
+                    BillAmount = share.UserShare,
+                    FirstName = share.Relative.FirstName,
+                    LastName =share.Relative.FamilyName,
+                    RelationTitle = AllRelations.FirstOrDefault(x=>x.Id== share.Relative.RelationId).Title 
+                });
+
+            });
+
+            return result;
+        }
+
+        public async Task<bool> FinalizeReservation(Guid Id)
+        {
+
+            var ReservationModel =await _repositoryManager.Reservation.GetByIdAsync(Id);
+
+            if (ReservationModel == null)
+                throw new Exception("Not found");
+
+
+            if(ReservationModel.UserId != _systemContext.CurrentUser.GetUserId().Value.ToString())
+                throw new Exception("is not yours");
+
+            if (ReservationModel.IsFinalized)
+                throw new Exception("Finalized already");
+
+            if (ReservationModel.ExpirationDate <= DateTime.Now)
+            {
+                _repositoryManager.Reservation.Delete(ReservationModel);
+                _repositoryManager.Save();
+                throw new Exception("has expired");
+            }
+
+
+
+            ReservationModel.IsFinalized = true;
+
+            ReservationModel.ReservationStates = new List<ReservationStates>();
+            ReservationModel.ReservationStates.Add(new ReservationStates()
+            {
+                ObjectStateId = ReservationModel.ObjectStateId,
+                IsDone = true,
+                CreatorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                ActorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                CreatedDate = DateTime.Now,
+                ToForward = true,
+                ReservationId = ReservationModel.Id,
+                Id = Guid.NewGuid(),
+                IsCancelled = false,
+               
+            });
+
+            var NextState = await _ObjectStateService.GetNextStateByState(await _ObjectStateService.GetStateById(ReservationModel.ObjectStateId));
+
+            ReservationModel.ReservationStates.Add(new ReservationStates()
+            {
+                ObjectStateId = NextState.Id,
+                IsDone = false,
+                CreatorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                CreatedDate = DateTime.Now,
+                ToForward = true,
+                ReservationId = ReservationModel.Id,
+                Id = Guid.NewGuid(),
+                IsCancelled = false,
+
+            });
+
+
+            ReservationModel.ObjectStateId = NextState.Id;
+
+            _repositoryManager.Reservation.Update(ReservationModel);
+            _repositoryManager.Save();
+
+            return true;
+
+
+        }
+
+        public async Task<Internal_ShareDto> CalculateShare(RelativeDto Relative, EntityDto Entity)
         {
             var Shares = await _repositoryManager.CouponShare.GetRelationSharesInPeriod(
                 new() { Relative.RelationId },
@@ -108,7 +258,7 @@ namespace Services.Services
             return res;
         }
 
-        private async Task<List<Internal_ShareDto>> CalculateShares(
+        public async Task<List<Internal_ShareDto>> CalculateShares(
             List<RelativeDto> Relatives,
             EntityDto Entity
         )

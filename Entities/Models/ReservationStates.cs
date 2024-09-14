@@ -11,6 +11,10 @@ namespace Entities.Models
     public sealed class ReservationStates : ModelBase
     {
         [Required]
+        [ForeignKey(nameof(Reservation))]
+        public Guid ReservationId { get; set; }
+
+        [Required]
         [ForeignKey(nameof(ObjectState))]
         public Guid ObjectStateId { get; set; }
         public bool ToForward { get; set; }
@@ -30,5 +34,7 @@ namespace Entities.Models
     
 
         public ObjectStates ObjectState { get; set; }
+        public Reservation Reservation { get; set; }
+
     }
 }

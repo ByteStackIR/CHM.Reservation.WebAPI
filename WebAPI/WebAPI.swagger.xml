@@ -438,5 +438,17 @@
         <member name="M:WebAPI.Migrations.ObjectStates_States3.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:WebAPI.Migrations.IsFinalizedExpirationDate">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.IsFinalizedExpirationDate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.IsFinalizedExpirationDate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.IsFinalizedExpirationDate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
     </members>
 </doc>

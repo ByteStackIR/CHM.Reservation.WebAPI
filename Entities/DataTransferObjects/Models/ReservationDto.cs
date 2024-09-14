@@ -17,6 +17,8 @@ namespace Entities.DataTransferObjects.Models
         public Decimal Amount { get; set; }
         public Decimal BillAmount { get; set; }
         public Guid ObjectStateId { get; set; }
+        public bool IsFinalized { get; set; } = false;
+        public DateTime ExpirationDate { get; set; }
         public DateTime CreatedDate { get; set; }
     }
 }

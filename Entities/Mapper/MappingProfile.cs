@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Entities.DataTransferObjects;
+using Entities.DataTransferObjects.Internal;
 using Entities.DataTransferObjects.Models;
 using Entities.Models;
 using System;
@@ -24,9 +25,18 @@ namespace Entities.Mapper
             ConfigureParameterValues();
             ConfigureCouponShare();
             ConfigureObjectState();
+            ConfigureReservations();
         }
 
+        public void ConfigureReservations()
+        {
+            CreateMap<Internal_ReservationDto,ReservationDto>();
+            CreateMap<ReservationDto, Internal_ReservationDto>();
 
+            CreateMap<ReservationDto, Reservation>().ReverseMap();
+
+
+        }
         public void ConfigureObjectState()
         {
             CreateMap<ObjectStateDto, ObjectStates>().ReverseMap();

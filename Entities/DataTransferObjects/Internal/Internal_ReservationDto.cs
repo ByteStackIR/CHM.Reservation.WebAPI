@@ -15,7 +15,14 @@ namespace Entities.DataTransferObjects.Internal
         public Decimal Amount { get; set; }
         public Decimal BillAmount { get; set; }
         public Guid? ObjectStateId { get; set; }
+        
+        public Guid CategoryId { get; set; }
+        public Guid EntityId { get; set; }
         public DateTime CreatedDate { get; set; }
+
+        public bool IsFinalized { get; set; } = false;
+        public DateTime ExpirationDate { get; set; }
+
 
         public List<Internal_ShareDto> Shares {  get; set; } 
     }
