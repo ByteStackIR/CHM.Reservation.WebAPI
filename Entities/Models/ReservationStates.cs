@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -31,9 +32,11 @@ namespace Entities.Models
 
         public User CreatorUser { get; set; }
         public User? ActorUser { get; set; }
-    
+
+        [DeleteBehavior(DeleteBehavior.NoAction)]
 
         public ObjectStates ObjectState { get; set; }
+        [DeleteBehavior(DeleteBehavior.NoAction)]
         public Reservation Reservation { get; set; }
 
     }

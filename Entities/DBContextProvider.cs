@@ -37,6 +37,7 @@ namespace Entities
         public DbSet<Category> Categories { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<CouponShare> CouponShares { get; set; }
+        public DbSet<ObjectStates> ObjectStates { get; set; }
 
         public DbSet<Entity> Entities { get; set; }
         public DbSet<Parameter> Parameters { get; set; }

@@ -52,7 +52,7 @@
                 ,
                 new ObjectStates()
                 {
-                    Id = Guid.Parse("e790a6ce-6381-4b87-a157-5c6a73bc6471"),
+                    Id = Guid.Parse("e790a6ce-6381-4b87-a157-5c6a73bc6472"),
                     Cancellable = true,
                     CategoryId = Guid.Parse("bd97c448-da11-4553-93e3-cac2976eb64f"),
                     Code = 1,
@@ -69,7 +69,7 @@
                 },
                 new ObjectStates()
                 {
-                    Id = Guid.Parse("e790a6ce-6381-4b87-a157-5c6a73bc6472"),
+                    Id = Guid.Parse("e790a6ce-6381-4b87-a157-5c6a73bc6473"),
                     Cancellable = false,
                     CategoryId = Guid.Parse("bd97c448-da11-4553-93e3-cac2976eb64f"),
                     Code = 2,
