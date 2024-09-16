@@ -98,7 +98,7 @@ namespace Services.Services
             var currentObjectState = await _objectStateService.GetStateById(
                 currentState.ObjectStateId
             );
-            if (currentObjectState.ToForward)
+            if (currentObjectState.ToBackward)
             {
                 var PreviousobjectState = await _objectStateService.GetPreviousStateByState(
                     currentObjectState
