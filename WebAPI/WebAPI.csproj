@@ -41,6 +41,7 @@
   <ItemGroup>
     <Folder Include="internal_logs\" />
     <Folder Include="Media\" />
+    <Folder Include="Migrations\" />
     <Folder Include="Utils\" />
   </ItemGroup>
 

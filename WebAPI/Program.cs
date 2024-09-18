@@ -78,8 +78,9 @@ public class Program
         //=====================Dependency Injection================
         builder.Services.AddScoped<ILoggerManager, LoggerManager>();
         builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
-       // builder.Services.AddScoped<IDapperRepositoryManager, DapperRepositoryManager>();
-       // builder.Services.RegisterServices();
+        builder.Services.AddScoped<IReservationService, ReservationService>();
+        // builder.Services.AddScoped<IDapperRepositoryManager, DapperRepositoryManager>();
+        // builder.Services.RegisterServices();
         builder.Services.RegisterPaymentGateway();
         builder.Services.ConfigureDenpdencyInjectionByMarker();
 

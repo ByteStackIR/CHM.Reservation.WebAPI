@@ -30,9 +30,6 @@ namespace Entities
 
         }
 
-
-
-
         // public DbSet<Transactions> Transactions { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Company> Companies { get; set; }
@@ -40,6 +37,7 @@ namespace Entities
         public DbSet<ObjectStates> ObjectStates { get; set; }
 
         public DbSet<Entity> Entities { get; set; }
+        public DbSet<EntityManager> EntityManagers { get; set; }
         public DbSet<Parameter> Parameters { get; set; }
         public DbSet<Period> Periods { get; set; }
 

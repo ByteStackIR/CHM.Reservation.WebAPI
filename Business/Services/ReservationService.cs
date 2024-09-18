@@ -13,8 +13,12 @@ using Entities.DataTransferObjects.Internal;
 using Entities.DataTransferObjects.Models;
 using Entities.IdentityExtensions;
 using Entities.Models;
+using Entities.QueryExtensions;
+using Features.CustomRequest;
+using Features.RequestFeatures;
 using LoggerService;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace Services.Services
@@ -315,6 +319,45 @@ namespace Services.Services
             }
 
             return res;
+        }
+
+        public async Task<PagedData<List<ReservationDto>>> GetPagedReservationsOfUserAsync(ReservationRequest_User request)
+        {
+            var currentUser = _systemContext.CurrentUser.GetUserId().Value.ToString();
+            var query = _repositoryManager.Reservation.FindByCondition(r => r.UserId == currentUser, false).Include(r => r.Slot);
+            var count = await query.CountAsync();
+            var data = await query.GetPage(request).ToListAsync();
+            var dataDto = _mapper.Map<List<ReservationDto>>(data);
+
+            return new(new(count, request.PageNumber, request.PageSize), dataDto);
+        }
+
+
+        public async Task<PagedData<List<ReservationDto>>> GetPagedReservationsOfHotelAsync(ReservationRequest_Hotel request)
+        {
+            var query = _repositoryManager.Reservation.FindByCondition(r => r.Slot.EntityId == request.EntityId, false)
+                .Include(r => r.Slot)
+                .Include(r => r.ReservationStates);
+
+            var count = await query.CountAsync();
+            var data = await query.GetPage(request).ToListAsync();
+            var dataDto = _mapper.Map<List<ReservationDto>>(data);
+            return new(new(count, request.PageNumber, request.PageSize), dataDto);
+
+        }
+        public async Task<PagedData<List<ReservationDto>>> GetPagedReservationOfExecutiveAsync(ReservationRequest_Executive request)
+        {
+            var currentUser = _systemContext.CurrentUser.GetUserId().Value.ToString();
+            var query = _repositoryManager.Reservation.FindByCondition(r => _repositoryManager.EntityManager.FindByCondition(
+                    em => em.UserId == currentUser,false)
+                    .Select(em => em.EntityId)
+                    .Contains(r.Slot.EntityId),false)
+                .Include(r => r.Slot);
+
+            var count = await query.CountAsync();
+            var data = await query.GetPage(request).ToListAsync();
+            var dataDto = _mapper.Map<List<ReservationDto>>(data);
+            return new(new(count, request.PageNumber, request.PageSize), dataDto);
         }
     }
 }
