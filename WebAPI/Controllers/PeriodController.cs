@@ -2,6 +2,7 @@
 using Contracts.IService;
 using Entities.DataTransferObjects.Models;
 using Entities.Models;
+using Features.CustomRequest;
 using Humanizer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,28 @@ namespace WebAPI.Controllers
             _configuration = configuration;
             _periodService = periodService;
         }
+
+
+    
+        [HttpPost("[action]")]
+        public async Task<IActionResult> GetPeriods(PeriodTableRequest request)
+        {
+            try
+            {
+                var result = await _periodService.GetPagnationData(request);
+              
+                    return Ok(result);
+                
+              
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+
 
         /// <summary>
         /// This Endpoint gets a single Period by its primary key periodId

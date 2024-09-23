@@ -12,6 +12,9 @@ using Contracts.IRepository;
 using Contracts.IService;
 using Entities.DataTransferObjects.Models;
 using Entities.Models;
+using Entities.QueryExtensions;
+using Features.CustomRequest;
+using Features.RequestFeatures;
 using LoggerService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +41,28 @@ public class PeriodService : ServiceBase, IPeriodService, IScopeMarker
         ILoggerManager logger
     )
         : base(repoManger, mapper, httpContextAccessor, systemContext, logger) { }
+
+
+    public async Task<PagedData<List<PeriodDto>>> GetPagnationData(PeriodTableRequest request)
+    {
+        try
+        {
+            var query =  _repositoryManager.Period.FindAll(false);
+
+            int count = query.Count();
+
+            var data =await query.GetPage(request).ToListAsync();
+
+
+            return new(new(count, request.PageNumber, request.PageSize)
+            , _mapper.Map<List<PeriodDto>>(data));
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
 
     public async Task<PeriodDto> GetById(Guid periodId)
     {
