@@ -10,6 +10,7 @@ namespace Contracts.IRepository
     {
 
         ITransactionRepository ITransactionRepository { get; }
+        IDefinitionsRepository IDefinitionsRepository { get; }
 
         ICategoryRepository Category { get; }
         ICompanyRepository Company { get; }
