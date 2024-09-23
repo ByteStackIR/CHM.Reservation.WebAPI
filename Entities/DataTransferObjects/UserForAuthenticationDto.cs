@@ -5,8 +5,8 @@ namespace Entities.DataTransferObjects;
 
 public record UserForAuthenticationDto
 {
-    [Required(ErrorMessage = "User name is required")]
-    public string? UserName { get; init; }
-    [Required(ErrorMessage = "Password name is required")]
-    public string? Password { get; init; }
+    [Required(ErrorMessage = "Phone Number is required")]
+    public string? PhoneNumber { get; init; }
+    public string Password { get; init; }
+    public string code { get; init; }
 }
