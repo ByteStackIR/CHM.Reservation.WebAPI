@@ -17,7 +17,7 @@ namespace Entities.Models
         [ForeignKey(nameof(Relation))]
         public Guid RelationId { get; set; }
 
-        [Column(TypeName ="decimal(4,2)")]
+        [Column(TypeName ="decimal(5,2)")]
         public Decimal Entitlement { get; set; }
         
         public Period Period { get; set; } 

@@ -148,7 +148,7 @@ public class PeriodService : ServiceBase, IPeriodService, IScopeMarker
                 foreach (var share in dto.CouponShare)
                 {
 
-                    if (share.Id != null || share.Id == Guid.Empty)
+                    if (share.Id== null || share.Id == Guid.Empty)
                     {
                         CouponShare model = _mapper.Map<CouponShare>(share);
                         model.Id = Guid.NewGuid();

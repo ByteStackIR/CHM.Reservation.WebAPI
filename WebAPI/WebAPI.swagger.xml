@@ -507,5 +507,14 @@
         <member name="M:WebAPI.Migrations.softdelete.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:WebAPI.Migrations.shareInCoupon">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.shareInCoupon.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.shareInCoupon.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
     </members>
 </doc>
