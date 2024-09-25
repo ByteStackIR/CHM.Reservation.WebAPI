@@ -507,13 +507,13 @@
         <member name="M:WebAPI.Migrations.softdelete.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
-        <member name="T:WebAPI.Migrations.shareInCoupon">
+        <member name="T:WebAPI.Migrations.periodTitle">
             <inheritdoc />
         </member>
-        <member name="M:WebAPI.Migrations.shareInCoupon.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:WebAPI.Migrations.periodTitle.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:WebAPI.Migrations.shareInCoupon.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+        <member name="M:WebAPI.Migrations.periodTitle.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
     </members>

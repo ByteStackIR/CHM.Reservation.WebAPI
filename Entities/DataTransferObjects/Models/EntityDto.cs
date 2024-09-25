@@ -11,7 +11,9 @@ namespace Entities.DataTransferObjects.Models
         public string Title { get; set; }
         public Guid? Id { get; set; } = null;
         public Guid CategoryId { get; set; }
-        public CategoryDto Category { get; set; }
+        public Guid CityId { get; set; }
+
+        public CategoryDto? Category { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public Guid PeriodId { get; set; }

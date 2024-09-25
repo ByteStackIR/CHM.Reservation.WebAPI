@@ -3,6 +3,7 @@ using Entities.DataTransferObjects.Models;
 using Entities.Models;
 using Features.CustomRequest;
 using Features.RequestFeatures;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -131,6 +132,7 @@ namespace WebAPI.Controllers
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
+        [Authorize]
         [HttpPost("[action]")]
         public async Task<IActionResult> AddEntity(EntityDto dto)
         {

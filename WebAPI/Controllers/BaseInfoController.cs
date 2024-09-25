@@ -38,6 +38,9 @@ namespace WebAPI.Controllers
             return Ok(await _parameterService.ParametersByCategoryId(CategoryId));
         }
 
+
+
+
         //TODO : role checking admin
         [HttpPost("[action]")]
         public async Task<IActionResult> GetUsersInRoles(List<string> Roles)

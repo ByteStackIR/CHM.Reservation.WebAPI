@@ -91,7 +91,7 @@ namespace Services.Services
                 ObjectStateId = null,
                 CreatedDate = DateTime.Now,
                 Shares = Shares,
-                SlotId = SlotItem.Id,
+                SlotId = SlotItem.Id.Value,
                 CategoryId = Entity.CategoryId,
                 EntityId = Entity.Id.Value,
                 UserId = _systemContext.CurrentUser.GetUserId().ToString(),

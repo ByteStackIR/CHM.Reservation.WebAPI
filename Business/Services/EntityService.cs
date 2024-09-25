@@ -194,7 +194,7 @@ namespace Services.Services
             var entity = _mapper.Map<Entity>(entityDto);
             entity.Id = Guid.NewGuid();
             entity.CreatedDate = DateTime.Now;
-            entity.UserId = "b9ca9610-42bd-4211-9d75-f9b675983562";
+            entity.UserId =_systemContext.CurrentUser.GetUserId().ToString();
             entity.Slots = new List<Slot>();
             entity.ParameterValues = new List<ParameterValues>();
 
