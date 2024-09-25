@@ -1,4 +1,7 @@
-﻿using Contracts.IService;
+﻿using Azure.Core;
+using Contracts.IService;
+using Features.CustomRequest;
+using Features.RequestFeatures;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,13 +12,15 @@ namespace WebAPI.Controllers
     public class BaseInfoController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
+        private readonly ICompanyService _companyService;
         private readonly IParameterService _parameterService;
         private readonly IRelationsService _relationsService;
         private readonly IUsersService _userService;
 
-        public BaseInfoController(IRelationsService relationsService,ICategoryService categoryService ,IParameterService parameterService, IUsersService usersService)
+        public BaseInfoController(IRelationsService relationsService,ICategoryService categoryService,ICompanyService companyService ,IParameterService parameterService, IUsersService usersService)
         {
             _categoryService = categoryService;
+            _companyService = companyService;
             _parameterService = parameterService;
             _relationsService = relationsService;
             _userService = usersService;
@@ -36,6 +41,32 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> GetParamtersByCategoryId(Guid CategoryId)
         {
             return Ok(await _parameterService.ParametersByCategoryId(CategoryId));
+        }
+
+        /// <summary>
+        /// گرفتن تمام شرکت ها به صورت صفحه بندی شده
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("[action]")]
+        public async Task<IActionResult> GetCompaniesAsync(CompanyRequest request)
+        {
+            try
+            {
+                var result = await _companyService.GetPagedAllCompanies(request);
+                if (result is not null)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
 
