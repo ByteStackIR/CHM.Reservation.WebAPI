@@ -26,6 +26,7 @@ namespace Entities.Mapper
             ConfigureCouponShare();
             ConfigureObjectState();
             ConfigureReservations();
+            ConfigureDefinitions();
         }
 
         public void ConfigureReservations()
@@ -103,6 +104,12 @@ namespace Entities.Mapper
         {
             CreateMap<ParameterValues, ParameterValuesDto>();
             CreateMap<ParameterValues, ParameterValuesDto>().ReverseMap();
+        }
+
+        public void ConfigureDefinitions()
+        {
+            CreateMap<Definitions, DefinitionsDto>();
+            CreateMap<Definitions, DefinitionsDto>().ReverseMap();
         }
 
     }

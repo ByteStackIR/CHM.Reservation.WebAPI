@@ -18,7 +18,7 @@ namespace WebAPI.Controllers
         {
             _configuration = configuration;
             _slotService = slotService;
-        }
+        }   
 
         /// <summary>
         /// گرفتن تمام اسلات های یک موجودیت خاص همراه با میزان اشغال به صورت صفحه بندی شده
