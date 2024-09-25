@@ -55,6 +55,11 @@ namespace Services.Services
             var count = await query.CountAsync();
             var data = await query.GetPage(request).ToListAsync();
             var dataDto = _mapper.Map<List<EntityDto>>(data);
+
+            for (int i = 0; i < data.Count; i++)
+            {
+                dataDto[i].Category = _mapper.Map<CategoryDto>(data[i].Category);
+            }
             return new(new(count, request.PageNumber, request.PageSize), dataDto);
         }
 
