@@ -19,5 +19,7 @@ namespace Entities.Models
         [Required]
         [ForeignKey(nameof(Entity))]
         public Guid EntityId { get; set; }
+
+        public Entity Entity { get; set; }
     }
 }

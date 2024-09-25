@@ -32,12 +32,12 @@ namespace Services
             if (CurrentUser.Identity.IsAuthenticated)
             {
                 var userCompany = repositoryManager.UserCompany.FindByCondition(x => x.IsActive && x.UserId == CurrentUser.GetUserId().Value.ToString(), false).Include(x => x.Company).FirstOrDefault();
-
+                if(userCompany!=null)
                 UserCompany = mapper.Map<CompanyDto>(userCompany.Company);
             }
 
 
-            var periodModel = repositoryManager.Period.FindByCondition(x => !x.IsDeleted && (x.StartDate >= DateTime.Now && x.EndDate <= DateTime.Now), false).FirstOrDefault();
+            var periodModel = repositoryManager.Period.FindByCondition(x => !x.IsDeleted && (x.StartDate <= DateTime.Now && x.EndDate >= DateTime.Now), false).OrderByDescending(x=>x.CreatedDate).FirstOrDefault();
             if(periodModel != null)
                 this.Period = mapper.Map<PeriodDto>(periodModel);
 
