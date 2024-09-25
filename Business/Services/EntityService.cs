@@ -18,20 +18,27 @@ using Features.CustomRequest;
 using Features.RequestFeatures;
 using LoggerService;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Services.Services
 {
     public class EntityService : ServiceBase, IEntityService, IScopeMarker
     {
+        public readonly UserManager<User> _userManager;
+
         public EntityService(
             IMapper mapper,
             ILoggerManager logger,
             IRepositoryManager repoManger,
+            UserManager<User> userManager,
             IHttpContextAccessor httpContextAccessor,
             ISystemContext systemContext
         )
-            : base(repoManger, mapper, httpContextAccessor, systemContext, logger) { }
+            : base(repoManger, mapper, httpContextAccessor, systemContext, logger)
+        {
+            _userManager = userManager;
+        }
 
         //===========PUBLIC AREA
 
@@ -198,6 +205,17 @@ namespace Services.Services
             entity.Slots = new List<Slot>();
             entity.ParameterValues = new List<ParameterValues>();
 
+            foreach (var entityManagerId in entityDto.EntityManagers)
+            {
+                EntityManager entityManager = new EntityManager();
+                entityManager.Id = Guid.NewGuid();
+                entityManager.UserId = entityManager.ToString();
+                entityManager.User = await _userManager.FindByIdAsync(entityManagerId.ToString());
+                entityManager.EntityId = entity.Id;
+                _repositoryManager.EntityManager.Create(entityManager);
+                _repositoryManager.EntityManager.SaveChanges();
+            }
+
             foreach (var Slot in entityDto.Slots)
             {
                 var model = _mapper.Map<Slot>(Slot);
@@ -256,6 +274,25 @@ namespace Services.Services
             entity.Title = entityDto.Title;
             entity.UserId = _systemContext.CurrentUser.GetUserId().ToString();
             entity.ParameterValues = new List<ParameterValues>();
+
+
+            var entityManagers = _repositoryManager.EntityManager.FindByCondition(tc => tc.EntityId == entity.Id, false).ToList();
+            foreach (var manager in entityManagers)
+            {
+                _repositoryManager.EntityManager.Delete(manager);
+                _repositoryManager.EntityManager.SaveChanges();
+            }
+          
+            foreach (var entityManagerId in entityDto.EntityManagers)
+            {
+                EntityManager entityManager = new EntityManager();
+                entityManager.Id = Guid.NewGuid();
+                entityManager.UserId = entityManager.ToString();
+                entityManager.User = await _userManager.FindByIdAsync(entityManagerId.ToString());
+                entityManager.EntityId = entity.Id;
+                _repositoryManager.EntityManager.Create(entityManager);
+                _repositoryManager.EntityManager.SaveChanges();
+            }
 
             foreach (var Slot in entityDto.Slots)
             {
