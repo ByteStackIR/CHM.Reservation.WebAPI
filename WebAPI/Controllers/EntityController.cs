@@ -84,7 +84,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> GetEntities(PublicEntitiesTableRequest request)
+        public async Task<IActionResult> GetEntities(AdminEntitiesTableRequest request)
         {
             try
             {
@@ -106,11 +106,11 @@ namespace WebAPI.Controllers
 
 
         [HttpPut("[action]")]
-        public async Task<IActionResult> UpdateEntity(PublicEntitiesTableRequest request)
+        public async Task<IActionResult> UpdateEntity(EntityDto request)
         {
             try
             {
-                var result = await _entityService.GetPagedEntities(request);
+                var result = await _entityService.UpdateEntityAsync(request);
                 if (result is not null)
                 {
                     return Ok(result);
