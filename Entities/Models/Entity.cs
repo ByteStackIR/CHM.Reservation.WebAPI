@@ -53,5 +53,7 @@ namespace Entities.Models
         public Period Period { get; set; }
         public ICollection<Slot> Slots { get; set; }
         public ICollection<ParameterValues> ParameterValues { get; set; }
+        public ICollection<EntityManager> EntityManagers { get; set; }
+
     }
 }

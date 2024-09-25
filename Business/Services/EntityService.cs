@@ -130,12 +130,19 @@ namespace Services.Services
             AdminEntitiesTableRequest request
         )
         {
-            var query = _repositoryManager.Entity.FindAll(false);
+            var query = _repositoryManager.Entity.FindAll(false).Include(x=>x.Category).OrderByDescending(x=>x.StartDate);
 
             var count = await query.CountAsync();
 
             var data = await query.GetPage(request).ToListAsync();
             var dataDto = _mapper.Map<List<EntityDto>>(data);
+
+            for (int i = 0; i < data.Count; i++)
+            {
+                dataDto[i].Category = _mapper.Map<CategoryDto>(data[i].Category);
+            }
+           
+
             return new(new(count, request.PageNumber, request.PageSize), dataDto);
         }
 
@@ -143,10 +150,17 @@ namespace Services.Services
         {
             try
             {
-                var entity = await _repositoryManager.Entity.GetByIdAsync(entityId);
+                var entity = await _repositoryManager.Entity.FindByCondition(x=>x.Id==entityId,false).Include(x=>x.Slots).Include(x=>x.ParameterValues).Include(x=>x.EntityManagers).FirstOrDefaultAsync();
                 if (entity is not null)
                 {
-                    return _mapper.Map<EntityDto>(entity);
+                    var res= _mapper.Map<EntityDto>(entity);
+                    res.Slots = _mapper.Map<List<SlotDto>>(entity.Slots);
+                    res.ParameterValues = _mapper.Map<List<ParameterValuesDto>>(entity.ParameterValues);
+                    res.EntityManagers = entity.EntityManagers.Select(x => x.Id).ToList();
+
+
+                    return res;
+
                 }
                 else
                 {
@@ -204,7 +218,7 @@ namespace Services.Services
             entity.UserId =_systemContext.CurrentUser.GetUserId().ToString();
             entity.Slots = new List<Slot>();
             entity.ParameterValues = new List<ParameterValues>();
-
+            entity.PeriodId = _systemContext.Period.Id;
             foreach (var entityManagerId in entityDto.EntityManagers)
             {
                 EntityManager entityManager = new EntityManager();
@@ -272,6 +286,7 @@ namespace Services.Services
             entity.MaxReserveTimes = entityDto.MaxReserveTimes;
             entity.MinAge = entityDto.MinAge;
             entity.Title = entityDto.Title;
+            entity.PerPerson = entityDto.PerPerson;
             entity.UserId = _systemContext.CurrentUser.GetUserId().ToString();
             entity.ParameterValues = new List<ParameterValues>();
 

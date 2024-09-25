@@ -101,6 +101,7 @@ public class PeriodService : ServiceBase, IPeriodService, IScopeMarker
             //var periodModel = _mapper.Map<Period>(dto);
             Period periodModel = new Period
             {
+                Title = dto.Title,
                 Id = dto.Id,
                 StartDate = dto.StartDate,
                 EndDate = dto.EndDate,
