@@ -19,5 +19,8 @@ namespace Contracts.IService
         Task<UserForRegistrationDto> GetUserById(Guid UserId);
         Task<bool> UpdateUserAsAdmin(UserUpdateDto dto);
         Task<bool> UpdateUserAsCompany(UserUpdateDto dto);
+
+
+        Task<List<UserDto>> GetUsersByRoles(List<string> roles);
     }
 }

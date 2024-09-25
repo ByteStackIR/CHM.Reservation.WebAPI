@@ -16,6 +16,7 @@
     using Microsoft.EntityFrameworkCore;
     using System;
     using System.Collections.Generic;
+    using System.Data;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -298,6 +299,33 @@
             await _relativesService.UpdateSelf(dto);
 
             return true;
+        }
+
+        public async Task<List<UserDto>> GetUsersByRoles(List<string> roles)
+        {
+            List<UserDto> Users = new();
+
+            foreach (var role in roles)
+            {
+                var uInRoles = await _userManager.GetUsersInRoleAsync(role);
+
+                foreach (var user in uInRoles)
+                {
+                    Users.Add(new()
+                    {
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Id=Guid.Parse(user.Id),
+                        PhoneNumber = user.PhoneNumber
+                    });
+                }
+
+            }
+
+            return Users;
+
+      
+         
         }
     }
 }

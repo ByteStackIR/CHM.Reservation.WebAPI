@@ -11,11 +11,14 @@ namespace WebAPI.Controllers
         private readonly ICategoryService _categoryService;
         private readonly IParameterService _parameterService;
         private readonly IRelationsService _relationsService;
-        public BaseInfoController(IRelationsService relationsService,ICategoryService categoryService ,IParameterService parameterService)
+        private readonly IUsersService _userService;
+
+        public BaseInfoController(IRelationsService relationsService,ICategoryService categoryService ,IParameterService parameterService, IUsersService usersService)
         {
             _categoryService = categoryService;
             _parameterService = parameterService;
             _relationsService = relationsService;
+            _userService = usersService;
         }
         [HttpGet("[action]")]
         public async Task<IActionResult> GetCategories()
@@ -33,6 +36,15 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> GetParamtersByCategoryId(Guid CategoryId)
         {
             return Ok(await _parameterService.ParametersByCategoryId(CategoryId));
+        }
+
+        //TODO : role checking admin
+        [HttpPost("[action]")]
+        public async Task<IActionResult> GetUsersInRoles(List<string> Roles)
+        {
+            var res = await _userService.GetUsersByRoles(Roles);
+
+            return Ok(res);
         }
 
     }
