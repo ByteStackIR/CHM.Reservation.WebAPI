@@ -25,5 +25,7 @@ namespace Entities.DataTransferObjects.Models
 
         public List<SlotDto> Slots { get; set; } = new List<SlotDto>();
         public List<ParameterValuesDto> ParameterValues { get; set; } = new List<ParameterValuesDto>();
+
+        public List<Guid> EntityManagers { set; get; }
     }
 }
