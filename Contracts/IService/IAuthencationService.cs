@@ -15,5 +15,8 @@ namespace Contracts.IService
         Task<string> CreateToken();
         Task<TokenDto> CreateToken(bool populateExp);
         Task<TokenDto> RefreshToken(TokenDto tokenDto);
+
+        Task<OTPResultDto> GenerateUserOTP(string PhoneNumber);
+        Task<bool> VerifyUserOTP(string PhoneNumber, string code);
     }
 }

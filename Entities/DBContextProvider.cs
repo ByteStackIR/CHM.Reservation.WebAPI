@@ -20,7 +20,7 @@ namespace Entities
            { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-           // modelBuilder.ApplyConfiguration(new DefinitionsConfiguration());
+           modelBuilder.ApplyConfiguration(new DefinitionsConfiguration());
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new RoleConfiguration());
@@ -60,7 +60,7 @@ namespace Entities
         public DbSet<UserCompany> UserCompanies { get; set; }
         public DbSet<ParameterValues> ParameterValues { get; set; }
         public DbSet<Attachments> Attachments { get; set; }
-
+        public DbSet<Definitions> Definitions { get; set; }
     }
 
 

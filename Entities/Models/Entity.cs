@@ -39,6 +39,13 @@ namespace Entities.Models
         [Required]
         [ForeignKey(nameof(User))]
         public string UserId { get; set; }
+
+        [Required]
+        [ForeignKey(nameof(City))]
+        public Guid CityId { get; set; }
+
+        public Definitions City { get; set; }
+
         [DeleteBehavior(DeleteBehavior.NoAction)]
         public User User { get; set; }
 

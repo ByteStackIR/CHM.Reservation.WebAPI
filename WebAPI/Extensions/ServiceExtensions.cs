@@ -16,6 +16,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Reflection;
 using Contracts.IRepository;
 using Repositories;
+using WebAPI.Configuration;
 
 namespace WebAPI.Extensions
 {
@@ -175,18 +176,33 @@ namespace WebAPI.Extensions
 
         public static void ConfigureIdentity(this IServiceCollection services)
         {
-            var builder = services.AddIdentity<User, IdentityRole>(o =>
-            {
-                o.Password.RequireDigit = true;
-                o.Password.RequireLowercase = false;
-                o.Password.RequireUppercase = false;
-                o.Password.RequireNonAlphanumeric = false;
-                o.Password.RequiredLength = 3;
-                o.User.RequireUniqueEmail = false;
-                ;
+            var builder = services
+                  .AddIdentity<User, IdentityRole>(o =>
+                  {
+                      o.Password.RequireDigit = true;
+                      o.Password.RequireLowercase = false;
+                      o.Password.RequireUppercase = false;
+                      o.Password.RequireNonAlphanumeric = false;
+                      o.Password.RequiredLength = 3;
+                      o.User.RequireUniqueEmail = false;
+                      o.Lockout.AllowedForNewUsers = true;
 
-            }).AddEntityFrameworkStores<DBContextProvider>()
-            .AddDefaultTokenProviders();
+                      o.Lockout.MaxFailedAccessAttempts = 10;
+                      o.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+
+                      o.Tokens.ProviderMap.Add(
+                          "CustomSMSConfirmation",
+                          new TokenProviderDescriptor(
+                              typeof(CustomSMSCodeConfirmationTokenProvider)
+                          )
+                      );
+                      o.Tokens.ChangePhoneNumberTokenProvider = "CustomSMSConfirmation";
+
+                  })
+                  .AddEntityFrameworkStores<DBContextProvider>()
+                  .AddDefaultTokenProviders();
+
+            builder.Services.AddTransient<CustomSMSCodeConfirmationTokenProvider>();
 
         }
 

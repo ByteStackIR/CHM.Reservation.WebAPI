@@ -17,6 +17,7 @@ namespace Repositories
         private readonly DBContextProvider _context;
 
         private readonly Lazy<ITransactionRepository> _ITransactionRepository;
+        private readonly Lazy<IDefinitionsRepository> _IDefinitionsRepository;
 
         private readonly Lazy<ICategoryRepository> _categoryRepository;
         private readonly Lazy<ICompanyRepository> _companyRepository;
@@ -53,7 +54,8 @@ namespace Repositories
             _parameterRepository = new Lazy<IParameterRepository>(() => new ParameterRepository(context));
             _parameterValuesRepository = new Lazy<IParameterValuesRepository>(() => new ParameterValuesRepository(context));
             _periodRepository = new Lazy<IPeriodRepository>(() => new PeriodRepository(context));
-  
+            _IDefinitionsRepository = new Lazy<IDefinitionsRepository>(() => new DefinitionsRepository(_context));
+
             _relationRepository = new Lazy<IRelationRepository>(() => new RelationRepository(context));
             _relativesRepository = new Lazy<IRelativesRepository>(() => new RelativesRepository(context));
             _reservationRepository = new Lazy<IReservationRepository>(() => new ReservationRepository(context));
@@ -68,6 +70,7 @@ namespace Repositories
         }
 
         public ITransactionRepository ITransactionRepository => _ITransactionRepository.Value;
+        public IDefinitionsRepository IDefinitionsRepository => _IDefinitionsRepository.Value;
 
         public ICategoryRepository Category => _categoryRepository.Value;
         public ICompanyRepository Company => _companyRepository.Value;

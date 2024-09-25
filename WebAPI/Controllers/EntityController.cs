@@ -41,6 +41,7 @@ namespace WebAPI.Controllers
             try
             {
                 var result = await _entityService.GetEntityByIdAsync(entityId);
+               
                 if (result is not null)
                 {
                     return Ok(result);
@@ -82,6 +83,49 @@ namespace WebAPI.Controllers
             }
         }
 
+        [HttpPost("[action]")]
+        public async Task<IActionResult> GetEntities(AdminEntitiesTableRequest request)
+        {
+            try
+            {
+                var result = await _entityService.GetPagedEntities(request);
+                if (result is not null)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
+        [HttpPut("[action]")]
+        public async Task<IActionResult> UpdateEntity(EntityDto request)
+        {
+            try
+            {
+                var result = await _entityService.UpdateEntityAsync(request);
+                if (result is not null)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         /// <summary>
         /// برای ساخت یک موجودیت جدید(هتل، تور) از این اندپوینت استفاده می‌شود
         /// </summary>
@@ -107,8 +151,8 @@ namespace WebAPI.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("[action]")]
-        public async Task<IActionResult> DeleteEntity(Guid entityId)
+        [HttpDelete("[action]")]
+        public async Task<IActionResult> DeleteEntity([FromBody] Guid entityId)
         {
             try
             {

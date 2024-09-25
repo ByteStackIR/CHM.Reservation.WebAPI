@@ -36,6 +36,38 @@ namespace WebAPI.Controllers
             return Ok(tokenDto);
         }
 
+        [HttpPost("LoginByOTP")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> LoginByOTP([FromBody] UserForAuthenticationDto user)
+        {
+            var res = await _Authenticationservice.GenerateUserOTP(user.PhoneNumber);
+
+
+            // var tokenDto = await _Authenticationservice.CreateToken(populateExp: true);
+            return Ok(res);
+        }
+
+
+        [HttpPost("VerifyLoginOTP")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> VerifyLoginOTP([FromBody] UserForAuthenticationDto user)
+        {
+            if (user.PhoneNumber is null)
+                throw new ArgumentNullException(nameof(user.PhoneNumber) + "");
+
+            var result = await _Authenticationservice.VerifyUserOTP(user.PhoneNumber, user.code);
+
+            if (result)
+            {
+                var tokenDto = await _Authenticationservice.CreateToken(populateExp: true);
+
+
+                return Ok(tokenDto);
+            }
+
+            return Unauthorized();
+        }
+
 
         [HttpPost("refresh")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
