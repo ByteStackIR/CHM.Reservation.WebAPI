@@ -59,6 +59,34 @@ namespace WebAPI.Controllers
         }
 
         /// <summary>
+        /// گرفتن یک موجودیت خاص از طریق این اندپوینت انجام میشود. -- برای عموم 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetSpecifiedEntity(Guid entityId)
+        {
+            try
+            {
+                var result = await _entityService.GetSpecifiedEntityAsync(entityId);
+
+                if (result is not null)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
+        /// <summary>
         /// گرفتن تمام موجودیت هایی که در زمان حال فعال هستند به صورت صفحه بندی شده
         /// </summary>
         /// <param name="request"></param>

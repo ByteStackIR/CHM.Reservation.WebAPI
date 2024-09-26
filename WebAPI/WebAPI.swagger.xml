@@ -32,6 +32,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:WebAPI.Controllers.EntityController.GetSpecifiedEntity(System.Guid)">
+            <summary>
+            گرفتن یک موجودیت خاص از طریق این اندپوینت انجام میشود. -- برای عموم 
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:WebAPI.Controllers.EntityController.GetPagedCurrentEntities(Features.CustomRequest.PublicEntitiesTableRequest)">
             <summary>
             گرفتن تمام موجودیت هایی که در زمان حال فعال هستند به صورت صفحه بندی شده
