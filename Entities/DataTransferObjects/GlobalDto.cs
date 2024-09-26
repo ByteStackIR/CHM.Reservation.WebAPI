@@ -1,4 +1,5 @@
-﻿using Entities.DataTransferObjects.Models;
+﻿using Entities.DataTransferObjects.Internal;
+using Entities.DataTransferObjects.Models;
 using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -72,7 +73,33 @@ namespace Entities.DataTransferObjects
         public Guid SlotId { get; set; }
         public List<Guid> Relatives { get; set; }
 
-        
+
+
+    }
+
+    public class TemporaryReservationBillDto
+    {
+        public Guid SlotId { get; set; }
+        public string UserId { get; set; }
+        public Decimal Amount { get; set; }
+        public Decimal BillAmount { get; set; }
+        public Guid? ObjectStateId { get; set; }
+
+        public Guid CategoryId { get; set; }
+        public Guid EntityId { get; set; }
+        public DateTime CreatedDate { get; set; }
+
+        public List<TemporaryShareDto> Shares { get; set; }
+
+
+    }
+
+    public class TemporaryShareDto
+    {
+        public RelativeDto Relative { get; set; }
+        public Decimal CompanyShare { get; set; }
+        public Decimal UserShare { get; set; }
+
 
     }
 

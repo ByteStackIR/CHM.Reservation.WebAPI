@@ -36,8 +36,8 @@ namespace Entities.Models
         
 
 
-        public Slot Slot { get; set; } = new Slot();
-        public User User { get; set; } = new User();
+        public Slot Slot { get; set; } 
+        public User User { get; set; } 
 
         [Required]
         [ForeignKey(nameof(ObjectState))]

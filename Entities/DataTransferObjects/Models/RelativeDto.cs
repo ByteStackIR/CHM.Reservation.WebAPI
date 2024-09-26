@@ -32,4 +32,24 @@ namespace Entities.DataTransferObjects.Models
     
     
     }
+
+    public class RelativeOfUserDto
+    {
+        public Guid Id { get; set; }
+        public Guid RelationId { get; set; }
+        public string RelationTitle { get; set; }
+
+        public string IdentityCode { get; set; }
+        public DateTime BirthDate { get; set; }
+        public string FirstName { get; set; }
+        public string FamilyName { get; set; }
+        public GenderType Gender { get; set; }
+
+        [NotMapped]
+        public string GenderTitle { get; set; }
+        public string UserId { get; set; }
+
+
+
+    }
 }

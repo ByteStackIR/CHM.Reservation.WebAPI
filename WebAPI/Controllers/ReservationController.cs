@@ -1,9 +1,13 @@
 ﻿using Contracts.IService;
+using Entities.DataTransferObjects;
 using Features.CustomRequest;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Services.Services;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
 
 namespace WebAPI.Controllers
 {
@@ -98,5 +102,35 @@ namespace WebAPI.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> AddTemporaryReservation(ReservationCreationDto dto)
+        {
+            var res = await _reservationService.AddReservation(dto);
+            return Ok(res);
+        }
+
+
+        [Authorize]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> GetTemporaryReservation()
+        {
+            var res = await _reservationService.GetTemporaryReservation(Guid.Parse(base.User.FindFirstValue(ClaimTypes.NameIdentifier)));
+            return Ok(res);
+        }
+
+        [Authorize]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> FinalizeReservation([FromBody] test dto)
+        {
+            var res = await _reservationService.FinalizeReservation(dto.TempoReservationId);
+            return Ok(res);
+        }
+
+    }
+
+    public class test
+    {
+        public Guid TempoReservationId { get; set; }
     }
 }

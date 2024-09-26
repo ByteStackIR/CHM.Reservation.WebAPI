@@ -14,7 +14,7 @@ namespace Contracts.IService
     {
         Task<List<RelativeDto>> GetbyUserId(Guid UserId);
         Task<RelativeDto> GetById(Guid Id);
-        Task<List<RelativeDto>> GetConfirmedRelatives(Guid UserId);
+        Task<List<RelativeOfUserDto>> GetConfirmedRelatives(Guid UserId);
         Task<PagedData<List<UserRelativesDto>>> GetNotCheckedRelativesAsAdmin(ListNotCheckedRelativesRequest request);
         Task<PagedData<List<UserRelativesDto>>> GetNotCheckedRelativesAsCompany(ListNotCheckedRelativesRequest request);
 

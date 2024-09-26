@@ -21,7 +21,7 @@ namespace Contracts.IService
         );
         Task<External_TempReservationDto> AddReservation(ReservationCreationDto dto);
         Task<bool> FinalizeReservation(Guid Id);
-
+        Task<External_TempReservationDto> GetTemporaryReservation(Guid UserId);
         //cartable services
         Task<PagedData<List<ReservationDto>>> GetPagedReservationsOfUserAsync(ReservationRequest_User request);
         Task<PagedData<List<ReservationDto>>> GetPagedReservationsOfHotelAsync(ReservationRequest_Hotel request);

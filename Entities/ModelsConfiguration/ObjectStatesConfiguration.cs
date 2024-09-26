@@ -118,7 +118,7 @@
                 {
                     Id = Guid.Parse("99cf7da7-838f-4899-bc2f-5f9fe137bdb2"),
                     Cancellable = false,
-                    CategoryId = Guid.Parse("bd97c448-da11-4553-93e3-cac2976eb64f"),
+                    CategoryId = Guid.Parse("cd97c448-da11-4553-93e3-cac2976eb64f"),
                     Code = 1,
                     Title = "در انتظار تایید حضور",
                     CreatedDate = DateTime.Now,
@@ -133,7 +133,7 @@
                 {
                     Id = Guid.Parse("99cf7da7-838f-4899-bc2f-5f9fe137bdb3"),
                     Cancellable = false,
-                    CategoryId = Guid.Parse("bd97c448-da11-4553-93e3-cac2976eb64f"),
+                    CategoryId = Guid.Parse("cd97c448-da11-4553-93e3-cac2976eb64f"),
                     Code = 2,
                     Title = "حضور تایید شد!",
                     CreatedDate = DateTime.Now,
@@ -146,7 +146,7 @@
                 {
                     Id = Guid.Parse("99cf7da7-838f-4899-bc2f-5f9fe137bdb4"),
                     Cancellable = false,
-                    CategoryId = Guid.Parse("bd97c448-da11-4553-93e3-cac2976eb64f"),
+                    CategoryId = Guid.Parse("cd97c448-da11-4553-93e3-cac2976eb64f"),
                     Code = 3,
                     Title = "عدم حضور",
                     CreatedDate = DateTime.Now,

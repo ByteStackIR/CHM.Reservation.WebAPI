@@ -21,9 +21,11 @@ namespace Entities.DataTransferObjects
         public Guid Id { get; set; }
         public string Title { get; set; }
         public CategoryDto Category { get; set; }
-
+        public int minAge { get; set; }
         public List<AttributeOfEntity> Attributes { get; set; }
-
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public Decimal PerPerson { get; set; }
         public List<SlotDto> Slots { get; set; }
     }
 }

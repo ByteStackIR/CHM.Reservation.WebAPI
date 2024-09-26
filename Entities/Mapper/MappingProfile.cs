@@ -76,6 +76,8 @@ namespace Entities.Mapper
 
             CreateMap<Relation, RelationDto>().ReverseMap();
             CreateMap<RelativeDto, Relatives>().ReverseMap();
+            CreateMap<Relatives, RelativeOfUserDto>().ForMember(dst=>dst.RelationTitle,opt=>opt.MapFrom(src=>src.Relation.Title));
+            ConfigureInternalToExternal();
 
             //  CreateMap<EmployeeModel, EmployeeDto>().ReverseMap();
             // CreateMap<EmployeeModel,EmployeeForCreationDto>().ReverseMap();
@@ -119,6 +121,12 @@ namespace Entities.Mapper
             CreateMap<Definitions, DefinitionsDto>().ReverseMap();
         }
 
+
+        public void ConfigureInternalToExternal()
+        {
+            CreateMap<Internal_ReservationDto, TemporaryReservationBillDto>();
+            CreateMap<TemporaryShareDto,Internal_ShareDto>().ReverseMap();
+        }
     }
 
 }

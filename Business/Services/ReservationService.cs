@@ -20,6 +20,7 @@ using LoggerService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
+using NLog.Filters;
 
 namespace Services.Services
 {
@@ -28,8 +29,9 @@ namespace Services.Services
         private ISlotService _slotService;
         private IObjectStateService _ObjectStateService;
         private IRelationsService _relationsService;
-        private IUserTransactionService _userTxService ;
+        private IUserTransactionService _userTxService;
         private ICouponTransactionService _couponTxService;
+
         public ReservationService(
             IMapper mapper,
             ILoggerManager logger,
@@ -38,9 +40,9 @@ namespace Services.Services
             ISystemContext systemContext,
             ISlotService slotService,
             IObjectStateService ObjectStateService,
-             IRelationsService RelationsService,
-             IUserTransactionService userTx,
-             ICouponTransactionService couponTx
+            IRelationsService RelationsService,
+            IUserTransactionService userTx,
+            ICouponTransactionService couponTx
         )
             : base(repoManger, mapper, httpContextAccessor, systemContext, logger)
         {
@@ -77,7 +79,7 @@ namespace Services.Services
             if (
                 relatives
                     .Where(x => x.UserId == _systemContext.CurrentUser.GetUserId().ToString())
-                    .Count() == dto.Relatives.Count
+                    .Count() != dto.Relatives.Count
             )
                 throw new Exception($"There are invalid relatives!");
 
@@ -104,41 +106,51 @@ namespace Services.Services
             Internal_ReservationDto dto
         )
         {
-            dto.Id = Guid.NewGuid();
-
-            List<SelectedRelatives> selectedRelatives = new List<SelectedRelatives>();
-
-            foreach (var Share in dto.Shares)
+            try
             {
-                SelectedRelatives Person =
-                    new()
-                    {
-                        Id = Guid.NewGuid(),
-                        RelativeId = Share.Relative.Id,
-                        ReservationId = dto.Id.Value,
-                        CreatedDate = DateTime.Now,
-                    };
+                dto.Id = Guid.NewGuid();
 
-                selectedRelatives.Add(Person);
+                List<SelectedRelatives> selectedRelatives = new List<SelectedRelatives>();
+
+                foreach (var Share in dto.Shares)
+                {
+                    SelectedRelatives Person =
+                        new()
+                        {
+                            Id = Guid.NewGuid(),
+                            RelativeId = Share.Relative.Id,
+                            ReservationId = dto.Id.Value,
+                            CreatedDate = DateTime.Now,
+                        };
+
+                    selectedRelatives.Add(Person);
+                }
+
+                dto.IsFinalized = false;
+                dto.ExpirationDate = DateTime.Now.AddMinutes(15);
+
+                dto.ObjectStateId = (
+                    await _ObjectStateService.GetStartStateByCategoryId(dto.CategoryId)
+                ).Id;
+
+                ReservationDto Intermediate = _mapper.Map<ReservationDto>(dto);
+
+                Reservation model = _mapper.Map<Reservation>(Intermediate);
+
+                model.SelectedRelatives = selectedRelatives;
+                //model.TxCoupons = null;
+                //model.TxUsers = null;
+                //model.ReservationStates = null;
+               
+                _repositoryManager.Reservation.Create(model);
+                _repositoryManager.Reservation.SaveChanges();
+
+                return dto;
             }
-
-            dto.IsFinalized = false;
-            dto.ExpirationDate = DateTime.Now.AddMinutes(15);
-
-            dto.ObjectStateId = (
-                await _ObjectStateService.GetStartStateByCategoryId(dto.CategoryId)
-            ).Id;
-
-            ReservationDto Intermediate = _mapper.Map<ReservationDto>(dto);
-
-            Reservation model = _mapper.Map<Reservation>(Intermediate);
-
-            model.SelectedRelatives = selectedRelatives;
-
-            _repositoryManager.Reservation.Create(model);
-            _repositoryManager.Reservation.SaveChanges();
-
-            return dto;
+            catch (Exception e)
+            {
+                return null;
+            }
         }
 
         public async Task<External_TempReservationDto> AddReservation(ReservationCreationDto dto)
@@ -147,29 +159,31 @@ namespace Services.Services
 
             var res = await CreateTemporaryReservation(interResult);
 
-            External_TempReservationDto result = new()
-            {
-                Amount = interResult.Amount,
-                BillAmount = interResult.BillAmount,
-                ExpirationDate = res.ExpirationDate,
-                Id =res.Id.Value,
-                Relatives = new()
-            };
+            External_TempReservationDto result =
+                new()
+                {
+                    Amount = interResult.Amount,
+                    BillAmount = interResult.BillAmount,
+                    ExpirationDate = res.ExpirationDate,
+                    Id = res.Id.Value,
+                    Relatives = new(),
+                };
 
             var AllRelations = await _relationsService.GetRelations();
             interResult.Shares.ForEach(share =>
             {
-
-                
-                result.Relatives.Add(new()
-                {
-                    Amount = share.CompanyShare+share.UserShare,
-                    BillAmount = share.UserShare,
-                    FirstName = share.Relative.FirstName,
-                    LastName =share.Relative.FamilyName,
-                    RelationTitle = AllRelations.FirstOrDefault(x=>x.Id== share.Relative.RelationId).Title 
-                });
-
+                result.Relatives.Add(
+                    new()
+                    {
+                        Amount = share.CompanyShare + share.UserShare,
+                        BillAmount = share.UserShare,
+                        FirstName = share.Relative.FirstName,
+                        LastName = share.Relative.FamilyName,
+                        RelationTitle = AllRelations
+                            .FirstOrDefault(x => x.Id == share.Relative.RelationId)
+                            .Title,
+                    }
+                );
             });
 
             return result;
@@ -177,14 +191,12 @@ namespace Services.Services
 
         public async Task<bool> FinalizeReservation(Guid Id)
         {
-
-            var ReservationModel =await _repositoryManager.Reservation.GetByIdAsync(Id);
+            var ReservationModel = await _repositoryManager.Reservation.GetByIdAsync(Id);
 
             if (ReservationModel == null)
                 throw new Exception("Not found");
 
-
-            if(ReservationModel.UserId != _systemContext.CurrentUser.GetUserId().Value.ToString())
+            if (ReservationModel.UserId != _systemContext.CurrentUser.GetUserId().Value.ToString())
                 throw new Exception("is not yours");
 
             if (ReservationModel.IsFinalized)
@@ -197,72 +209,124 @@ namespace Services.Services
                 throw new Exception("has expired");
             }
 
-
-
             ReservationModel.IsFinalized = true;
 
             ReservationModel.ReservationStates = new List<ReservationStates>();
-            ReservationModel.ReservationStates.Add(new ReservationStates()
-            {
-                ObjectStateId = ReservationModel.ObjectStateId,
-                IsDone = true,
-                CreatorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
-                ActorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
-                CreatedDate = DateTime.Now,
-                ToForward = true,
-                ReservationId = ReservationModel.Id,
-                Id = Guid.NewGuid(),
-                IsCancelled = false,
-               
-            });
+            ReservationModel.ReservationStates.Add(
+                new ReservationStates()
+                {
+                    ObjectStateId = ReservationModel.ObjectStateId,
+                    IsDone = true,
+                    CreatorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                    ActorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                    CreatedDate = DateTime.Now,
+                    ToForward = true,
+                    ReservationId = ReservationModel.Id,
+                    Id = Guid.NewGuid(),
+                    IsCancelled = false,
+                }
+            );
 
-            var NextState = await _ObjectStateService.GetNextStateByState(await _ObjectStateService.GetStateById(ReservationModel.ObjectStateId));
+            var NextState = await _ObjectStateService.GetNextStateByState(
+                await _ObjectStateService.GetStateById(ReservationModel.ObjectStateId)
+            );
 
-            ReservationModel.ReservationStates.Add(new ReservationStates()
-            {
-                ObjectStateId = NextState.Id,
-                IsDone = false,
-                CreatorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
-                CreatedDate = DateTime.Now,
-                ToForward = true,
-                ReservationId = ReservationModel.Id,
-                Id = Guid.NewGuid(),
-                IsCancelled = false,
-
-            });
-
+            ReservationModel.ReservationStates.Add(
+                new ReservationStates()
+                {
+                    ObjectStateId = NextState.Id,
+                    IsDone = false,
+                    CreatorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                    CreatedDate = DateTime.Now,
+                    ToForward = true,
+                    ReservationId = ReservationModel.Id,
+                    Id = Guid.NewGuid(),
+                    IsCancelled = false,
+                }
+            );
 
             ReservationModel.ObjectStateId = NextState.Id;
 
+            await _couponTxService.AddTransaction(
+                new()
+                {
+                    Amount = ReservationModel.Amount - ReservationModel.BillAmount,
+                    CreatedDate = DateTime.Now,
+                    Id = Guid.NewGuid(),
+                    PeriodId = _systemContext.Period.Id,
+                    ReservationId = ReservationModel.Id,
+                    UserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                }
+            );
 
-            await _couponTxService.AddTransaction(new()
-            {
-                Amount = ReservationModel.Amount - ReservationModel.BillAmount,
-                CreatedDate = DateTime.Now,
-                Id = Guid.NewGuid(),
-                PeriodId = _systemContext.Period.Id,
-                ReservationId = ReservationModel.Id,
-                UserId = _systemContext.CurrentUser.GetUserId().Value.ToString()
-            });
-
-
-            await _couponTxService.AddTransaction(new()
-            {
-                Amount =  ReservationModel.BillAmount,
-                CreatedDate = DateTime.Now,
-                Id = Guid.NewGuid(),
-                PeriodId = _systemContext.Period.Id,
-                ReservationId = ReservationModel.Id,
-                UserId = _systemContext.CurrentUser.GetUserId().Value.ToString()
-            });
+            await _couponTxService.AddTransaction(
+                new()
+                {
+                    Amount = ReservationModel.BillAmount,
+                    CreatedDate = DateTime.Now,
+                    Id = Guid.NewGuid(),
+                    PeriodId = _systemContext.Period.Id,
+                    ReservationId = ReservationModel.Id,
+                    UserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                }
+            );
             _repositoryManager.Reservation.Update(ReservationModel);
             _repositoryManager.Save();
 
-
-
             return true;
+        }
+
+        public async Task<External_TempReservationDto> GetTemporaryReservation(Guid UserId)
+        {
+            var tempoReservation = await _repositoryManager
+                .Reservation.FindByCondition(
+                    x =>
+                        x.UserId == UserId.ToString()
+                        && x.IsFinalized == false
+                        && x.ExpirationDate > DateTime.Now,
+                    false
+                )
+                .Include(x => x.SelectedRelatives)
+                .ThenInclude(x => x.Relative)
+                .Include(x => x.Slot.Entity)
+                .FirstOrDefaultAsync();
+
+            External_TempReservationDto result =
+                new()
+                {
+                    Amount = tempoReservation.Amount,
+                    BillAmount = tempoReservation.BillAmount,
+                    ExpirationDate = tempoReservation.ExpirationDate,
+                    Id = tempoReservation.Id,
+                    Relatives = new(),
+                };
+
+            var Shares = await CalculateShares(
+                _mapper.Map<List<RelativeDto>>(
+                    tempoReservation.SelectedRelatives.Select(x => x.Relative).ToList()
+                ),
+                _mapper.Map<EntityDto>(tempoReservation.Slot.Entity)
+            );
+
+            var AllRelations = await _relationsService.GetRelations();
+            Shares.ForEach(share =>
+            {
+                result.Relatives.Add(
+                    new()
+                    {
+                        Amount = share.CompanyShare + share.UserShare,
+                        BillAmount = share.UserShare,
+                        FirstName = share.Relative.FirstName,
+                        LastName = share.Relative.FamilyName,
+                        RelationTitle = AllRelations
+                            .FirstOrDefault(x => x.Id == share.Relative.RelationId)
+                            .Title,
+                    }
+                );
+            });
 
 
+            return result;
         }
 
         public async Task<Internal_ShareDto> CalculateShare(RelativeDto Relative, EntityDto Entity)
@@ -305,13 +369,13 @@ namespace Services.Services
             {
                 var share = Shares.FirstOrDefault(x => x.RelationId == x.RelationId);
 
-                Decimal CompanyShare = Entity.PersonShare * share.Entitlement / 100;
+                Decimal CompanyShare = Entity.PerPerson * share.Entitlement / 100;
 
                 res.Add(
                     new()
                     {
                         CompanyShare = CompanyShare,
-                        UserShare = Entity.PersonShare - CompanyShare,
+                        UserShare = Entity.PerPerson - CompanyShare,
                         CouponShareId = share.Id,
                         Relative = Relative,
                     }
@@ -321,10 +385,14 @@ namespace Services.Services
             return res;
         }
 
-        public async Task<PagedData<List<ReservationDto>>> GetPagedReservationsOfUserAsync(ReservationRequest_User request)
+        public async Task<PagedData<List<ReservationDto>>> GetPagedReservationsOfUserAsync(
+            ReservationRequest_User request
+        )
         {
             var currentUser = _systemContext.CurrentUser.GetUserId().Value.ToString();
-            var query = _repositoryManager.Reservation.FindByCondition(r => r.UserId == currentUser, false).Include(r => r.Slot);
+            var query = _repositoryManager
+                .Reservation.FindByCondition(r => r.UserId == currentUser, false)
+                .Include(r => r.Slot);
             var count = await query.CountAsync();
             var data = await query.GetPage(request).ToListAsync();
             var dataDto = _mapper.Map<List<ReservationDto>>(data);
@@ -332,10 +400,12 @@ namespace Services.Services
             return new(new(count, request.PageNumber, request.PageSize), dataDto);
         }
 
-
-        public async Task<PagedData<List<ReservationDto>>> GetPagedReservationsOfHotelAsync(ReservationRequest_Hotel request)
+        public async Task<PagedData<List<ReservationDto>>> GetPagedReservationsOfHotelAsync(
+            ReservationRequest_Hotel request
+        )
         {
-            var query = _repositoryManager.Reservation.FindByCondition(r => r.Slot.EntityId == request.EntityId, false)
+            var query = _repositoryManager
+                .Reservation.FindByCondition(r => r.Slot.EntityId == request.EntityId, false)
                 .Include(r => r.Slot)
                 .Include(r => r.ReservationStates);
 
@@ -343,15 +413,22 @@ namespace Services.Services
             var data = await query.GetPage(request).ToListAsync();
             var dataDto = _mapper.Map<List<ReservationDto>>(data);
             return new(new(count, request.PageNumber, request.PageSize), dataDto);
-
         }
-        public async Task<PagedData<List<ReservationDto>>> GetPagedReservationOfExecutiveAsync(ReservationRequest_Executive request)
+
+        public async Task<PagedData<List<ReservationDto>>> GetPagedReservationOfExecutiveAsync(
+            ReservationRequest_Executive request
+        )
         {
             var currentUser = _systemContext.CurrentUser.GetUserId().Value.ToString();
-            var query = _repositoryManager.Reservation.FindByCondition(r => _repositoryManager.EntityManager.FindByCondition(
-                    em => em.UserId == currentUser,false)
-                    .Select(em => em.EntityId)
-                    .Contains(r.Slot.EntityId),false)
+            var query = _repositoryManager
+                .Reservation.FindByCondition(
+                    r =>
+                        _repositoryManager
+                            .EntityManager.FindByCondition(em => em.UserId == currentUser, false)
+                            .Select(em => em.EntityId)
+                            .Contains(r.Slot.EntityId),
+                    false
+                )
                 .Include(r => r.Slot);
 
             var count = await query.CountAsync();

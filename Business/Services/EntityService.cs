@@ -89,11 +89,16 @@ namespace Services.Services
             EntityDataDto res =
                 new()
                 {
+                    minAge = (int)data.MinAge,
                     Id = data.Id,
                     Title = data.Title,
                     Slots = SLots,
                     Category = _mapper.Map<CategoryDto>(data.Category),
                     Attributes = new(),
+                    StartDate = data.StartDate,
+                    EndDate = data.EndDate,
+                    PerPerson = data.PerPerson,
+                    
                 };
 
             foreach (var item in data.ParameterValues)
