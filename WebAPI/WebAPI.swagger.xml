@@ -4,6 +4,20 @@
         <name>WebAPI</name>
     </assembly>
     <members>
+        <member name="M:WebAPI.Controllers.BaseInfoController.GetCompaniesAsync(Features.CustomRequest.CompanyRequest)">
+            <summary>
+            گرفتن تمام شرکت ها به صورت صفحه بندی شده
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WebAPI.Controllers.DefinitionsController.GetDefinitions(System.Guid)">
+            <summary>
+            گرفتن لیست دفینیشن ها مثل شهر ها و ... 
+            </summary>
+            <param name="parentId"></param>
+            <returns></returns>
+        </member>
         <member name="M:WebAPI.Controllers.EntityController.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Contracts.IService.IEntityService)">
             <summary>
             Constructor of EntityController
