@@ -14,4 +14,13 @@ namespace Entities.Constant
         public const string Operator = "dbd0d55e-6c75-45fa-9f33-303f06fb336d";
         public const string System = "53b7cc09-9eed-4d77-9f3c-fb92dfcb40e9";
     }
+
+    public static class RolesNamesConstant
+    {
+        public const string Administrator = "ADMINISTRATOR";
+        public const string User = "USER";
+        public const string Manager = "OPERATOR";
+        public const string Operator = "MANAGER";
+        public const string System = "SYSTEM";
+    }
 }

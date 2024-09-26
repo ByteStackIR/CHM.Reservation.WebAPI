@@ -1,6 +1,7 @@
 ﻿namespace WebAPI.Controllers
 {
     using Contracts.IService;
+    using Entities.Constant;
     using Entities.DataTransferObjects;
     using Features.CustomRequest;
     using Microsoft.AspNetCore.Authorization;
@@ -9,7 +10,7 @@
 
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "ADMINISTRATOR,MANAGER")]
+    [Authorize(Roles = $"{RolesNamesConstant.Administrator},{RolesNamesConstant.Manager}")]
     public class UsersController : ControllerBase
     {
         private readonly IUsersService _UserService;
@@ -32,7 +33,7 @@
 
         [HttpPost("[action]")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        [Authorize(Roles = "ADMINISTRATOR")]
+        [Authorize(Roles = RolesNamesConstant.Administrator)]
         public async Task<IActionResult> RegisterUser(
             [FromBody] UserForRegistrationDto userForRegistration
         )
@@ -61,7 +62,7 @@
         [HttpPut("[action]")]
         public async Task<IActionResult> UpdateUserAsAdmin([FromBody] UserUpdateDto dto)
         {
-            if (base.User.IsInRole("ADMINISTATOR"))
+            if (base.User.IsInRole(RolesNamesConstant.Administrator))
                 await _UserService.UpdateUserAsAdmin(dto);
             else
                 await _UserService.UpdateUserAsCompany(dto);
