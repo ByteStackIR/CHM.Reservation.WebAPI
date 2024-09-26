@@ -35,6 +35,7 @@ namespace Services.Services
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IRepositoryManager _repositoryManager;
         private readonly SignInManager<User> _signInManager;
         private User? _user;
         private ILoggerManager _logger;
@@ -45,6 +46,7 @@ namespace Services.Services
             _logger = logger;
             _userManager = userManager; _configuration = configuration;
             _roleManager = roleManager;
+            _repositoryManager = repositoryManager;
             Settings = _settings;
             _signInManager = signInManager;
             _mapper = mapper;
@@ -159,7 +161,7 @@ namespace Services.Services
         }
 
 
-        public async Task<OTPResultDto> GenerateUserOTP(string PhoneNumber)
+        public async Task<OTPResultDto> GenerateUserOTP(string PhoneNumber, string identityCode)
         {
 
             _user = await _userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber == PhoneNumber);
@@ -169,6 +171,22 @@ namespace Services.Services
             if (!(await _signInManager.CanSignInAsync(_user)) || (await _userManager.IsLockedOutAsync(_user)))
             {
                 throw new Exception(_user.LockoutEnd.HasValue ? _user.LockoutEnd.ToString() : "" + " LOCKOUT_USER");
+            }
+
+            // getting the relative record of user with identity code
+            var relativeRecord = await _repositoryManager.Relatives.FindByCondition(r => r.UserId == _user.Id && r.IdentityCode == identityCode, false).FirstOrDefaultAsync();
+
+            if (relativeRecord == null)
+            {
+                throw new Exception("IDENTITY_CODE_NOT_FOUND");
+            }
+
+            // check if its type is SELF
+            var relation = await _repositoryManager.Relation.FindByCondition(rel => rel.Id == relativeRecord.RelationId && rel.Type == (int)RelationType.SELF, false).FirstOrDefaultAsync();
+
+            if (relation == null)
+            {
+                throw new Exception("NOT_SELF_RELATION");
             }
 
             var code = await _userManager.GenerateUserTokenAsync(_user, "CustomSMSConfirmation", "passwordless-auth");
