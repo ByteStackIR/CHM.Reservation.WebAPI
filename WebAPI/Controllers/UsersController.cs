@@ -3,11 +3,13 @@
     using Contracts.IService;
     using Entities.DataTransferObjects;
     using Features.CustomRequest;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using WebAPI.ActionFilters;
 
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "ADMINISTRATOR,MANAGER")]
     public class UsersController : ControllerBase
     {
         private readonly IUsersService _UserService;
@@ -21,9 +23,7 @@
 
         [HttpPost("[action]")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> GetAllUsersAsAdmin(
-            [FromBody] AdminUsersTableRequest request
-        )
+        public async Task<IActionResult> GetAllUsers([FromBody] AdminUsersTableRequest request)
         {
             var users = await _UserService.GetAllUsersAsAdmin(request);
 
@@ -32,17 +32,7 @@
 
         [HttpPost("[action]")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> GetAllUsersAsCompany(
-            [FromBody] AdminUsersTableRequest request
-        )
-        {
-            var users = await _UserService.GetAllUsersAsAdmin(request);
-
-            return Ok(users);
-        }
-
-        [HttpPost("[action]")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [Authorize(Roles = "ADMINISTRATOR")]
         public async Task<IActionResult> RegisterUser(
             [FromBody] UserForRegistrationDto userForRegistration
         )
@@ -71,14 +61,11 @@
         [HttpPut("[action]")]
         public async Task<IActionResult> UpdateUserAsAdmin([FromBody] UserUpdateDto dto)
         {
-            await _UserService.UpdateUserAsAdmin(dto);
-            return NoContent();
-        }
+            if (base.User.IsInRole("ADMINISTATOR"))
+                await _UserService.UpdateUserAsAdmin(dto);
+            else
+                await _UserService.UpdateUserAsCompany(dto);
 
-        [HttpPut("[action]")]
-        public async Task<IActionResult> UpdateUserAsCompany([FromBody] UserUpdateDto dto)
-        {
-            await _UserService.UpdateUserAsCompany(dto);
             return NoContent();
         }
     }
