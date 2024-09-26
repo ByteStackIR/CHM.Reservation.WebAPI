@@ -174,7 +174,8 @@ namespace Services.Services
             }
 
             // getting the relative record of user with identity code
-            var relativeRecord = await _repositoryManager.Relatives.FindByCondition(r => r.UserId == _user.Id && r.IdentityCode == identityCode, false).FirstOrDefaultAsync();
+            var relativeRecord = await _repositoryManager.Relatives.FindByCondition(r => r.UserId == _user.Id && r.IdentityCode == identityCode, false)
+                .FirstOrDefaultAsync();
 
             if (relativeRecord == null)
             {
@@ -182,7 +183,8 @@ namespace Services.Services
             }
 
             // check if its type is SELF
-            var relation = await _repositoryManager.Relation.FindByCondition(rel => rel.Id == relativeRecord.RelationId && rel.Type == (int)RelationType.SELF, false).FirstOrDefaultAsync();
+            var relation = await _repositoryManager.Relation.FindByCondition(rel => rel.Id == relativeRecord.RelationId && rel.Type == (int)RelationType.SELF, false)
+                .FirstOrDefaultAsync(); 
 
             if (relation == null)
             {
