@@ -40,7 +40,7 @@ namespace WebAPI.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> LoginByOTP([FromBody] UserForAuthenticationDto user)
         {
-            var res = await _Authenticationservice.GenerateUserOTP(user.PhoneNumber);
+            var res = await _Authenticationservice.GenerateUserOTP(user.PhoneNumber, user.IdentityCode);
 
 
             // var tokenDto = await _Authenticationservice.CreateToken(populateExp: true);
