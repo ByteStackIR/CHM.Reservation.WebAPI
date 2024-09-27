@@ -86,7 +86,7 @@ namespace Services.Services
             var query = _repositoryManager
                 .Entity.FindByCondition(e => e.Id == EntityId, false)
                 .Include(e => e.Category)
-                .Include(e => e.ParameterValues)
+                .Include(e => e.ParameterValues.OrderBy(x=>x.DisplayOrder))
                 .ThenInclude(x => x.Parameter)
                 .Include(e => e.Slots)
                 .ThenInclude(x => x.Reservations.Where(x => TrueReservation(x)))
@@ -205,7 +205,7 @@ namespace Services.Services
             {
                 var entity = await _repositoryManager
                     .Entity.FindByCondition(x => x.Id == entityId, false)
-                    .Include(x => x.ParameterValues)
+                    .Include(x => x.ParameterValues.OrderBy(x => x.DisplayOrder))
                     .ThenInclude(x => x.Parameter)
                     .Include(x => x.Slots)
                     .FirstOrDefaultAsync();
