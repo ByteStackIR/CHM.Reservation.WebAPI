@@ -10,7 +10,7 @@
 
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RolesNamesConstant.Administrator},{RolesNamesConstant.Manager}")]
+   // [Authorize(Roles = $"{RolesNamesConstant.Administrator},{RolesNamesConstant.Manager}")]
     public class UsersController : ControllerBase
     {
         private readonly IUsersService _UserService;
@@ -33,7 +33,7 @@
 
         [HttpPost("[action]")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        [Authorize(Roles = RolesNamesConstant.Administrator)]
+        //[Authorize(Roles = RolesNamesConstant.Administrator)]
         public async Task<IActionResult> RegisterUser(
             [FromBody] UserForRegistrationDto userForRegistration
         )

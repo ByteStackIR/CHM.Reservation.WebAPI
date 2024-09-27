@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Entities.Enum;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,6 +15,8 @@ namespace Entities.Models
         [ForeignKey(nameof(Category))]
         public Guid CategoryId { get; set; } 
         public string Title { get; set; }
+
+        public ParameterType Type { get; set; }
 
         public Category Category { get; set; } 
         public ICollection<ParameterValues> Values { get; set; } 

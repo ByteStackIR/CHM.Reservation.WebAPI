@@ -13,6 +13,7 @@ namespace Entities.DataTransferObjects
         public Guid ValueId { get; set; }
         public string Title { get; set; }
         public string Value { get; set; }
+        public int DisplayOrder { get; set; }
     }
 
 

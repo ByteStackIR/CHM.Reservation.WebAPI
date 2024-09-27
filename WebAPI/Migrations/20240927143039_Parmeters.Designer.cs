@@ -4,6 +4,7 @@ using Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace WebAPI.Migrations
 {
     [DbContext(typeof(DBContextProvider))]
-    partial class DBContextProviderModelSnapshot : ModelSnapshot
+    [Migration("20240927143039_Parmeters")]
+    partial class Parmeters
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,22 +111,6 @@ namespace WebAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Companies");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("cd97c448-da11-4553-93e3-cac2976eb64f"),
-                            CreatedDate = new DateTime(2024, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            Title = "گندله سازی"
-                        },
-                        new
-                        {
-                            Id = new Guid("bd97c448-da11-4553-93e3-cac2976eb64f"),
-                            CreatedDate = new DateTime(2024, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            Title = "احیاء مستقیم"
-                        });
                 });
 
             modelBuilder.Entity("Entities.Models.CouponShare", b =>
@@ -3976,7 +3963,7 @@ namespace WebAPI.Migrations
                             Cancellable = false,
                             CategoryId = new Guid("bd97c448-da11-4553-93e3-cac2976eb64f"),
                             Code = -1,
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3791),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3906),
                             IsFinalNode = true,
                             IsStartNode = false,
                             RoleId = "53b7cc09-9eed-4d77-9f3c-fb92dfcb40e9",
@@ -3991,7 +3978,7 @@ namespace WebAPI.Migrations
                             Cancellable = true,
                             CategoryId = new Guid("bd97c448-da11-4553-93e3-cac2976eb64f"),
                             Code = 0,
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3796),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3910),
                             IsFinalNode = false,
                             IsStartNode = true,
                             NextNode = 1,
@@ -4008,7 +3995,7 @@ namespace WebAPI.Migrations
                             Cancellable = true,
                             CategoryId = new Guid("bd97c448-da11-4553-93e3-cac2976eb64f"),
                             Code = 1,
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3800),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3915),
                             IsFinalNode = false,
                             IsStartNode = false,
                             NextNode = 2,
@@ -4024,7 +4011,7 @@ namespace WebAPI.Migrations
                             Cancellable = false,
                             CategoryId = new Guid("bd97c448-da11-4553-93e3-cac2976eb64f"),
                             Code = 2,
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3803),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3919),
                             IsFinalNode = true,
                             IsStartNode = false,
                             RoleId = "53b7cc09-9eed-4d77-9f3c-fb92dfcb40e9",
@@ -4038,7 +4025,7 @@ namespace WebAPI.Migrations
                             Cancellable = false,
                             CategoryId = new Guid("cd97c448-da11-4553-93e3-cac2976eb64f"),
                             Code = -1,
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3806),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3921),
                             IsFinalNode = true,
                             IsStartNode = false,
                             RoleId = "53b7cc09-9eed-4d77-9f3c-fb92dfcb40e9",
@@ -4053,7 +4040,7 @@ namespace WebAPI.Migrations
                             Cancellable = true,
                             CategoryId = new Guid("cd97c448-da11-4553-93e3-cac2976eb64f"),
                             Code = 0,
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3809),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3924),
                             IsFinalNode = false,
                             IsStartNode = true,
                             NextNode = 1,
@@ -4068,7 +4055,7 @@ namespace WebAPI.Migrations
                             Cancellable = false,
                             CategoryId = new Guid("cd97c448-da11-4553-93e3-cac2976eb64f"),
                             Code = 1,
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3811),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3927),
                             IsFinalNode = false,
                             IsStartNode = false,
                             NextNode = 2,
@@ -4083,7 +4070,7 @@ namespace WebAPI.Migrations
                             Cancellable = false,
                             CategoryId = new Guid("cd97c448-da11-4553-93e3-cac2976eb64f"),
                             Code = 2,
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3814),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3929),
                             IsFinalNode = true,
                             IsStartNode = false,
                             RoleId = "53b7cc09-9eed-4d77-9f3c-fb92dfcb40e9",
@@ -4097,7 +4084,7 @@ namespace WebAPI.Migrations
                             Cancellable = false,
                             CategoryId = new Guid("cd97c448-da11-4553-93e3-cac2976eb64f"),
                             Code = 3,
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3817),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3949),
                             IsFinalNode = true,
                             IsStartNode = false,
                             RoleId = "53b7cc09-9eed-4d77-9f3c-fb92dfcb40e9",
@@ -4131,72 +4118,6 @@ namespace WebAPI.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Parameters");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
-                            CategoryId = new Guid("cd97c448-da11-4553-93e3-cac2976eb64f"),
-                            CreatedDate = new DateTime(2024, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified),
-                            Title = "آدرس",
-                            Type = (short)2
-                        },
-                        new
-                        {
-                            Id = new Guid("c9eb3f7a-bd4e-4b1d-b7e8-0a1c5f5e3c8e"),
-                            CategoryId = new Guid("cd97c448-da11-4553-93e3-cac2976eb64f"),
-                            CreatedDate = new DateTime(2024, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified),
-                            Title = "ناهار؟",
-                            Type = (short)3
-                        },
-                        new
-                        {
-                            Id = new Guid("d9b5f0d4-5e8a-4b2f-bf29-0b7a4a3e6c6f"),
-                            CategoryId = new Guid("cd97c448-da11-4553-93e3-cac2976eb64f"),
-                            CreatedDate = new DateTime(2024, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified),
-                            Title = "شام؟",
-                            Type = (short)3
-                        },
-                        new
-                        {
-                            Id = new Guid("3c6eb8a1-5d7a-4b9d-b3f3-0b3c6c7e8f8a"),
-                            CategoryId = new Guid("cd97c448-da11-4553-93e3-cac2976eb64f"),
-                            CreatedDate = new DateTime(2024, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified),
-                            Title = "صبحانه؟",
-                            Type = (short)3
-                        },
-                        new
-                        {
-                            Id = new Guid("ab2b5f9e-df6e-4ef9-b8b1-0a1d0f9d0a1c"),
-                            CategoryId = new Guid("cd97c448-da11-4553-93e3-cac2976eb64f"),
-                            CreatedDate = new DateTime(2024, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified),
-                            Title = "سرویس ایاب و ذهاب",
-                            Type = (short)3
-                        },
-                        new
-                        {
-                            Id = new Guid("f47ac10b-58cc-4372-93e3-cac2976eb64f"),
-                            CategoryId = new Guid("cd97c448-da11-4553-93e3-cac2976eb64f"),
-                            CreatedDate = new DateTime(2024, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified),
-                            Title = "توضیحات",
-                            Type = (short)2
-                        },
-                        new
-                        {
-                            Id = new Guid("f47ac10b-58cc-4372-a567-cac2976eb64f"),
-                            CategoryId = new Guid("bd97c448-da11-4553-93e3-cac2976eb64f"),
-                            CreatedDate = new DateTime(2024, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified),
-                            Title = "توضیحات",
-                            Type = (short)2
-                        },
-                        new
-                        {
-                            Id = new Guid("c9eb3f7a-bd4e-4b1d-b7e8-cac2976eb64f"),
-                            CategoryId = new Guid("bd97c448-da11-4553-93e3-cac2976eb64f"),
-                            CreatedDate = new DateTime(2024, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified),
-                            Title = "تعداد روز",
-                            Type = (short)1
-                        });
                 });
 
             modelBuilder.Entity("Entities.Models.ParameterValues", b =>
@@ -4292,21 +4213,21 @@ namespace WebAPI.Migrations
                         new
                         {
                             Id = new Guid("00000000-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3411),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3677),
                             Title = "تحت تکفل",
                             Type = (short)-1
                         },
                         new
                         {
                             Id = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3422),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3690),
                             Title = "سایر",
                             Type = (short)-2
                         },
                         new
                         {
                             Id = new Guid("10f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3425),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3702),
                             Maximum = 1,
                             ParentId = new Guid("00000000-9d33-4279-aed3-8f372907f27e"),
                             Title = "خود",
@@ -4315,7 +4236,7 @@ namespace WebAPI.Migrations
                         new
                         {
                             Id = new Guid("11f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3427),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3715),
                             Maximum = 1,
                             ParentId = new Guid("00000000-9d33-4279-aed3-8f372907f27e"),
                             Title = "همسر",
@@ -4324,7 +4245,7 @@ namespace WebAPI.Migrations
                         new
                         {
                             Id = new Guid("12f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3430),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3718),
                             ParentId = new Guid("00000000-9d33-4279-aed3-8f372907f27e"),
                             Title = "فرزند",
                             Type = (short)2
@@ -4332,7 +4253,7 @@ namespace WebAPI.Migrations
                         new
                         {
                             Id = new Guid("13f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3432),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3720),
                             Maximum = 1,
                             ParentId = new Guid("00000000-9d33-4279-aed3-8f372907f27e"),
                             Title = "پدر",
@@ -4341,7 +4262,7 @@ namespace WebAPI.Migrations
                         new
                         {
                             Id = new Guid("14f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3434),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3722),
                             Maximum = 1,
                             ParentId = new Guid("00000000-9d33-4279-aed3-8f372907f27e"),
                             Title = "مادر",
@@ -4350,7 +4271,7 @@ namespace WebAPI.Migrations
                         new
                         {
                             Id = new Guid("15f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3436),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3724),
                             Maximum = 1,
                             ParentId = new Guid("00000000-9d33-4279-aed3-8f372907f27e"),
                             Title = "پدر همسر",
@@ -4359,7 +4280,7 @@ namespace WebAPI.Migrations
                         new
                         {
                             Id = new Guid("16f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3439),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3727),
                             Maximum = 1,
                             ParentId = new Guid("00000000-9d33-4279-aed3-8f372907f27e"),
                             Title = "مادر همسر",
@@ -4368,7 +4289,7 @@ namespace WebAPI.Migrations
                         new
                         {
                             Id = new Guid("17f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3441),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3729),
                             ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
                             Title = "عروس",
                             Type = (short)9
@@ -4376,7 +4297,7 @@ namespace WebAPI.Migrations
                         new
                         {
                             Id = new Guid("18f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3443),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3730),
                             ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
                             Title = "داماد",
                             Type = (short)10
@@ -4384,7 +4305,7 @@ namespace WebAPI.Migrations
                         new
                         {
                             Id = new Guid("19f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3445),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3733),
                             ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
                             Title = "خواهر",
                             Type = (short)8
@@ -4392,7 +4313,7 @@ namespace WebAPI.Migrations
                         new
                         {
                             Id = new Guid("20f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3447),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3734),
                             ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
                             Title = "برادر",
                             Type = (short)7
@@ -4400,7 +4321,7 @@ namespace WebAPI.Migrations
                         new
                         {
                             Id = new Guid("21f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3449),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3736),
                             ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
                             Title = "عمه",
                             Type = (short)14
@@ -4408,7 +4329,7 @@ namespace WebAPI.Migrations
                         new
                         {
                             Id = new Guid("22f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3451),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3738),
                             ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
                             Title = "خاله",
                             Type = (short)13
@@ -4416,7 +4337,7 @@ namespace WebAPI.Migrations
                         new
                         {
                             Id = new Guid("23f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3452),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3740),
                             ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
                             Title = "دایی",
                             Type = (short)12
@@ -4424,7 +4345,7 @@ namespace WebAPI.Migrations
                         new
                         {
                             Id = new Guid("24f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3454),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3742),
                             ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
                             Title = "عمو",
                             Type = (short)11
@@ -4432,7 +4353,7 @@ namespace WebAPI.Migrations
                         new
                         {
                             Id = new Guid("25f944bb-9d33-4279-aed3-8f372907f27e"),
-                            CreatedDate = new DateTime(2024, 9, 27, 18, 6, 40, 963, DateTimeKind.Local).AddTicks(3456),
+                            CreatedDate = new DateTime(2024, 9, 27, 18, 0, 38, 410, DateTimeKind.Local).AddTicks(3744),
                             ParentId = new Guid("11111111-9d33-4279-aed3-8f372907f27e"),
                             Title = "بدون نسبت",
                             Type = (short)26

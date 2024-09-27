@@ -110,6 +110,7 @@ namespace Services.Services
                         Title = item.Parameter.Title,
                         Value = item.Value,
                         ValueId = item.Id,
+                        
                     }
                 );
             }
@@ -267,6 +268,7 @@ namespace Services.Services
                     EntityId = entity.Id,
                     Value = paramValueDto.Value,
                     CreatedDate = DateTime.Now,
+                    DisplayOrder = paramValueDto.DisplayOrder,
                 };
 
                 entity.ParameterValues.Add(paramValue);
@@ -327,7 +329,7 @@ namespace Services.Services
                     model.Id = Guid.NewGuid();
                     model.CreatedDate = DateTime.Now;
                     model.EntityId = entity.Id;
-
+                   
                     _repositoryManager.Slot.Create(model);
                 }
                 else
@@ -360,6 +362,7 @@ namespace Services.Services
                         EntityId = entity.Id,
                         Value = paramValueDto.Value,
                         CreatedDate = DateTime.Now,
+                        DisplayOrder = paramValueDto.DisplayOrder,
                     };
                     entity.ParameterValues.Add(paramValue);
                 }
@@ -369,6 +372,7 @@ namespace Services.Services
                         paramValueDto.Id
                     );
                     paramValue.Value = paramValueDto.Value;
+                    paramValue.DisplayOrder = paramValueDto.DisplayOrder;
                     _repositoryManager.Entity.Update(entity);
                 }
             }

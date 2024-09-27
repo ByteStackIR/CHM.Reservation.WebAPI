@@ -10,23 +10,24 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Entities.ModelsConfiguration
 {
-    public class CategoriesConfiguration : IEntityTypeConfiguration<Category>
+    public class CompaniesConfiguration : IEntityTypeConfiguration<Company>
     {
-        public void Configure(EntityTypeBuilder<Category> builder)
+        public void Configure(EntityTypeBuilder<Company> builder)
         {
             builder.HasData(
-                new Category()
+                new Company()
                 {
                     Id = Guid.Parse("cd97c448-da11-4553-93e3-cac2976eb64f"),
-                    Title = "Hotel",
-                    Description = "هتل به فارسی",
+                    Title = "گندله سازی",
+                    IsDeleted = false,
                     CreatedDate = new DateTime(2024, 01, 01, 01, 01, 01),
                 },
-                new Category()
+                new Company()
                 {
                     Id = Guid.Parse("bd97c448-da11-4553-93e3-cac2976eb64f"),
-                    Title = "Tour",
-                    Description = "تور به فارسی",
+                    Title = "احیاء مستقیم",
+                    IsDeleted = false,
+
                     CreatedDate = new DateTime(2024, 01, 01, 01, 01, 01),
                 }
             );

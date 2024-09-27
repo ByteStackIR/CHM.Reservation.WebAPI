@@ -17,7 +17,7 @@ namespace Entities.DataTransferObjects.Models
         public CategoryDto? Category { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public string Address { get; set; }
+     
         public Guid PeriodId { get; set; }
         public Decimal PerPerson { get; set; }
         public Decimal CompanyShare { get; set; }

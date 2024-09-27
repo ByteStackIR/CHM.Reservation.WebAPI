@@ -19,8 +19,9 @@ namespace Entities.Models
         [ForeignKey(nameof(Entity))]
         public Guid EntityId { get; set; }
 
-        public string Value { get; set; } = string.Empty;
+        public string Value { get; set; } 
 
+        public int DisplayOrder { get; set; }
 
 
         [DeleteBehavior(DeleteBehavior.NoAction)]

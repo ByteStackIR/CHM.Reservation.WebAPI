@@ -11,6 +11,8 @@ namespace Entities.DataTransferObjects.Models
         public Guid? Id { get; set; }
         public Guid ParameterId { get; set; }
         public Guid EntityId { get; set; }
+        public int DisplayOrder { get; set; }
+
         public string Value { get; set; } = string.Empty;
     }
 }

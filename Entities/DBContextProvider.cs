@@ -24,7 +24,10 @@ namespace Entities
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new RoleConfiguration());
-           modelBuilder.ApplyConfiguration(new RelationsConfiguration());
+            modelBuilder.ApplyConfiguration(new ParametersConfiguration());
+            modelBuilder.ApplyConfiguration(new CompaniesConfiguration());
+
+            modelBuilder.ApplyConfiguration(new RelationsConfiguration());
             modelBuilder.ApplyConfiguration(new CategoriesConfiguration());
             modelBuilder.ApplyConfiguration(new ObjectStatesConfiguration());
 
