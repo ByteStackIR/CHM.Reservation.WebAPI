@@ -127,6 +127,14 @@ namespace WebAPI.Controllers
             return Ok(res);
         }
 
+        [Authorize]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> CancelTemporaryReservation([FromBody] test dto)
+        {
+             await _reservationService.CancelTemporaryReservation(dto.TempoReservationId);
+            return NoContent();
+        }
+
     }
 
     public class test

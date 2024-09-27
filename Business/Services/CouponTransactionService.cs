@@ -33,7 +33,7 @@ namespace Services.Services
             resDto.Id = Guid.NewGuid();
             resDto.CreatedDate = DateTime.Now;
 
-            var model = _mapper.Map<Tx_Coupon>(dto);
+            var model = _mapper.Map<Tx_Coupon>(resDto);
             _repositoryManager.Tx_Coupon.Create(model);
 
             _repositoryManager.Save();

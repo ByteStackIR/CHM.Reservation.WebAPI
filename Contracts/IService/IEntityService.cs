@@ -21,7 +21,7 @@ namespace Contracts.IService
         Task<EntityDto> UpdateEntityAsync(EntityDto entityDto);
         Task<EntityDto> GetEntityInformationByIdAsync(Guid entityId);
 
-
+        bool TrueReservation(Reservation reservation);
         //===========PUBLIC AREA
         Task<EntityDataDto> GetSpecifiedEntityAsync(Guid EntityId);
     }

@@ -33,7 +33,7 @@ namespace Services.Services
             resDto.Id = Guid.NewGuid();
             resDto.CreatedDate = DateTime.Now;
 
-            var model = _mapper.Map<Tx_User>(dto);
+            var model = _mapper.Map<Tx_User>(resDto);
             _repositoryManager.Tx_User.Create(model);
 
             _repositoryManager.Save();

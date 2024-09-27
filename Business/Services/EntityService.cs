@@ -9,6 +9,7 @@ using Contracts.IContext;
 using Contracts.IMarker;
 using Contracts.IRepository;
 using Contracts.IService;
+using Entities.Constant;
 using Entities.DataTransferObjects;
 using Entities.DataTransferObjects.Models;
 using Entities.IdentityExtensions;
@@ -63,6 +64,20 @@ namespace Services.Services
             return new(new(count, request.PageNumber, request.PageSize), dataDto);
         }
 
+
+        public bool TrueReservation(Reservation reservation)
+        {
+            List<Guid> CancelIds = new()
+            {
+                Guid.Parse(CancelStateConstant.HotelCancelState),
+                Guid.Parse(CancelStateConstant.TourCancelState),
+
+            };
+
+
+            return ((reservation.IsFinalized && !CancelIds.Contains(reservation.ObjectStateId)) || (reservation.IsFinalized == false && reservation.ExpirationDate >= DateTime.Now));
+        }
+
         public async Task<EntityDataDto> GetSpecifiedEntityAsync(Guid EntityId)
         {
             //TODO: Add State Condition
@@ -74,7 +89,7 @@ namespace Services.Services
                 .Include(e => e.ParameterValues)
                 .ThenInclude(x => x.Parameter)
                 .Include(e => e.Slots)
-                .ThenInclude(x => x.Reservations.Where(x => true))
+                .ThenInclude(x => x.Reservations.Where(x => TrueReservation(x)))
                 .ThenInclude(x => x.SelectedRelatives);
 
 
@@ -83,7 +98,7 @@ namespace Services.Services
 
             foreach (var item in SLots)
             {
-                item.Occupancy = data.Slots.FirstOrDefault(y => y.Id == item.Id).Reservations.Count;
+                item.Occupancy = data.Slots.FirstOrDefault(y => y.Id == item.Id).Reservations.Select(x=>x.SelectedRelatives.Count).Sum();
             }
 
             EntityDataDto res =

@@ -46,6 +46,8 @@ namespace Entities.Mapper
 
 
             CreateMap<Internal_TransactionDto, Tx_UserDto>();
+            CreateMap<Internal_TransactionDto,Tx_CouponDto>();
+
             CreateMap<Tx_UserDto, Internal_ReservationDto>();
             CreateMap<Tx_UserDto, Tx_User>().ReverseMap();
 

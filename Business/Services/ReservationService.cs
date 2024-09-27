@@ -141,7 +141,7 @@ namespace Services.Services
                 //model.TxCoupons = null;
                 //model.TxUsers = null;
                 //model.ReservationStates = null;
-               
+
                 _repositoryManager.Reservation.Create(model);
                 _repositoryManager.Reservation.SaveChanges();
 
@@ -155,6 +155,11 @@ namespace Services.Services
 
         public async Task<External_TempReservationDto> AddReservation(ReservationCreationDto dto)
         {
+            Guid? preReservation = (await GetTemporaryReservationId(_systemContext.CurrentUser.GetUserId().Value));
+
+            if (preReservation.HasValue)
+                await CancelTemporaryReservation(preReservation.Value);
+
             var interResult = await InitReservation(dto);
 
             var res = await CreateTemporaryReservation(interResult);
@@ -211,8 +216,7 @@ namespace Services.Services
 
             ReservationModel.IsFinalized = true;
 
-            ReservationModel.ReservationStates = new List<ReservationStates>();
-            ReservationModel.ReservationStates.Add(
+            _repositoryManager.ReservationStates.Create(
                 new ReservationStates()
                 {
                     ObjectStateId = ReservationModel.ObjectStateId,
@@ -230,8 +234,7 @@ namespace Services.Services
             var NextState = await _ObjectStateService.GetNextStateByState(
                 await _ObjectStateService.GetStateById(ReservationModel.ObjectStateId)
             );
-
-            ReservationModel.ReservationStates.Add(
+            _repositoryManager.ReservationStates.Create(
                 new ReservationStates()
                 {
                     ObjectStateId = NextState.Id,
@@ -246,7 +249,7 @@ namespace Services.Services
             );
 
             ReservationModel.ObjectStateId = NextState.Id;
-
+            _repositoryManager.Save();
             await _couponTxService.AddTransaction(
                 new()
                 {
@@ -259,7 +262,7 @@ namespace Services.Services
                 }
             );
 
-            await _couponTxService.AddTransaction(
+            await _userTxService.AddTransaction(
                 new()
                 {
                     Amount = ReservationModel.BillAmount,
@@ -271,9 +274,25 @@ namespace Services.Services
                 }
             );
             _repositoryManager.Reservation.Update(ReservationModel);
-            _repositoryManager.Save();
 
             return true;
+        }
+
+        public async Task<Guid?> GetTemporaryReservationId(Guid UserId)
+        {
+            var tempoReservation = await _repositoryManager
+                .Reservation.FindByCondition(
+                    x =>
+                        x.UserId == UserId.ToString()
+                        && x.IsFinalized == false
+                        && x.ExpirationDate > DateTime.Now,
+                    false
+                )
+                .FirstOrDefaultAsync();
+
+
+
+            return tempoReservation?.Id;
         }
 
         public async Task<External_TempReservationDto> GetTemporaryReservation(Guid UserId)
@@ -324,7 +343,6 @@ namespace Services.Services
                     }
                 );
             });
-
 
             return result;
         }
@@ -435,6 +453,25 @@ namespace Services.Services
             var data = await query.GetPage(request).ToListAsync();
             var dataDto = _mapper.Map<List<ReservationDto>>(data);
             return new(new(count, request.PageNumber, request.PageSize), dataDto);
+        }
+
+        public async Task CancelTemporaryReservation(Guid ReservationId)
+        {
+            var tempoReservation = await _repositoryManager
+            .Reservation.FindByCondition(
+                x =>
+                   x.Id== ReservationId,
+                false
+            ).Include(x=>x.SelectedRelatives)
+            .FirstOrDefaultAsync();
+
+            foreach(var item in tempoReservation.SelectedRelatives)
+                _repositoryManager.SelectedRelatives.Delete(item);
+
+            _repositoryManager.Reservation.Delete(tempoReservation);
+
+            _repositoryManager.Save();
+
         }
     }
 }

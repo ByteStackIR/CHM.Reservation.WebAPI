@@ -13,6 +13,9 @@ namespace Contracts.IService
 
         Task<Internal_ReservationDto> InitReservation(ReservationCreationDto dto);
         Task<Internal_ReservationDto> CreateTemporaryReservation(Internal_ReservationDto dto);
+        Task CancelTemporaryReservation(Guid ReservationId);
+
+
         Task<Internal_ShareDto> CalculateShare(RelativeDto Relative, EntityDto Entity);
 
         Task<List<Internal_ShareDto>> CalculateShares(

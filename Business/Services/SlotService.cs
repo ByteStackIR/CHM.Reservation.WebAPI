@@ -22,14 +22,20 @@ namespace Services.Services
 {
     public class SlotService : ServiceBase, ISlotService, IScopeMarker
     {
+        IEntityService _EntityService;
         public SlotService(
             IMapper mapper,
             ILoggerManager logger,
             IRepositoryManager repoManger,
             IHttpContextAccessor httpContextAccessor,
+            IEntityService EntityService,
+
             ISystemContext systemContext
         )
-            : base(repoManger, mapper, httpContextAccessor, systemContext, logger) { }
+            : base(repoManger, mapper, httpContextAccessor, systemContext, logger) {
+
+            _EntityService = EntityService;
+        }
 
         public async Task<PagedData<List<SlotDto>>> GetPagedAvailableSlotsAsync(SlotRequest request)
         {
@@ -46,11 +52,11 @@ namespace Services.Services
                 //TODO: a condtion for states should be added too
                 //FIX: test
                 var reserves = _repositoryManager
-                    .Reservation.FindByCondition(r => r.SlotId == slot.Id, false)
-                    .Include(r => r.ObjectState)
-                    .ThenInclude(o => o.ReservationStates); //TODO: condition to be added!!! filter only on those that are final
+                    .Reservation.FindByCondition(r => r.SlotId == slot.Id && _EntityService.TrueReservation(r), false).Include(x=>x.SelectedRelatives)
+                    //.Include(r => r.ObjectState)
+                    ; //TODO: condition to be added!!! filter only on those that are final
 
-                var occupancy = await reserves.CountAsync();
+                var occupancy = await reserves.Select(x=>x.SelectedRelatives.Count()).SumAsync();
                 slot.Occupancy = occupancy;
             }
 
