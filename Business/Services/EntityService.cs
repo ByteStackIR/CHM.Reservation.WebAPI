@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -64,20 +65,6 @@ namespace Services.Services
             return new(new(count, request.PageNumber, request.PageSize), dataDto);
         }
 
-
-        public bool TrueReservation(Reservation reservation)
-        {
-            List<Guid> CancelIds = new()
-            {
-                Guid.Parse(CancelStateConstant.HotelCancelState),
-                Guid.Parse(CancelStateConstant.TourCancelState),
-
-            };
-
-
-            return ((reservation.IsFinalized && !CancelIds.Contains(reservation.ObjectStateId)) || (reservation.IsFinalized == false && reservation.ExpirationDate >= DateTime.Now));
-        }
-
         public async Task<EntityDataDto> GetSpecifiedEntityAsync(Guid EntityId)
         {
             //TODO: Add State Condition
@@ -85,20 +72,57 @@ namespace Services.Services
             var now = DateTime.Now;
             var query = _repositoryManager
                 .Entity.FindByCondition(e => e.Id == EntityId, false)
+                .Include(x => x.City)
                 .Include(e => e.Category)
-                .Include(e => e.ParameterValues.OrderBy(x=>x.DisplayOrder))
+                .Include(e => e.ParameterValues.OrderBy(x => x.DisplayOrder))
                 .ThenInclude(x => x.Parameter)
                 .Include(e => e.Slots)
-                .ThenInclude(x => x.Reservations.Where(x => TrueReservation(x)))
-                .ThenInclude(x => x.SelectedRelatives);
-
+                .ThenInclude(x =>
+                    x.Reservations.Where(reservation =>
+                        (
+                            reservation.IsFinalized
+                            && (
+                                reservation.ObjectStateId
+                                    != Guid.Parse(CancelStateConstant.HotelCancelState)
+                                && reservation.ObjectStateId
+                                    != Guid.Parse(CancelStateConstant.TourCancelState)
+                            )
+                        )
+                        || (
+                            reservation.IsFinalized == false
+                            && reservation.ExpirationDate >= DateTime.Now
+                        )
+                    )
+                )
+                .ThenInclude(x =>
+                    x.SelectedRelatives.Where(y =>
+                        (
+                            (
+                                y.Reservation.IsFinalized
+                                && (
+                                    y.Reservation.ObjectStateId
+                                        != Guid.Parse(CancelStateConstant.HotelCancelState)
+                                    && y.Reservation.ObjectStateId
+                                        != Guid.Parse(CancelStateConstant.TourCancelState)
+                                )
+                            )
+                            || (
+                                y.Reservation.IsFinalized == false
+                                && y.Reservation.ExpirationDate >= DateTime.Now
+                            )
+                        )
+                    )
+                );
 
             var data = await query.FirstOrDefaultAsync();
             var SLots = _mapper.Map<List<SlotDto>>(data.Slots);
 
             foreach (var item in SLots)
             {
-                item.Occupancy = data.Slots.FirstOrDefault(y => y.Id == item.Id).Reservations.Select(x=>x.SelectedRelatives.Count).Sum();
+                item.Occupancy = data
+                    .Slots.FirstOrDefault(y => y.Id == item.Id)
+                    .Reservations.Select(x => x.SelectedRelatives.Count)
+                    .Sum();
             }
 
             EntityDataDto res =
@@ -113,7 +137,7 @@ namespace Services.Services
                     StartDate = data.StartDate,
                     EndDate = data.EndDate,
                     PerPerson = data.PerPerson,
-                    
+                    CityTitle = data.City.Title,
                 };
 
             foreach (var item in data.ParameterValues)
@@ -125,7 +149,7 @@ namespace Services.Services
                         Title = item.Parameter.Title,
                         Value = item.Value,
                         ValueId = item.Id,
-                        
+                        Type = item.Parameter.Type.ToString(),
                     }
                 );
             }
@@ -156,7 +180,10 @@ namespace Services.Services
             AdminEntitiesTableRequest request
         )
         {
-            var query = _repositoryManager.Entity.FindAll(false).Include(x=>x.Category).OrderByDescending(x=>x.StartDate);
+            var query = _repositoryManager
+                .Entity.FindAll(false)
+                .Include(x => x.Category)
+                .OrderByDescending(x => x.StartDate);
 
             var count = await query.CountAsync();
 
@@ -167,7 +194,6 @@ namespace Services.Services
             {
                 dataDto[i].Category = _mapper.Map<CategoryDto>(data[i].Category);
             }
-           
 
             return new(new(count, request.PageNumber, request.PageSize), dataDto);
         }
@@ -176,17 +202,22 @@ namespace Services.Services
         {
             try
             {
-                var entity = await _repositoryManager.Entity.FindByCondition(x=>x.Id==entityId,false).Include(x=>x.Slots).Include(x=>x.ParameterValues).Include(x=>x.EntityManagers).FirstOrDefaultAsync();
+                var entity = await _repositoryManager
+                    .Entity.FindByCondition(x => x.Id == entityId, false)
+                    .Include(x => x.Slots)
+                    .Include(x => x.ParameterValues)
+                    .Include(x => x.EntityManagers)
+                    .FirstOrDefaultAsync();
                 if (entity is not null)
                 {
-                    var res= _mapper.Map<EntityDto>(entity);
+                    var res = _mapper.Map<EntityDto>(entity);
                     res.Slots = _mapper.Map<List<SlotDto>>(entity.Slots);
-                    res.ParameterValues = _mapper.Map<List<ParameterValuesDto>>(entity.ParameterValues);
+                    res.ParameterValues = _mapper.Map<List<ParameterValuesDto>>(
+                        entity.ParameterValues
+                    );
                     res.EntityManagers = entity.EntityManagers.Select(x => x.Id).ToList();
 
-
                     return res;
-
                 }
                 else
                 {
@@ -241,7 +272,7 @@ namespace Services.Services
             var entity = _mapper.Map<Entity>(entityDto);
             entity.Id = Guid.NewGuid();
             entity.CreatedDate = DateTime.Now;
-            entity.UserId =_systemContext.CurrentUser.GetUserId().ToString();
+            entity.UserId = _systemContext.CurrentUser.GetUserId().ToString();
             entity.Slots = new List<Slot>();
             entity.ParameterValues = new List<ParameterValues>();
             entity.PeriodId = _systemContext.Period.Id;
@@ -317,14 +348,15 @@ namespace Services.Services
             entity.UserId = _systemContext.CurrentUser.GetUserId().ToString();
             entity.ParameterValues = new List<ParameterValues>();
 
-
-            var entityManagers = _repositoryManager.EntityManager.FindByCondition(tc => tc.EntityId == entity.Id, false).ToList();
+            var entityManagers = _repositoryManager
+                .EntityManager.FindByCondition(tc => tc.EntityId == entity.Id, false)
+                .ToList();
             foreach (var manager in entityManagers)
             {
                 _repositoryManager.EntityManager.Delete(manager);
                 _repositoryManager.EntityManager.SaveChanges();
             }
-          
+
             foreach (var entityManagerId in entityDto.EntityManagers)
             {
                 EntityManager entityManager = new EntityManager();
@@ -344,7 +376,7 @@ namespace Services.Services
                     model.Id = Guid.NewGuid();
                     model.CreatedDate = DateTime.Now;
                     model.EntityId = entity.Id;
-                   
+
                     _repositoryManager.Slot.Create(model);
                 }
                 else

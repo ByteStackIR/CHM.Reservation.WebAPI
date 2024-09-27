@@ -14,6 +14,7 @@ namespace Entities.DataTransferObjects
         public string Title { get; set; }
         public string Value { get; set; }
         public int DisplayOrder { get; set; }
+        public string Type { get; set; }
     }
 
 
@@ -28,5 +29,6 @@ namespace Entities.DataTransferObjects
         public DateTime EndDate { get; set; }
         public Decimal PerPerson { get; set; }
         public List<SlotDto> Slots { get; set; }
+        public string CityTitle { get; set; }
     }
 }
