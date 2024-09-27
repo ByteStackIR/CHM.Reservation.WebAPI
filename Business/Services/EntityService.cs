@@ -95,23 +95,7 @@ namespace Services.Services
                     )
                 )
                 .ThenInclude(x =>
-                    x.SelectedRelatives.Where(y =>
-                        (
-                            (
-                                y.Reservation.IsFinalized
-                                && (
-                                    y.Reservation.ObjectStateId
-                                        != Guid.Parse(CancelStateConstant.HotelCancelState)
-                                    && y.Reservation.ObjectStateId
-                                        != Guid.Parse(CancelStateConstant.TourCancelState)
-                                )
-                            )
-                            || (
-                                y.Reservation.IsFinalized == false
-                                && y.Reservation.ExpirationDate >= DateTime.Now
-                            )
-                        )
-                    )
+                    x.SelectedRelatives
                 );
 
             var data = await query.FirstOrDefaultAsync();
