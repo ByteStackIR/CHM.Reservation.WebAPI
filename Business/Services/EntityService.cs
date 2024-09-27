@@ -99,7 +99,7 @@ namespace Services.Services
                 );
 
             var data = await query.FirstOrDefaultAsync();
-            var SLots = _mapper.Map<List<SlotDto>>(data.Slots);
+            var SLots = _mapper.Map<List<SlotDto>>(data.Slots).OrderBy(x=>x.StartDate).ToList();
 
             foreach (var item in SLots)
             {
@@ -189,7 +189,7 @@ namespace Services.Services
                 var entity = await _repositoryManager
                     .Entity.FindByCondition(x => x.Id == entityId, false)
                     .Include(x => x.Slots)
-                    .Include(x => x.ParameterValues)
+                    .Include(x => x.ParameterValues.OrderBy(x=>x.DisplayOrder))
                     .Include(x => x.EntityManagers)
                     .FirstOrDefaultAsync();
                 if (entity is not null)
@@ -198,7 +198,7 @@ namespace Services.Services
                     res.Slots = _mapper.Map<List<SlotDto>>(entity.Slots);
                     res.ParameterValues = _mapper.Map<List<ParameterValuesDto>>(
                         entity.ParameterValues
-                    );
+                    ).OrderBy(x=>x.DisplayOrder).ToList();
                     res.EntityManagers = entity.EntityManagers.Select(x => x.Id).ToList();
 
                     return res;

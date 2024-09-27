@@ -12,6 +12,7 @@ namespace Entities.DataTransferObjects.Models
         public Guid CategoryId { get; set; }
         public string Title { get; set; }
     
+        public string Type { get; set; }
         public DateTime CreatedDate { get; set; }
     }
 }
