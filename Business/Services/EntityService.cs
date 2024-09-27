@@ -98,6 +98,9 @@ namespace Services.Services
                     x.SelectedRelatives
                 );
 
+
+    
+
             var data = await query.FirstOrDefaultAsync();
             var SLots = _mapper.Map<List<SlotDto>>(data.Slots).OrderBy(x=>x.StartDate).ToList();
 
@@ -108,6 +111,9 @@ namespace Services.Services
                     .Reservations.Select(x => x.SelectedRelatives.Count)
                     .Sum();
             }
+            var Images = _repositoryManager.AttachmentsRepository.FindByCondition(x => x.ObjectId == EntityId, true);
+
+
 
             EntityDataDto res =
                 new()
@@ -122,6 +128,7 @@ namespace Services.Services
                     EndDate = data.EndDate,
                     PerPerson = data.PerPerson,
                     CityTitle = data.City.Title,
+                    Images = Images.Select(x=>x.Id.ToString()).ToList()
                 };
 
             foreach (var item in data.ParameterValues)
@@ -192,6 +199,9 @@ namespace Services.Services
                     .Include(x => x.ParameterValues.OrderBy(x=>x.DisplayOrder))
                     .Include(x => x.EntityManagers)
                     .FirstOrDefaultAsync();
+
+                var images =await _repositoryManager.AttachmentsRepository.FindByCondition(x => x.ObjectId == entityId, true).ToListAsync();
+
                 if (entity is not null)
                 {
                     var res = _mapper.Map<EntityDto>(entity);
@@ -200,6 +210,16 @@ namespace Services.Services
                         entity.ParameterValues
                     ).OrderBy(x=>x.DisplayOrder).ToList();
                     res.EntityManagers = entity.EntityManagers.Select(x => x.Id).ToList();
+                    res.Images = new();
+                    foreach (var item in images)
+                    {
+                        res.Images.Add(new()
+                        {
+                            DisplayOrder = item.DisplayOrder,
+                            FilePath = item.Id.ToString(),
+                            Key = item.Id.ToString()
+                        });
+                    }
 
                     return res;
                 }

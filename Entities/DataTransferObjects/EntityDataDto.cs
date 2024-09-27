@@ -30,5 +30,7 @@ namespace Entities.DataTransferObjects
         public Decimal PerPerson { get; set; }
         public List<SlotDto> Slots { get; set; }
         public string CityTitle { get; set; }
+
+        public List<string> Images { get; set; }
     }
 }

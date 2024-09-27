@@ -54,7 +54,7 @@ namespace Repositories
             _parameterRepository = new Lazy<IParameterRepository>(() => new ParameterRepository(context));
             _parameterValuesRepository = new Lazy<IParameterValuesRepository>(() => new ParameterValuesRepository(context));
             _periodRepository = new Lazy<IPeriodRepository>(() => new PeriodRepository(context));
-            _IDefinitionsRepository = new Lazy<IDefinitionsRepository>(() => new DefinitionsRepository(_context));
+            _IDefinitionsRepository = new Lazy<IDefinitionsRepository>(() => new DefinitionsRepository(context));
 
             _relationRepository = new Lazy<IRelationRepository>(() => new RelationRepository(context));
             _relativesRepository = new Lazy<IRelativesRepository>(() => new RelativesRepository(context));
@@ -65,7 +65,7 @@ namespace Repositories
             _tx_CouponRepository = new Lazy<ITx_CouponRepository>(() => new Tx_CouponRepository(context));
             _tx_UserRepository = new Lazy<ITx_UserRepository>(() => new Tx_UserRepository(context));
             _userCompanyRepository = new Lazy<IUserCompanyRepository>(() => new UserCompanyRepository(context));
-            _IAttachmentsRepository = new Lazy<IAttachmentsRepository>(() => new AttachmentsRepository(_context));
+            _IAttachmentsRepository = new Lazy<IAttachmentsRepository>(() => new AttachmentsRepository(context));
 
         }
 

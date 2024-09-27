@@ -4,16 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Models
+namespace Entities.DataTransferObjects.Models
 {
-    public class Attachments : ModelBase
+    public class AttachmentDto
     {
+        public Guid Id { get; set; }
         public Guid ObjectId { get; set; }
         public string FileName { get; set; }
         public string FileCategory { get; set; }
         public string FileType { get; set; }
-
         public int DisplayOrder { get; set; }
-       
+        public DateTime CreatedDate { get; set; }
     }
 }

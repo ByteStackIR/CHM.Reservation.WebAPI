@@ -1,6 +1,9 @@
 ﻿using Contracts.IService;
+using Entities.DataTransferObjects;
 using Entities.DataTransferObjects.Models;
+using Entities.Enum;
 using Entities.Models;
+using Entities.Utils;
 using Features.CustomRequest;
 using Features.RequestFeatures;
 using Microsoft.AspNetCore.Authorization;
@@ -18,18 +21,23 @@ namespace WebAPI.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly IEntityService _entityService;
+        private readonly IAttachmentsService _IAttachmentsService;
 
         /// <summary>
         /// Constructor of EntityController
         /// </summary>
         /// <param name="configuration"></param>
         /// <param name="entitySevice"></param>
-        public EntityController(IConfiguration configuration, IEntityService entityService)
+        public EntityController(
+            IConfiguration configuration,
+            IEntityService entityService,
+            IAttachmentsService iAttachmentsService
+        )
         {
             _configuration = configuration;
             _entityService = entityService;
+            _IAttachmentsService = iAttachmentsService;
         }
-
 
         /// <summary>
         /// گرفتن یک موجودیت خاص از طریق این اندپوینت انجام میشود.
@@ -42,7 +50,7 @@ namespace WebAPI.Controllers
             try
             {
                 var result = await _entityService.GetEntityByIdAsync(entityId);
-               
+
                 if (result is not null)
                 {
                     return Ok(result);
@@ -59,7 +67,7 @@ namespace WebAPI.Controllers
         }
 
         /// <summary>
-        /// گرفتن یک موجودیت خاص از طریق این اندپوینت انجام میشود. -- برای عموم 
+        /// گرفتن یک موجودیت خاص از طریق این اندپوینت انجام میشود. -- برای عموم
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -84,7 +92,6 @@ namespace WebAPI.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-
 
         /// <summary>
         /// گرفتن تمام موجودیت هایی که در زمان حال فعال هستند به صورت صفحه بندی شده
@@ -133,13 +140,48 @@ namespace WebAPI.Controllers
             }
         }
 
-
         [HttpPut("[action]")]
-        public async Task<IActionResult> UpdateEntity(EntityDto request)
+        public async Task<IActionResult> UpdateEntity(
+            [FromForm] String Entity,
+            [FromForm] FilesDto Images
+        )
         {
             try
             {
-                var result = await _entityService.UpdateEntityAsync(request);
+                EntityDto dto = System.Text.Json.JsonSerializer.Deserialize<EntityDto>(Entity, new System.Text.Json.JsonSerializerOptions() { PropertyNameCaseInsensitive=true});
+
+                if (Images != null && Images.Files.Count != 0)
+                {
+                    foreach (var File in Images.Files)
+                    {
+                        if (Guid.TryParse(File.Key, out Guid AttachId))
+                        {
+                            if (File.DisplayOrder == -1)
+                                await _IAttachmentsService.RemoveFromStore(AttachId);
+                            else
+                                await _IAttachmentsService.UpdateStore(
+                                    AttachId,
+                                    File.DisplayOrder,
+                                    dto.Id.Value
+                                );
+                        }
+                        else
+                        {
+                            string tempName = await FileHelper.SaveFileAsync(
+                                File.File,
+                                FileType.FileTypes[FileTypeEnum.Entities]
+                            );
+                            await _IAttachmentsService.AddToStore(
+                                tempName,
+                                FileType.FileTypes[FileTypeEnum.Entities],
+                                File.File.ContentType,
+                                File.DisplayOrder,
+                                dto.Id.Value
+                            );
+                        }
+                    }
+                }
+                var result = await _entityService.UpdateEntityAsync(dto);
                 if (result is not null)
                 {
                     return Ok(result);
@@ -162,19 +204,45 @@ namespace WebAPI.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpPost("[action]")]
-        public async Task<IActionResult> AddEntity(EntityDto dto)
+        public async Task<IActionResult> AddEntity(
+            [FromForm] String Entity,
+            [FromForm] FilesDto Images
+        )
         {
             try
             {
+                EntityDto dto = System.Text.Json.JsonSerializer.Deserialize<EntityDto>(Entity, new System.Text.Json.JsonSerializerOptions() { PropertyNameCaseInsensitive = false });
+
+                dto.Id = Guid.NewGuid();
+                if (Images != null && Images.Files.Count != 0)
+                {
+                    foreach (var File in Images.Files)
+                    {
+                        string tempName = await FileHelper.SaveFileAsync(
+                            File.File,
+                            FileType.FileTypes[FileTypeEnum.Entities]
+                        );
+                        await _IAttachmentsService.AddToStore(
+                            tempName,
+                            FileType.FileTypes[FileTypeEnum.Entities],
+                            File.File.ContentType,
+                            File.DisplayOrder,
+                            dto.Id.Value
+                        );
+                    }
+                }
                 var createdEntity = await _entityService.AddEntityAsync(dto);
-                return CreatedAtAction(nameof(GetEntity), new { id = createdEntity.Id }, createdEntity);
+                return CreatedAtAction(
+                    nameof(GetEntity),
+                    new { id = createdEntity.Id },
+                    createdEntity
+                );
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
         }
-
 
         /// <summary>
         /// گرفتن یک موجودیت خاص از طریق این اندپوینت انجام میشود.

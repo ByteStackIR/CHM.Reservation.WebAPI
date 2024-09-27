@@ -18,7 +18,7 @@
             <param name="parentId"></param>
             <returns></returns>
         </member>
-        <member name="M:WebAPI.Controllers.EntityController.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Contracts.IService.IEntityService)">
+        <member name="M:WebAPI.Controllers.EntityController.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Contracts.IService.IEntityService,Contracts.IService.IAttachmentsService)">
             <summary>
             Constructor of EntityController
             </summary>
@@ -34,7 +34,7 @@
         </member>
         <member name="M:WebAPI.Controllers.EntityController.GetSpecifiedEntity(System.Guid)">
             <summary>
-            گرفتن یک موجودیت خاص از طریق این اندپوینت انجام میشود. -- برای عموم 
+            گرفتن یک موجودیت خاص از طریق این اندپوینت انجام میشود. -- برای عموم
             </summary>
             <param name="id"></param>
             <returns></returns>
@@ -46,7 +46,7 @@
             <param name="request"></param>
             <returns></returns>
         </member>
-        <member name="M:WebAPI.Controllers.EntityController.AddEntity(Entities.DataTransferObjects.Models.EntityDto)">
+        <member name="M:WebAPI.Controllers.EntityController.AddEntity(System.String,Entities.DataTransferObjects.FilesDto)">
             <summary>
             برای ساخت یک موجودیت جدید(هتل، تور) از این اندپوینت استفاده می‌شود
             </summary>
@@ -274,6 +274,18 @@
             <inheritdoc />
         </member>
         <member name="M:WebAPI.Migrations.sampleData.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:WebAPI.Migrations.attach">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.attach.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.attach.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.attach.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
     </members>

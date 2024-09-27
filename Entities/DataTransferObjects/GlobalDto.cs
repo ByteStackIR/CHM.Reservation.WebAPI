@@ -34,6 +34,8 @@ namespace Entities.DataTransferObjects
     public class FileDto
     {
         public string Key { get; set; }
+        public int DisplayOrder { get; set; }
+        public string? FilePath { get; set; }
         public IFormFile? File { get; set; }
 
     }

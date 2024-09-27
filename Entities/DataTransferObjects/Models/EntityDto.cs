@@ -30,5 +30,15 @@ namespace Entities.DataTransferObjects.Models
         public List<SlotDto> Slots { get; set; } = new List<SlotDto>();
         public List<ParameterValuesDto> ParameterValues { get; set; } = new List<ParameterValuesDto>();
         public List<Guid> EntityManagers { set; get; }
+
+        public List<ImageDto> Images { get; set; }
+    }
+
+    public class ImageDto
+    {
+        public string Key { get; set; }
+        public int DisplayOrder { get; set; }
+        public string FilePath { get; set; }
+
     }
 }
