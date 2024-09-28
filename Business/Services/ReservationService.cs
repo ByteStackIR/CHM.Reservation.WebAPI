@@ -155,7 +155,9 @@ namespace Services.Services
 
         public async Task<External_TempReservationDto> AddReservation(ReservationCreationDto dto)
         {
-            Guid? preReservation = (await GetTemporaryReservationId(_systemContext.CurrentUser.GetUserId().Value));
+            Guid? preReservation = (
+                await GetTemporaryReservationId(_systemContext.CurrentUser.GetUserId().Value)
+            );
 
             if (preReservation.HasValue)
                 await CancelTemporaryReservation(preReservation.Value);
@@ -290,8 +292,6 @@ namespace Services.Services
                 )
                 .FirstOrDefaultAsync();
 
-
-
             return tempoReservation?.Id;
         }
 
@@ -373,7 +373,8 @@ namespace Services.Services
 
         public async Task<List<Internal_ShareDto>> CalculateShares(
             List<RelativeDto> Relatives,
-            EntityDto Entity
+            EntityDto Entity,
+            SlotDto slot
         )
         {
             var Shares = await _repositoryManager.CouponShare.GetRelationSharesInPeriod(
@@ -386,18 +387,38 @@ namespace Services.Services
             foreach (var Relative in Relatives)
             {
                 var share = Shares.FirstOrDefault(x => x.RelationId == x.RelationId);
+                //TODO : کمتر از دو سال کلا هزینه آن برای شرکت و کاربر صفر است یا چی؟
+                int age = 0;
+                age = slot.StartDate.Date.Year - Relative.BirthDate.Date.Year;
+                if (DateTime.Now.DayOfYear < Relative.BirthDate.Date.DayOfYear)
+                    age = age - 1;
 
-                Decimal CompanyShare = Entity.PerPerson * share.Entitlement / 100;
+                if (age >= Entity.MinAge)
+                {
+                    Decimal CompanyShare = Entity.PerPerson * share.Entitlement / 100;
 
-                res.Add(
-                    new()
-                    {
-                        CompanyShare = CompanyShare,
-                        UserShare = Entity.PerPerson - CompanyShare,
-                        CouponShareId = share.Id,
-                        Relative = Relative,
-                    }
-                );
+                    res.Add(
+                        new()
+                        {
+                            CompanyShare = CompanyShare,
+                            UserShare = Entity.PerPerson - CompanyShare,
+                            CouponShareId = share.Id,
+                            Relative = Relative,
+                        }
+                    );
+                }
+                else
+                {
+                    res.Add(
+                        new()
+                        {
+                            CompanyShare = 0,
+                            UserShare = 0,
+                            CouponShareId = share.Id,
+                            Relative = Relative,
+                        }
+                    );
+                }
             }
 
             return res;
@@ -458,20 +479,16 @@ namespace Services.Services
         public async Task CancelTemporaryReservation(Guid ReservationId)
         {
             var tempoReservation = await _repositoryManager
-            .Reservation.FindByCondition(
-                x =>
-                   x.Id== ReservationId,
-                false
-            ).Include(x=>x.SelectedRelatives)
-            .FirstOrDefaultAsync();
+                .Reservation.FindByCondition(x => x.Id == ReservationId, false)
+                .Include(x => x.SelectedRelatives)
+                .FirstOrDefaultAsync();
 
-            foreach(var item in tempoReservation.SelectedRelatives)
+            foreach (var item in tempoReservation.SelectedRelatives)
                 _repositoryManager.SelectedRelatives.Delete(item);
 
             _repositoryManager.Reservation.Delete(tempoReservation);
 
             _repositoryManager.Save();
-
         }
     }
 }
