@@ -240,6 +240,34 @@
             <param name="request"></param>
             <returns></returns>
         </member>
+        <member name="M:WebAPI.Controllers.UsersController.GetAllUsers(Features.CustomRequest.AdminUsersTableRequest)">
+            <summary>
+            دریافت لیست تمامی کاربران ثبت شده در برنامه به همراه آیدی شرکت
+            </summary>
+            <param name="Dto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WebAPI.Controllers.UsersController.RegisterUser(Entities.DataTransferObjects.UserForRegistrationDto)">
+            <summary>
+            ثبت کاربر جدید
+            </summary>
+            <param name="userForRegistration"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WebAPI.Controllers.UsersController.GetUserById(System.Guid)">
+            <summary>
+            دریافت اطلاعات کاربر از طریق آیدی
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WebAPI.Controllers.UsersController.UpdateUserAsAdmin(Entities.DataTransferObjects.UserUpdateDto)">
+            <summary>
+            آپدیت کاربر
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+        </member>
         <member name="T:WebAPI.Migrations.objectstatebug">
             <inheritdoc />
         </member>

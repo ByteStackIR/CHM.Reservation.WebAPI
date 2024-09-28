@@ -83,7 +83,11 @@ namespace Services.Services
             )
                 throw new Exception($"There are invalid relatives!");
 
-            var Shares = await CalculateShares(_mapper.Map<List<RelativeDto>>(relatives), Entity);
+            var Shares = await CalculateShares(
+                _mapper.Map<List<RelativeDto>>(relatives),
+                Entity,
+                SlotItem
+            );
 
             Internal_ReservationDto result = new Internal_ReservationDto()
             {
@@ -324,7 +328,8 @@ namespace Services.Services
                 _mapper.Map<List<RelativeDto>>(
                     tempoReservation.SelectedRelatives.Select(x => x.Relative).ToList()
                 ),
-                _mapper.Map<EntityDto>(tempoReservation.Slot.Entity)
+                _mapper.Map<EntityDto>(tempoReservation.Slot.Entity),
+                _mapper.Map<SlotDto>(tempoReservation.Slot)
             );
 
             var AllRelations = await _relationsService.GetRelations();

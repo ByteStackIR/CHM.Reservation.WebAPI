@@ -20,7 +20,8 @@ namespace Contracts.IService
 
         Task<List<Internal_ShareDto>> CalculateShares(
             List<RelativeDto> Relatives,
-            EntityDto Entity
+            EntityDto Entity,
+            SlotDto slot
         );
         Task<External_TempReservationDto> AddReservation(ReservationCreationDto dto);
         Task<bool> FinalizeReservation(Guid Id);
