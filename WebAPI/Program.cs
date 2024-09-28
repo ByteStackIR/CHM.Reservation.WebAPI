@@ -1,5 +1,3 @@
-
-
 using Contracts.IDapperRepository;
 using Contracts.IRepository;
 using Contracts.IService;
@@ -34,29 +32,39 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-        LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
+        LogManager.LoadConfiguration(
+            string.Concat(Directory.GetCurrentDirectory(), "/nlog.config")
+        );
 
+
+        // ! PRODUCTION PUBLISH IN LIARA
+        // var connectionString = builder.Configuration.GetConnectionString("productionSql");
+        // builder.Services.AddDbContext<DBContextProvider>(options =>
+        //     options.UseSqlServer(connectionString, b => b.MigrationsAssembly("WebAPI"))
+        // );
 
         var connectionString = builder.Configuration.GetConnectionString("sqlConnection");
-        builder.Services.AddDbContext<DBContextProvider>(options => options.UseSqlServer(connectionString, b => b.MigrationsAssembly("WebAPI")));
-  
+        builder.Services.AddDbContext<DBContextProvider>(options =>
+            options.UseSqlServer(connectionString, b => b.MigrationsAssembly("WebAPI"))
+        );
+
         builder.Services.ConfigureIdentity();
         builder.Services.ConfigureJWT(builder.Configuration);
         builder.Services.ConfigureAuthorization();
         builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
-        
 
         builder.Services.ConfigureCors();
         builder.Services.ConfigureRepositoryManager();
 
-
         //builder.Services.AddControllers();
         builder.Services.ConfigureVersioning();
-        builder.Services.AddControllers(config =>
-        {
-            config.RespectBrowserAcceptHeader = true;
-            config.ReturnHttpNotAcceptable = true;
-        }).AddXmlDataContractSerializerFormatters();
+        builder
+            .Services.AddControllers(config =>
+            {
+                config.RespectBrowserAcceptHeader = true;
+                config.ReturnHttpNotAcceptable = true;
+            })
+            .AddXmlDataContractSerializerFormatters();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
         builder.Services.ConfigureSwagger();
@@ -65,12 +73,7 @@ public class Program
         builder.Services.ConfigureResponseCaching();
         builder.Services.ConfigureOutputCaching();
 
-
-
-
-       
         builder.Services.AddSingleton<IAuthorizationHandler, AuthorizationHandler>();
-
 
         builder.Services.DapperInstallation();
 
@@ -93,20 +96,18 @@ public class Program
 
         var app = builder.Build();
 
-
         app.Configure(app.Environment);
 
-
-       
         app.UseResponseCaching();
         app.UseOutputCache();
-       // app.UseRateLimiter();
-        app.Use( async (context, next) =>
-        {
-            
-            next.Invoke();
-        });
-     
+        // app.UseRateLimiter();
+        app.Use(
+            async (context, next) =>
+            {
+                next.Invoke();
+            }
+        );
+
         app.ConfigureExceptionHandler(new LoggerManager());
         //Host.CreateDefaultBuilder(args)
         //        .ConfigureWebHostDefaults(webBuilder =>
@@ -115,7 +116,5 @@ public class Program
         //        });
 
         app.Run();
-
-
     }
 }
