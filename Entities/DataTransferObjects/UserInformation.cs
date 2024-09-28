@@ -13,8 +13,19 @@ namespace Entities.DataTransferObjects
         public string FirstName { get; set; }
         public string PhoneNumber { get; set; }
         public string LastName { get; set; }
-
         public string PersonnelCode { get; set; }
+    }
+
+
+    public class UserFullDto
+    {
+        public Guid Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string PhoneNumber { get; set; }
+        public string PersonnelCode { get; set; }
+        public string IdentityCode { get; set; }
+        public string CompanyId { get; set; }
     }
 
     public class UserUpdateDto

@@ -72,8 +72,8 @@
         /// The GetAllUsersAsAdmin
         /// </summary>
         /// <param name="request">The request<see cref="AdminUsersTableRequest"/></param>
-        /// <returns>The <see cref="Task{PagedData{List{UserDto}}}"/></returns>
-        public async Task<PagedData<List<UserDto>>> GetAllUsersAsAdmin(
+        /// <returns>The <see cref="Task{PagedData{List{UserFullDto}}}"/></returns>
+        public async Task<PagedData<List<UserFullDto>>> GetAllUsersAsAdmin(
             AdminUsersTableRequest request
         )
         {
@@ -84,21 +84,25 @@
             var data = await query
                 .GetPage(request)
                 .Include(x => x.UserCompanies.Where(x => x.IsActive))
+                .Include(y => y.Relatives.Where(z => z.RelationId == Guid.Parse("10f944bb-9d33-4279-aed3-8f372907f27e"))) // دریافت کد ملی خود کاربر
                 .ToListAsync();
 
-            var result = new List<UserDto>();
+            var result = new List<UserFullDto>();
 
             foreach (var item in data)
             {
                 result.Add(
                     new()
                     {
+                        Id = Guid.Parse(item.Id),
                         FirstName = item.FirstName,
                         LastName = item.LastName,
                         PhoneNumber = item.PhoneNumber,
-                        Id = Guid.Parse(item.Id),
+                        IdentityCode = item.Relatives.FirstOrDefault()?.IdentityCode ?? "فاقد کد ملی",
+                        CompanyId = item.UserCompanies.FirstOrDefault()?.CompanyId.ToString() ?? "فاقد شرکت",
                         PersonnelCode =
                             item.UserCompanies.FirstOrDefault()?.PersonnelCode ?? "فاقد شرکت",
+
                     }
                 );
             }
@@ -315,7 +319,7 @@
                     {
                         FirstName = user.FirstName,
                         LastName = user.LastName,
-                        Id=Guid.Parse(user.Id),
+                        Id = Guid.Parse(user.Id),
                         PhoneNumber = user.PhoneNumber
                     });
                 }
@@ -324,8 +328,8 @@
 
             return Users;
 
-      
-         
+
+
         }
     }
 }

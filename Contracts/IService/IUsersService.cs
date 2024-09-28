@@ -13,7 +13,7 @@ namespace Contracts.IService
 {
     public interface IUsersService
     {
-        Task<PagedData<List<UserDto>>> GetAllUsersAsAdmin(AdminUsersTableRequest request);
+        Task<PagedData<List<UserFullDto>>> GetAllUsersAsAdmin(AdminUsersTableRequest request);
         Task<IdentityResult> RegisterUser(UserForRegistrationDto userForRegistration);
         Task ToggleUserLockOut(Guid UserId);
         Task<UserForRegistrationDto> GetUserById(Guid UserId);

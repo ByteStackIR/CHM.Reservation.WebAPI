@@ -10,7 +10,7 @@
 
     [Route("api/[controller]")]
     [ApiController]
-   // [Authorize(Roles = $"{RolesNamesConstant.Administrator},{RolesNamesConstant.Manager}")]
+    // [Authorize(Roles = $"{RolesNamesConstant.Administrator},{RolesNamesConstant.Manager}")]
     public class UsersController : ControllerBase
     {
         private readonly IUsersService _UserService;
@@ -22,11 +22,16 @@
             _UserService = UserService;
         }
 
+
+
+        ///<Summary>
+        /// دریافت لیست تمامی کاربران ثبت شده در برنامه به همراه آیدی شرکت
+        ///</Summary>
         [HttpPost("[action]")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> GetAllUsers([FromBody] AdminUsersTableRequest request)
+        // [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> GetAllUsers([FromBody] AdminUsersTableRequest Dto)
         {
-            var users = await _UserService.GetAllUsersAsAdmin(request);
+            var users = await _UserService.GetAllUsersAsAdmin(Dto);
 
             return Ok(users);
         }
