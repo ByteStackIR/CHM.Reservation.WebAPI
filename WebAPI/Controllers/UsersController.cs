@@ -10,7 +10,7 @@
 
     [Route("api/[controller]")]
     [ApiController]
-   // [Authorize(Roles = $"{RolesNamesConstant.Administrator},{RolesNamesConstant.Manager}")]
+    // [Authorize(Roles = $"{RolesNamesConstant.Administrator},{RolesNamesConstant.Manager}")]
     public class UsersController : ControllerBase
     {
         private readonly IUsersService _UserService;
@@ -22,15 +22,26 @@
             _UserService = UserService;
         }
 
+        /// <summary>
+        /// دریافت لیست تمامی کاربران ثبت شده در برنامه به همراه آیدی شرکت
+        /// </summary>
+        /// <param name="Dto"></param>
+        /// <returns></returns>
         [HttpPost("[action]")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> GetAllUsers([FromBody] AdminUsersTableRequest request)
+        // [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> GetAllUsers([FromBody] AdminUsersTableRequest Dto)
         {
-            var users = await _UserService.GetAllUsersAsAdmin(request);
+            // TODO ارسال تعداد و مشخصات اعضای زیر مجموعه
+            var users = await _UserService.GetAllUsersAsAdmin(Dto);
 
             return Ok(users);
         }
 
+        /// <summary>
+        /// ثبت کاربر جدید
+        /// </summary>
+        /// <param name="userForRegistration"></param>
+        /// <returns></returns>
         [HttpPost("[action]")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         //[Authorize(Roles = RolesNamesConstant.Administrator)]
@@ -52,6 +63,11 @@
             return StatusCode(201);
         }
 
+        /// <summary>
+        /// دریافت اطلاعات کاربر از طریق آیدی
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
         [HttpGet("[action]/{Id}")]
         public async Task<IActionResult> GetUserById(Guid Id)
         {
@@ -59,6 +75,11 @@
             return Ok(res);
         }
 
+        /// <summary>
+        /// آپدیت کاربر
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPut("[action]")]
         public async Task<IActionResult> UpdateUserAsAdmin([FromBody] UserUpdateDto dto)
         {
