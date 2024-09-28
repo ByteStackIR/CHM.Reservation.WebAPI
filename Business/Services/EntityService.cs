@@ -205,10 +205,8 @@ namespace Services.Services
                 if (entity is not null)
                 {
                     var res = _mapper.Map<EntityDto>(entity);
-                    res.Slots = _mapper.Map<List<SlotDto>>(entity.Slots);
-                    res.ParameterValues = _mapper.Map<List<ParameterValuesDto>>(
-                        entity.ParameterValues
-                    ).OrderBy(x=>x.DisplayOrder).ToList();
+                    res.Slots = res.Slots.OrderBy(x => x.StartDate).ToList();
+                    res.ParameterValues = res.ParameterValues.OrderBy(x=>x.DisplayOrder).ToList();
                     res.EntityManagers = entity.EntityManagers.Select(x => x.Id).ToList();
                     res.Images = new();
                     foreach (var item in images)
@@ -220,7 +218,7 @@ namespace Services.Services
                             Key = item.Id.ToString()
                         });
                     }
-
+                    res.Images = res.Images.OrderBy(x => x.DisplayOrder).ToList();
                     return res;
                 }
                 else
@@ -351,7 +349,8 @@ namespace Services.Services
             entity.PerPerson = entityDto.PerPerson;
             entity.UserId = _systemContext.CurrentUser.GetUserId().ToString();
             entity.ParameterValues = new List<ParameterValues>();
-
+            _repositoryManager.Entity.Update(entity);
+      
             var entityManagers = _repositoryManager
                 .EntityManager.FindByCondition(tc => tc.EntityId == entity.Id, false)
                 .ToList();
@@ -415,7 +414,7 @@ namespace Services.Services
                         CreatedDate = DateTime.Now,
                         DisplayOrder = paramValueDto.DisplayOrder,
                     };
-                    entity.ParameterValues.Add(paramValue);
+                    _repositoryManager.ParameterValues.Create(paramValue);
                 }
                 else
                 {
@@ -424,11 +423,11 @@ namespace Services.Services
                     );
                     paramValue.Value = paramValueDto.Value;
                     paramValue.DisplayOrder = paramValueDto.DisplayOrder;
-                    _repositoryManager.Entity.Update(entity);
+                    _repositoryManager.ParameterValues.Update(paramValue);
                 }
             }
 
-            _repositoryManager.Entity.Update(entity);
+        
             _repositoryManager.Save();
 
             return _mapper.Map<EntityDto>(entity);

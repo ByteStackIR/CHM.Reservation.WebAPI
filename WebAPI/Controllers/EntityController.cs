@@ -148,7 +148,13 @@ namespace WebAPI.Controllers
         {
             try
             {
-                EntityDto dto = System.Text.Json.JsonSerializer.Deserialize<EntityDto>(Entity, new System.Text.Json.JsonSerializerOptions() { PropertyNameCaseInsensitive=true});
+                EntityDto dto = System.Text.Json.JsonSerializer.Deserialize<EntityDto>(
+                    Entity,
+                    new System.Text.Json.JsonSerializerOptions()
+                    {
+                        PropertyNameCaseInsensitive = true,
+                    }
+                );
 
                 if (Images != null && Images.Files.Count != 0)
                 {
@@ -159,25 +165,46 @@ namespace WebAPI.Controllers
                             if (File.DisplayOrder == -1)
                                 await _IAttachmentsService.RemoveFromStore(AttachId);
                             else
-                                await _IAttachmentsService.UpdateStore(
-                                    AttachId,
-                                    File.DisplayOrder,
-                                    dto.Id.Value
-                                );
+                            {
+                                if (File.File != null)
+                                {
+                                    string tempName = await FileHelper.SaveFileAsync(
+                                        File.File,
+                                        FileType.FileTypes[FileTypeEnum.Entities]
+                                    );
+                                    await _IAttachmentsService.AddToStore(
+                                        tempName,
+                                        FileType.FileTypes[FileTypeEnum.Entities],
+                                        File.File.ContentType,
+                                        File.DisplayOrder,
+                                        dto.Id.Value
+                                    );
+                                    await _IAttachmentsService.RemoveFromStore(AttachId);
+                                }
+                                else
+                                    await _IAttachmentsService.UpdateStore(
+                                        AttachId,
+                                        File.DisplayOrder,
+                                        dto.Id.Value
+                                    );
+                            }
                         }
                         else
                         {
-                            string tempName = await FileHelper.SaveFileAsync(
-                                File.File,
-                                FileType.FileTypes[FileTypeEnum.Entities]
-                            );
-                            await _IAttachmentsService.AddToStore(
-                                tempName,
-                                FileType.FileTypes[FileTypeEnum.Entities],
-                                File.File.ContentType,
-                                File.DisplayOrder,
-                                dto.Id.Value
-                            );
+                            if (File.File != null)
+                            {
+                                string tempName = await FileHelper.SaveFileAsync(
+                                    File.File,
+                                    FileType.FileTypes[FileTypeEnum.Entities]
+                                );
+                                await _IAttachmentsService.AddToStore(
+                                    tempName,
+                                    FileType.FileTypes[FileTypeEnum.Entities],
+                                    File.File.ContentType,
+                                    File.DisplayOrder,
+                                    dto.Id.Value
+                                );
+                            }
                         }
                     }
                 }
@@ -211,7 +238,13 @@ namespace WebAPI.Controllers
         {
             try
             {
-                EntityDto dto = System.Text.Json.JsonSerializer.Deserialize<EntityDto>(Entity, new System.Text.Json.JsonSerializerOptions() { PropertyNameCaseInsensitive = false });
+                EntityDto dto = System.Text.Json.JsonSerializer.Deserialize<EntityDto>(
+                    Entity,
+                    new System.Text.Json.JsonSerializerOptions()
+                    {
+                        PropertyNameCaseInsensitive = false,
+                    }
+                );
 
                 dto.Id = Guid.NewGuid();
                 if (Images != null && Images.Files.Count != 0)
