@@ -6,6 +6,9 @@ namespace Entities.Utils
     {
         public static async Task<string> SaveFileAsync(IFormFile file, string Type)
         {
+            // TODO add image compression 
+
+
             if (file == null || file.Length == 0)
             {
                 return null;

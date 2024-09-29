@@ -99,10 +99,10 @@ namespace Services.Services
                 );
 
 
-    
+
 
             var data = await query.FirstOrDefaultAsync();
-            var SLots = _mapper.Map<List<SlotDto>>(data.Slots).OrderBy(x=>x.StartDate).ToList();
+            var SLots = _mapper.Map<List<SlotDto>>(data.Slots).OrderBy(x => x.StartDate).ToList();
 
             foreach (var item in SLots)
             {
@@ -128,7 +128,7 @@ namespace Services.Services
                     EndDate = data.EndDate,
                     PerPerson = data.PerPerson,
                     CityTitle = data.City.Title,
-                    Images = Images.Select(x=>x.Id.ToString()).ToList()
+                    Images = Images.Select(x => x.Id.ToString()).ToList()
                 };
 
             foreach (var item in data.ParameterValues)
@@ -184,6 +184,22 @@ namespace Services.Services
             for (int i = 0; i < data.Count; i++)
             {
                 dataDto[i].Category = _mapper.Map<CategoryDto>(data[i].Category);
+
+                // adding images to entity
+                var images = await _repositoryManager.AttachmentsRepository.FindByCondition(x => x.ObjectId == dataDto[i].Id, true).ToListAsync();
+
+                // TODO write a mapper to do the this
+                dataDto[i].Images = new();
+                foreach (var item in images)
+                {
+                    dataDto[i].Images.Add(new()
+                    {
+                        DisplayOrder = item.DisplayOrder,
+                        FilePath = item.Id.ToString(),
+                        Key = item.Id.ToString()
+                    });
+                }
+                dataDto[i].Images = dataDto[i].Images.OrderBy(x => x.DisplayOrder).ToList();
             }
 
             return new(new(count, request.PageNumber, request.PageSize), dataDto);
@@ -196,18 +212,20 @@ namespace Services.Services
                 var entity = await _repositoryManager
                     .Entity.FindByCondition(x => x.Id == entityId, false)
                     .Include(x => x.Slots)
-                    .Include(x => x.ParameterValues.OrderBy(x=>x.DisplayOrder))
+                    .Include(x => x.ParameterValues.OrderBy(x => x.DisplayOrder))
                     .Include(x => x.EntityManagers)
                     .FirstOrDefaultAsync();
 
-                var images =await _repositoryManager.AttachmentsRepository.FindByCondition(x => x.ObjectId == entityId, true).ToListAsync();
+                var images = await _repositoryManager.AttachmentsRepository.FindByCondition(x => x.ObjectId == entityId, true).ToListAsync();
 
                 if (entity is not null)
                 {
                     var res = _mapper.Map<EntityDto>(entity);
                     res.Slots = res.Slots.OrderBy(x => x.StartDate).ToList();
-                    res.ParameterValues = res.ParameterValues.OrderBy(x=>x.DisplayOrder).ToList();
+                    res.ParameterValues = res.ParameterValues.OrderBy(x => x.DisplayOrder).ToList();
                     res.EntityManagers = entity.EntityManagers.Select(x => x.Id).ToList();
+
+                    // TODO write a mapper to do the this
                     res.Images = new();
                     foreach (var item in images)
                     {
@@ -350,7 +368,7 @@ namespace Services.Services
             entity.UserId = _systemContext.CurrentUser.GetUserId().ToString();
             entity.ParameterValues = new List<ParameterValues>();
             _repositoryManager.Entity.Update(entity);
-      
+
             var entityManagers = _repositoryManager
                 .EntityManager.FindByCondition(tc => tc.EntityId == entity.Id, false)
                 .ToList();
@@ -427,7 +445,7 @@ namespace Services.Services
                 }
             }
 
-        
+
             _repositoryManager.Save();
 
             return _mapper.Map<EntityDto>(entity);
