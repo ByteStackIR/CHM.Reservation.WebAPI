@@ -300,7 +300,7 @@ namespace Services.Services
             var claims = new List<Claim> { new Claim(ClaimTypes.Name, _user.UserName) };
 
             var roles = await _userManager.GetRolesAsync(_user);
-            var userRoles = roles.Select(r => new Claim(ClaimTypes.Role, r)).ToArray();
+            var userRoles = roles.Select(r => new Claim(ClaimTypes.Role, r.ToUpper())).ToArray();
             // var userClaims = await _userManager.GetClaimsAsync(_user).ConfigureAwait(false);
             IList<Claim> roleClaims = new List<Claim>();
             _roleManager

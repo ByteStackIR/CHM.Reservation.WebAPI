@@ -24,6 +24,8 @@ namespace Entities.Models
         public DateTime BirthDate { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string FamilyName { get; set; } = string.Empty;
+        public string FatherName { get; set; } 
+
         public GenderType Gender { get; set; }
 
         [ForeignKey(nameof(User))]

@@ -31,15 +31,16 @@ namespace Entities.DataTransferObjects
     public class UserUpdateDto
     {
         public Guid Id { get; set; }
-        public DateTime BrithDate { get; set; }
+        public DateTime BirthDate { get; set; }
         public GenderType Gender { get; set; }
         public string FirstName { get; set; }
+        public string FatherName { get; set; }
         public string PhoneNumber { get; set; }
         public string LastName { get; set; }
         public string IdentityCode { get; set; }
         public string PersonnelCode { get; set; }
         public Guid CompanyId { get; set; }
-        public string Role { get; set; }
+        public List<string> Roles { get; set; } = new();
     }
 
     public class RoleDto

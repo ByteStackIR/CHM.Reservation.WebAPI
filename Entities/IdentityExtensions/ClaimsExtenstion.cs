@@ -21,5 +21,15 @@ namespace Entities.IdentityExtensions
 
         }
 
+        public static bool IsInRoles(this ClaimsPrincipal claimsPrincipal,List<string> Roles)
+        {
+           var userRoles = claimsPrincipal.FindAll(ClaimTypes.Role).Select(x=>x.Value).ToList();
+            var t = userRoles.Intersect(Roles).ToList();
+            if (userRoles.Intersect(Roles).Count() > 0)
+                return true;
+            return false;
+
+        }
+
     }
 }

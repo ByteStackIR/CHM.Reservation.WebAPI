@@ -3,6 +3,7 @@
     using Contracts.IService;
     using Entities.Constant;
     using Entities.DataTransferObjects;
+    using Entities.IdentityExtensions;
     using Features.CustomRequest;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,7 @@
 
     [Route("api/[controller]")]
     [ApiController]
-    // [Authorize(Roles = $"{RolesNamesConstant.Administrator},{RolesNamesConstant.Manager}")]
+    [Authorize(Roles = $"{RolesNamesConstant.Administrator},{RolesNamesConstant.Manager}")]
     public class UsersController : ControllerBase
     {
         private readonly IUsersService _UserService;
@@ -81,9 +82,9 @@
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPut("[action]")]
-        public async Task<IActionResult> UpdateUserAsAdmin([FromBody] UserUpdateDto dto)
+        public async Task<IActionResult> UpdateUser([FromBody] UserUpdateDto dto)
         {
-            if (base.User.IsInRole(RolesNamesConstant.Administrator))
+            if (base.User.IsInRoles(new() { RolesNamesConstant.Administrator }))
                 await _UserService.UpdateUserAsAdmin(dto);
             else
                 await _UserService.UpdateUserAsCompany(dto);
