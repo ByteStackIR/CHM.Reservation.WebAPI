@@ -261,7 +261,7 @@
             <param name="Id"></param>
             <returns></returns>
         </member>
-        <member name="M:WebAPI.Controllers.UsersController.UpdateUserAsAdmin(Entities.DataTransferObjects.UserUpdateDto)">
+        <member name="M:WebAPI.Controllers.UsersController.UpdateUser(Entities.DataTransferObjects.UserUpdateDto)">
             <summary>
             آپدیت کاربر
             </summary>
@@ -314,6 +314,30 @@
             <inheritdoc />
         </member>
         <member name="M:WebAPI.Migrations.attach.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:WebAPI.Migrations.FatherName">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.FatherName.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.FatherName.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.FatherName.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:WebAPI.Migrations.FatherName1">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.FatherName1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.FatherName1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.FatherName1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
     </members>

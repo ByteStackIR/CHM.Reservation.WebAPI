@@ -45,12 +45,14 @@ namespace WebAPI.Extensions
             }
             app.UseSwagger();
             app.UseSwaggerUI();
+
             //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCors("CorsPolicy");
 
 
             app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -214,7 +216,6 @@ namespace WebAPI.Extensions
             {
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 
             })
             .AddJwtBearer(options =>
@@ -295,6 +296,7 @@ namespace WebAPI.Extensions
 
         public static void ConfigureAuthorization(this IServiceCollection services)
         {
+    
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(PolicyTypes.Teams.Manage, policy =>

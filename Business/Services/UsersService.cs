@@ -30,6 +30,7 @@
         /// </summary>
         private UserManager<User> _userManager;
 
+        RoleManager<IdentityRole> _roleManager;
         /// <summary>
         /// Defines the _relativesService
         /// </summary>
@@ -59,13 +60,15 @@
             ILoggerManager logger,
             IRepositoryManager repoManger,
             IHttpContextAccessor httpContextAccessor,
-            ISystemContext systemContext
+            ISystemContext systemContext,
+             RoleManager<IdentityRole> roleManager
         )
             : base(repoManger, mapper, httpContextAccessor, systemContext, logger)
         {
             _userManager = userManager;
             _userCompanyService = userCompanyService;
             _relativesService = relativesService;
+            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -172,6 +175,7 @@
             var user = _mapper.Map<User>(userForRegistration);
             try
             {
+                user.UserName = "U" + user.PhoneNumber;
                 result = await _userManager.CreateAsync(user, Guid.NewGuid().ToString());
                 if (result.Succeeded)
                 {
@@ -210,7 +214,7 @@
 
             return new()
             {
-                BrithDate = selfModel.BirthDate,
+                BirthDate = selfModel.BirthDate,
                 CompanyId = user.UserCompanies.FirstOrDefault(x => x.IsActive)?.CompanyId ?? Guid.Empty,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
@@ -218,7 +222,8 @@
                 IdentityCode = selfModel.IdentityCode,
                 PersonnelCode = user.UserCompanies.FirstOrDefault(x => x.IsActive)?.PersonnelCode ?? "",
                 PhoneNumber = user.PhoneNumber,
-                Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault()
+                Roles = (await _userManager.GetRolesAsync(user)).ToList(),
+                FatherName = selfModel.FatherName
             };
         }
 
@@ -263,7 +268,33 @@
             user.LastName = dto.LastName;
             user.PhoneNumber = dto.PhoneNumber;
             user.Gender = dto.Gender;
+            user.UserName = "U" + dto.PhoneNumber;
+
             await _userManager.UpdateAsync(user);
+
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            var currentRolesList = currentRoles.ToList();
+
+            // Determine roles to remove
+            var rolesToRemove = currentRolesList.Except(dto.Roles).ToList();
+
+            // Determine roles to add
+            var rolesToAdd = dto.Roles.Except(currentRolesList).ToList();
+
+            // Remove old roles that are not in the new list
+            if (rolesToRemove.Any())
+            {
+                await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+            }
+
+            // Add new roles that are not already assigned
+            if (rolesToAdd.Any())
+            {
+                await _userManager.AddToRolesAsync(user, rolesToAdd);
+            }
+
+
+
 
             var userCompany = user.UserCompanies.FirstOrDefault(x => x.IsActive);
 
@@ -296,6 +327,7 @@
             user.LastName = dto.LastName;
             user.PhoneNumber = dto.PhoneNumber;
             user.Gender = dto.Gender;
+            user.UserName = "U" + dto.PhoneNumber;
             await _userManager.UpdateAsync(user);
 
             await _userCompanyService.AddUserToCompany(Guid.Parse(user.Id), dto.CompanyId, dto.PersonnelCode);

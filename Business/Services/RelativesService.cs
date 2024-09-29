@@ -65,9 +65,14 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         {
             var userRelatives = await _repositoryManager
                 .Relatives.FindByCondition(
-                    x => x.UserId == UserId.ToString() && x.IsChecked && x.IsConfirmed && !x.IsDeleted,
+                    x =>
+                        x.UserId == UserId.ToString()
+                        && x.IsChecked
+                        && x.IsConfirmed
+                        && !x.IsDeleted,
                     false
-                ).Include(x => x.Relation)
+                )
+                .Include(x => x.Relation)
                 .ToListAsync();
 
             return _mapper.Map<List<RelativeOfUserDto>>(userRelatives);
@@ -383,6 +388,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         model.FirstName = dto.FirstName;
         model.FamilyName = dto.FamilyName;
         model.IdentityCode = dto.IdentityCode;
+        model.FatherName = dto.FatherName;
         model.Gender = dto.Gender;
         model.UserId = _systemContext.CurrentUser.GetUserId().Value.ToString();
         model.IsChecked = true;
@@ -445,6 +451,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         model.BirthDate = dto.BirthDate;
         model.FirstName = dto.FirstName;
         model.FamilyName = dto.FamilyName;
+        model.FatherName = dto.FatherName;
         model.IdentityCode = dto.IdentityCode;
         model.Gender = dto.Gender;
         model.IsChecked = true;
@@ -492,6 +499,8 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         model.BirthDate = dto.BirthDate;
         model.FirstName = dto.FirstName;
         model.FamilyName = dto.FamilyName;
+        model.FatherName = dto.FatherName;
+
         model.IdentityCode = dto.IdentityCode;
         model.Gender = dto.Gender;
         model.IsChecked = true;
@@ -634,7 +643,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         Relatives model =
             new()
             {
-                BirthDate = user.BrithDate,
+                BirthDate = user.BirthDate,
                 CreatedDate = DateTime.Now,
                 FamilyName = user.LastName,
                 FirstName = user.FirstName,
@@ -646,6 +655,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
                 IsDeleted = false,
                 RelationId = relation.Id,
                 UserId = userModel.Id,
+                FatherName = user.FatherName,
             };
 
         _repositoryManager.Relatives.Create(model);
@@ -663,11 +673,11 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         var model = await _repositoryManager
             .Relatives.FindByCondition(
                 x => x.UserId == userModel.Id && x.RelationId == relation.Id,
-                false
+                true
             )
             .FirstOrDefaultAsync();
 
-        model.BirthDate = dto.BrithDate;
+        model.BirthDate = dto.BirthDate;
         model.FirstName = dto.FirstName;
         model.FamilyName = dto.LastName;
         model.IdentityCode = dto.IdentityCode;
@@ -675,9 +685,10 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         model.IsDeleted = false;
         model.IsChecked = true;
         model.IsConfirmed = true;
+        model.FatherName = dto.FatherName;
 
         _repositoryManager.Relatives.Update(model);
-        _repositoryManager.Save();
+        _repositoryManager.Relatives.SaveChanges();
 
         return _mapper.Map<RelativeDto>(model);
     }

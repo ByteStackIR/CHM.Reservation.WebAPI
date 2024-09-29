@@ -12,7 +12,7 @@ namespace Entities.Enum
 
         [Description("زن  ")]
         Woman = 1,
-        [Description("زیبال")]
+        [Description("مرد")]
         Man = 2,
     }
 }
