@@ -111,41 +111,9 @@
             <returns></returns>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:WebAPI.Controllers.RelativesController.AdminAddRelatives(Entities.DataTransferObjects.UserRelativesCreationDto)">
-            <summary>
-            افزودن نسبت ها برای کاربر -- در سطح ادمین
-            </summary>
-            <param name="dto"></param>
-            <returns></returns>
-            <exception cref="T:System.Exception"></exception>
-        </member>
-        <member name="M:WebAPI.Controllers.RelativesController.CompanyAddRelatives(Entities.DataTransferObjects.UserRelativesCreationDto)">
-            <summary>
-            افزودن نسبت ها برای کاربر -- در سطح شرکت
-            </summary>
-            <param name="dto"></param>
-            <returns></returns>
-            <exception cref="T:System.Exception"></exception>
-        </member>
         <member name="M:WebAPI.Controllers.RelativesController.UpdateRelative(Entities.DataTransferObjects.Models.RelativeDto)">
             <summary>
             ویرایش نسبت ها برای کاربر درخواست دهنده
-            </summary>
-            <param name="dto"></param>
-            <returns></returns>
-            <exception cref="T:System.Exception"></exception>
-        </member>
-        <member name="M:WebAPI.Controllers.RelativesController.AdminUpdateRelative(Entities.DataTransferObjects.Models.RelativeDto)">
-            <summary>
-            ویرایش نسبت ها برای کاربر -- در سطح ادمین
-            </summary>
-            <param name="dto"></param>
-            <returns></returns>
-            <exception cref="T:System.Exception"></exception>
-        </member>
-        <member name="M:WebAPI.Controllers.RelativesController.CompanyUpdateRelative(Entities.DataTransferObjects.Models.RelativeDto)">
-            <summary>
-            ویرایش نسبت ها برای کاربر -- در سطح شرکت
             </summary>
             <param name="dto"></param>
             <returns></returns>
@@ -159,26 +127,34 @@
             <returns></returns>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:WebAPI.Controllers.RelativesController.AdminToggleRelative(Entities.DataTransferObjects.Models.RelativeDto)">
-            <summary>
-            فعال و غیرفعال سازی نسبت برای کاربر -- در سطح ادمین
-            </summary>
-            <param name="dto">UserId - Id</param>
-            <returns></returns>
-            <exception cref="T:System.Exception"></exception>
-        </member>
-        <member name="M:WebAPI.Controllers.RelativesController.CompanyToggleRelative(Entities.DataTransferObjects.Models.RelativeDto)">
-            <summary>
-            فعال و غیرفعال سازی نسبت  برای کاربر -- در سطح شرکت
-            </summary>
-            <param name="dto">UserId - Id</param>
-            <returns></returns>
-            <exception cref="T:System.Exception"></exception>
-        </member>
         <member name="M:WebAPI.Controllers.RelativesController.GetConfirmedRelatives">
             <summary>
             گرفتن اطلاعات نسبت های تایید شده برای کاربر درخواست دهنده
             </summary>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.AddToUserRelatives(Entities.DataTransferObjects.UserRelativesCreationDto)">
+            <summary>
+            افزودن نسبت ها برای کاربر -- در سطح شرکت و ادمین
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.UpdateUserRelative(Entities.DataTransferObjects.Models.RelativeDto)">
+            <summary>
+            ویرایش نسبت ها برای کاربر -- در سطح شرکت و ادمین
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.ToggleUserRelative(Entities.DataTransferObjects.Models.RelativeDto)">
+            <summary>
+            فعال و غیرفعال سازی نسبت برای کاربر -- در سطح شرکت و ادمین
+            </summary>
+            <param name="dto">UserId - Id</param>
             <returns></returns>
             <exception cref="T:System.Exception"></exception>
         </member>
@@ -189,24 +165,9 @@
             <returns></returns>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:WebAPI.Controllers.RelativesController.GetCompanyNotCheckedRelatives(Features.CustomRequest.ListNotCheckedRelativesRequest)">
+        <member name="M:WebAPI.Controllers.RelativesController.CheckUserRelative(Entities.DataTransferObjects.Models.RelativeDto)">
             <summary>
-            گرفتن اطلاعات نسبت های بررسی نشده - سطح شرکت
-            </summary>
-            <returns></returns>
-            <exception cref="T:System.Exception"></exception>
-        </member>
-        <member name="M:WebAPI.Controllers.RelativesController.AdminCheckRelative(Entities.DataTransferObjects.Models.RelativeDto)">
-            <summary>
-            تعیین وضعیت نسبت  برای کاربر -- در سطح ادمین
-            </summary>
-            <param name="dto">userId - Id - IsConfirmed</param>
-            <returns></returns>
-            <exception cref="T:System.Exception"></exception>
-        </member>
-        <member name="M:WebAPI.Controllers.RelativesController.CompanyCheckRelative(Entities.DataTransferObjects.Models.RelativeDto)">
-            <summary>
-            تعیین وضعیت نسبت  برای کاربر -- در سطح شرکت
+            تعیین وضعیت نسبت  برای کاربر -- در سطح شرکت و ادمین
             </summary>
             <param name="dto">userId - Id - IsConfirmed</param>
             <returns></returns>

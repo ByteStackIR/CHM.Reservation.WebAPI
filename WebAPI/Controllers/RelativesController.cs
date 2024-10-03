@@ -1,5 +1,8 @@
-﻿using Asp.Versioning;
+﻿using System.Security.Claims;
+using Asp.Versioning;
+using Azure.Core;
 using Contracts.IService;
+using Entities.Constant;
 using Entities.DataTransferObjects;
 using Entities.DataTransferObjects.Models;
 using Entities.IdentityExtensions;
@@ -9,11 +12,11 @@ using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class RelativesController : ControllerBase
     {
@@ -31,20 +34,21 @@ namespace WebAPI.Controllers
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        [Authorize]
+       
         [HttpGet("[action]")]
         public async Task<IActionResult> GetRelatives()
         {
             try
             {
                 var UserId = base.User.GetUserId();
-                if(UserId == null)
+                if (UserId == null)
                     throw new Exception("User not found!");
 
                 var res = await _relativesService.GetbyUserId(UserId.Value);
                 return Ok(res);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 throw new Exception("An error occured while retrieving User's Relatives!");
             }
         }
@@ -55,14 +59,12 @@ namespace WebAPI.Controllers
         /// <param name="dto"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        [Authorize]
+       
         [HttpPost("[action]")]
-        public async Task<IActionResult> AddRelative([FromBody] RelativeDto dto )
+        public async Task<IActionResult> AddRelative([FromBody] RelativeDto dto)
         {
             try
             {
-              
-
                 var res = await _relativesService.InsertByUser(dto);
                 return Ok(res);
             }
@@ -72,21 +74,18 @@ namespace WebAPI.Controllers
             }
         }
 
-
         /// <summary>
         /// افزودن نسبت ها برای کاربر درخواست دهنده
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        [Authorize]
+       
         [HttpPost("[action]")]
         public async Task<IActionResult> AddRelatives([FromBody] List<RelativeDto> dto)
         {
             try
             {
-
-
                 var res = await _relativesService.BulkInsertByUser(dto);
                 return Ok(res);
             }
@@ -96,68 +95,18 @@ namespace WebAPI.Controllers
             }
         }
 
-
-        /// <summary>
-        /// افزودن نسبت ها برای کاربر -- در سطح ادمین
-        /// </summary>
-        /// <param name="dto"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        [Authorize]
-        [HttpPost("admin/[action]")]
-        public async Task<IActionResult> AdminAddRelatives([FromBody] UserRelativesCreationDto dto)
-        {
-            try
-            {
-                var res = await _relativesService.BulkInsertByAdmin(dto);
-                return Ok(res);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occured while inserting User's Relatives!");
-            }
-        }
-
-
-        /// <summary>
-        /// افزودن نسبت ها برای کاربر -- در سطح شرکت
-        /// </summary>
-        /// <param name="dto"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        [Authorize]
-        [HttpPost("company/[action]")]
-        public async Task<IActionResult> CompanyAddRelatives([FromBody] UserRelativesCreationDto dto)
-        {
-            try
-            {
-                var res = await _relativesService.BulkInsertByCompany(dto);
-                
-                return Ok(res);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occured while inserting User's Relatives!");
-            }
-        }
-
-
-
-
         /// <summary>
         /// ویرایش نسبت ها برای کاربر درخواست دهنده
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        [Authorize]
+       
         [HttpPut("[action]")]
         public async Task<IActionResult> UpdateRelative([FromBody] RelativeDto dto)
         {
             try
             {
-
-
                 var res = await _relativesService.UpdateByUser(dto);
                 return Ok(res);
             }
@@ -166,69 +115,18 @@ namespace WebAPI.Controllers
                 throw new Exception("An error occured while updating User's Relatives!");
             }
         }
-
-
-        /// <summary>
-        /// ویرایش نسبت ها برای کاربر -- در سطح ادمین
-        /// </summary>
-        /// <param name="dto"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        [Authorize]
-        [HttpPut("admin/[action]")]
-        public async Task<IActionResult> AdminUpdateRelative([FromBody] RelativeDto dto)
-        {
-            try
-            {
-                var res = await _relativesService.UpdateByAdmin(dto);
-                return Ok(res);
-            }
-            catch (Exception ex)
-            { 
-                throw new Exception("An error occured while updating User's Relatives!");
-            }
-        }
-
-
-        /// <summary>
-        /// ویرایش نسبت ها برای کاربر -- در سطح شرکت
-        /// </summary>
-        /// <param name="dto"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        [Authorize]
-        [HttpPut("company/[action]")]
-        public async Task<IActionResult> CompanyUpdateRelative([FromBody] RelativeDto dto)
-        {
-            try
-            {
-                var res = await _relativesService.UpdateByCompany(dto);
-
-                return Ok(res);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occured while updating User's Relatives!");
-            }
-        }
-
-
-
-
         /// <summary>
         /// فعال و غیرفعال سازی نسبت برای کاربر درخواست دهنده
         /// </summary>
         /// <param name="dto">Id</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        [Authorize]
+       
         [HttpDelete("[action]")]
         public async Task<IActionResult> ToggleRelative([FromBody] RelativeDto dto)
         {
             try
             {
-
-
                 var res = await _relativesService.ToggleByUser(dto.Id);
                 return Ok(res);
             }
@@ -238,62 +136,12 @@ namespace WebAPI.Controllers
             }
         }
 
-
-        /// <summary>
-        /// فعال و غیرفعال سازی نسبت برای کاربر -- در سطح ادمین
-        /// </summary>
-        /// <param name="dto">UserId - Id</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        [Authorize]
-        [HttpDelete("admin/[action]")]
-        public async Task<IActionResult> AdminToggleRelative([FromBody] RelativeDto dto)
-        {
-            try
-            {
-                var res = await _relativesService.ToggleByAdmin(Guid.Parse(dto.UserId), dto.Id);
-                return Ok(res);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occured while toggling User's Relatives!");
-            }
-        }
-
-
-        /// <summary>
-        /// فعال و غیرفعال سازی نسبت  برای کاربر -- در سطح شرکت
-        /// </summary>
-        /// <param name="dto">UserId - Id</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        [Authorize]
-        [HttpDelete("company/[action]")]
-        public async Task<IActionResult> CompanyToggleRelative([FromBody] RelativeDto dto)
-        {
-            try
-            {
-                var res = await _relativesService.ToggleByCompany(Guid.Parse(dto.UserId),dto.Id);
-
-                return Ok(res);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occured while toggling User's Relatives!");
-            }
-        }
-
-
-
-
-
-
         /// <summary>
         /// گرفتن اطلاعات نسبت های تایید شده برای کاربر درخواست دهنده
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        [Authorize]
+       
         [HttpGet("[action]")]
         public async Task<IActionResult> GetConfirmedRelatives()
         {
@@ -313,21 +161,138 @@ namespace WebAPI.Controllers
         }
 
 
+        /// <summary>
+        /// افزودن نسبت ها برای کاربر -- در سطح شرکت و ادمین
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+
+        [Authorize(Roles = $"{RolesNamesConstant.Administrator},{RolesNamesConstant.Manager}")]
+        [HttpPost("admin/[action]")]
+        public async Task<IActionResult> AddToUserRelatives([FromBody] UserRelativesCreationDto dto)
+        {
+            try
+            {
+                if (base.User.IsInRoles(new() { RolesNamesConstant.Administrator }))
+                {
+                    var res = await _relativesService.BulkInsertByAdmin(dto);
+                    return Ok(res);
+                }
+                else if (base.User.IsInRoles(new() { RolesNamesConstant.Manager }))
+                {
+                    var res = await _relativesService.BulkInsertByCompany(dto);
+                    return Ok(res);
+                }
+
+                return Forbid();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured while inserting User's Relatives!");
+            }
+        }
+
+
+
+        /// <summary>
+        /// ویرایش نسبت ها برای کاربر -- در سطح شرکت و ادمین
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+
+        [Authorize(Roles = $"{RolesNamesConstant.Administrator},{RolesNamesConstant.Manager}")]
+        [HttpPut("admin/[action]")]
+        public async Task<IActionResult> UpdateUserRelative([FromBody] RelativeDto dto)
+        {
+            try
+            {
+                if (base.User.IsInRoles(new() { RolesNamesConstant.Administrator }))
+                {
+                    var res = await _relativesService.UpdateByAdmin(dto);
+                    return Ok(res);
+                }
+                else if (base.User.IsInRoles(new() { RolesNamesConstant.Manager }))
+                {
+                    var res = await _relativesService.UpdateByCompany(dto);
+
+                    return Ok(res);
+                }
+
+                return Forbid();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured while updating User's Relatives!");
+            }
+        }
+
+
+
+        /// <summary>
+        /// فعال و غیرفعال سازی نسبت برای کاربر -- در سطح شرکت و ادمین
+        /// </summary>
+        /// <param name="dto">UserId - Id</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+
+        [Authorize(Roles = $"{RolesNamesConstant.Administrator},{RolesNamesConstant.Manager}")]
+        [HttpDelete("admin/[action]")]
+        public async Task<IActionResult> ToggleUserRelative([FromBody] RelativeDto dto)
+        {
+            try
+            {
+                if (base.User.IsInRoles(new() { RolesNamesConstant.Administrator }))
+                {
+                    var res = await _relativesService.ToggleByAdmin(Guid.Parse(dto.UserId), dto.Id);
+                    return Ok(res);
+                }
+                else if (base.User.IsInRoles(new() { RolesNamesConstant.Manager }))
+                {
+                    var res = await _relativesService.ToggleByCompany(
+                        Guid.Parse(dto.UserId),
+                        dto.Id
+                    );
+
+                    return Ok(res);
+                }
+
+                return Forbid();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured while toggling User's Relatives!");
+            }
+        }
+
 
         /// <summary>
         /// گرفتن اطلاعات نسبت های بررسی نشده - سطح ادمین
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        [Authorize]
+
+        [Authorize(Roles = $"{RolesNamesConstant.Administrator},{RolesNamesConstant.Manager}")]
         [HttpPost("admin/[action]")]
-        public async Task<IActionResult> GetAllNotCheckedRelatives([FromBody] ListNotCheckedRelativesRequest request)
+        public async Task<IActionResult> GetAllNotCheckedRelatives(
+            [FromBody] ListNotCheckedRelativesRequest request
+        )
         {
             try
             {
+                if (base.User.IsInRoles(new() { RolesNamesConstant.Administrator }))
+                {
+                    var res = await _relativesService.GetNotCheckedRelativesAsAdmin(request);
+                    return Ok(res);
+                }
+                else if (base.User.IsInRoles(new() { RolesNamesConstant.Manager }))
+                {
+                    var res = await _relativesService.GetNotCheckedRelativesAsCompany(request);
+                    return Ok(res);
+                }
 
-                var res = await _relativesService.GetNotCheckedRelativesAsAdmin(request);
-                return Ok(res);
+                return Forbid();
             }
             catch (Exception ex)
             {
@@ -336,75 +301,45 @@ namespace WebAPI.Controllers
         }
 
         /// <summary>
-        /// گرفتن اطلاعات نسبت های بررسی نشده - سطح شرکت
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        [Authorize]
-        [HttpPost("company/[action]")]
-        public async Task<IActionResult> GetCompanyNotCheckedRelatives([FromBody] ListNotCheckedRelativesRequest request)
-        {
-            try
-            {
-
-                var res = await _relativesService.GetNotCheckedRelativesAsCompany(request);
-                return Ok(res);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occured while retrieving all unchecked Relatives!");
-            }
-        }
-
-
-
-        /// <summary>
-        /// تعیین وضعیت نسبت  برای کاربر -- در سطح ادمین
+        /// تعیین وضعیت نسبت  برای کاربر -- در سطح شرکت و ادمین
         /// </summary>
         /// <param name="dto">userId - Id - IsConfirmed</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        [Authorize]
-        [HttpPut("company/[action]")]
-        public async Task<IActionResult> AdminCheckRelative([FromBody] RelativeDto dto)
+
+        [Authorize(Roles = $"{RolesNamesConstant.Administrator},{RolesNamesConstant.Manager}")]
+        [HttpPut("admin/[action]")]
+        public async Task<IActionResult> CheckUserRelative([FromBody] RelativeDto dto)
         {
             try
             {
-                var res = await _relativesService.ResultOfReviewRelativeByAdmin(Guid.Parse(dto.UserId), dto.Id, dto.IsConfirmed);
+                if (base.User.IsInRoles(new() { RolesNamesConstant.Administrator }))
+                {
+                    var res = await _relativesService.ResultOfReviewRelativeByAdmin(
+                        Guid.Parse(dto.UserId),
+                        dto.Id,
+                        dto.IsConfirmed
+                    );
 
-                return Ok(res);
+                    return Ok(res);
+                }
+                else if (base.User.IsInRoles(new() { RolesNamesConstant.Manager }))
+                {
+                    var res = await _relativesService.ResultOfReviewRelativeByCompany(
+                        Guid.Parse(dto.UserId),
+                        dto.Id,
+                        dto.IsConfirmed
+                    );
+
+                    return Ok(res);
+                }
+
+                return Forbid();
             }
             catch (Exception ex)
             {
                 throw new Exception("An error occured while checking User's Relatives!");
             }
         }
-
-
-        /// <summary>
-        /// تعیین وضعیت نسبت  برای کاربر -- در سطح شرکت
-        /// </summary>
-        /// <param name="dto">userId - Id - IsConfirmed</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        [Authorize]
-        [HttpPut("company/[action]")]
-        public async Task<IActionResult> CompanyCheckRelative([FromBody] RelativeDto dto)
-        {
-            try
-            {
-                var res = await _relativesService.ResultOfReviewRelativeByCompany(Guid.Parse(dto.UserId), dto.Id,dto.IsConfirmed);
-
-                return Ok(res);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occured while checking User's Relatives!");
-            }
-        }
-
-
-
-
     }
 }
