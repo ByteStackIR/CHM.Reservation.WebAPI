@@ -330,6 +330,7 @@ namespace Services.Services
                     ClaimTypes.UserData,
                     JsonSerializer.Serialize(
                         new UserInfo(
+                            _user.Id,
                             _user.FirstName,
                             _user.LastName,
                             _user.PhoneNumber,
@@ -425,6 +426,7 @@ namespace Services.Services
                 refreshToken,
                 _user.RefreshTokenExpiryTime,
                 new(
+                    id: _user.Id,
                     userName: _user.UserName,
                     firstName: _user.FirstName,
                     lastName: _user.LastName,
