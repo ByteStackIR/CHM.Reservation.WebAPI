@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 /WebAPI/Project/internal_logs/internallog.txt
 /WebAPI/internal_logs
+
+
+/WebAPI/Media
