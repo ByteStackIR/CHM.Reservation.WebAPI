@@ -1,12 +1,12 @@
-﻿using Entities.DataTransferObjects;
-using Entities.DataTransferObjects.Models;
-using Features.CustomRequest;
-using Features.RequestFeatures;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Entities.DataTransferObjects;
+using Entities.DataTransferObjects.Models;
+using Features.CustomRequest;
+using Features.RequestFeatures;
 
 namespace Contracts.IService
 {
@@ -15,8 +15,12 @@ namespace Contracts.IService
         Task<List<RelativeDto>> GetbyUserId(Guid UserId);
         Task<RelativeDto> GetById(Guid Id);
         Task<List<RelativeOfUserDto>> GetConfirmedRelatives(Guid UserId);
-        Task<PagedData<List<UserRelativesDto>>> GetNotCheckedRelativesAsAdmin(ListNotCheckedRelativesRequest request);
-        Task<PagedData<List<UserRelativesDto>>> GetNotCheckedRelativesAsCompany(ListNotCheckedRelativesRequest request);
+        Task<PagedData<List<UserRelativesDto>>> GetNotCheckedRelativesAsAdmin(
+            ListNotCheckedRelativesRequest request
+        );
+        Task<PagedData<List<UserRelativesDto>>> GetNotCheckedRelativesAsCompany(
+            ListNotCheckedRelativesRequest request
+        );
 
         Task<RelativeDto> InsertByUser(RelativeDto dto);
         Task<List<RelativeDto>> BulkInsertByUser(List<RelativeDto> dto);
@@ -32,7 +36,11 @@ namespace Contracts.IService
 
         Task<RelativeDto> ResultOfReviewRelativeByAdmin(Guid UserId, Guid Id, bool Accept);
         Task<RelativeDto> ResultOfReviewRelativeByCompany(Guid UserId, Guid Id, bool Accept);
-        Task<RelativeDto>  AddSelf(UserForRegistrationDto user);
+        Task<RelativeDto> AddSelf(UserForRegistrationDto user);
         Task<RelativeDto> UpdateSelf(UserUpdateDto dto);
+
+        Task<List<RelativeDto>> ManiuplateRelatives(ManiuplateRelativeDto dto);
+        Task<List<RelativeDto>> ManiuplateRelativesAsAdmin(ManiuplateRelativeDto dto);
+        Task<List<RelativeDto>> ManiuplateRelativesAsCompany(ManiuplateRelativeDto dto);
     }
 }

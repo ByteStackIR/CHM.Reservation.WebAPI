@@ -115,19 +115,77 @@ namespace WebAPI.Controllers
                 throw new Exception("An error occured while updating User's Relatives!");
             }
         }
+
+
+
+        /// <summary>
+        /// ویرایش نسبت ها برای کاربر درخواست دهنده
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> ManiuplateRelative([FromBody] ManiuplateRelativeDto dto)
+        {
+            try
+            {
+                var res = await _relativesService.ManiuplateRelatives(dto);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured while updating User's Relatives!");
+            }
+        }
+
+
+        /// <summary>
+        /// ویرایش نسبت ها برای کاربر درخواست دهنده
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        [Authorize(Roles = $"{RolesNamesConstant.Administrator},{RolesNamesConstant.Manager}")]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> ManiuplateUserRelative([FromBody] ManiuplateRelativeDto dto)
+        {
+            try
+            {
+                if (base.User.IsInRoles(new() { RolesNamesConstant.Administrator }))
+                {
+                    var res = await _relativesService.ManiuplateRelativesAsAdmin(dto);
+                    return Ok(res);
+                }
+                else if (base.User.IsInRoles(new() { RolesNamesConstant.Manager }))
+                {
+                    var res = await _relativesService.ManiuplateRelativesAsCompany(dto);
+                    return Ok(res);
+                }
+
+
+                return Forbid();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured while updating User's Relatives!");
+            }
+        }
+
+
         /// <summary>
         /// فعال و غیرفعال سازی نسبت برای کاربر درخواست دهنده
         /// </summary>
         /// <param name="dto">Id</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-       
+
         [HttpDelete("[action]")]
         public async Task<IActionResult> ToggleRelative([FromBody] RelativeDto dto)
         {
             try
             {
-                var res = await _relativesService.ToggleByUser(dto.Id);
+                var res = await _relativesService.ToggleByUser(dto.Id.Value);
                 return Ok(res);
             }
             catch (Exception ex)
@@ -245,14 +303,14 @@ namespace WebAPI.Controllers
             {
                 if (base.User.IsInRoles(new() { RolesNamesConstant.Administrator }))
                 {
-                    var res = await _relativesService.ToggleByAdmin(Guid.Parse(dto.UserId), dto.Id);
+                    var res = await _relativesService.ToggleByAdmin(Guid.Parse(dto.UserId), dto.Id.Value);
                     return Ok(res);
                 }
                 else if (base.User.IsInRoles(new() { RolesNamesConstant.Manager }))
                 {
                     var res = await _relativesService.ToggleByCompany(
                         Guid.Parse(dto.UserId),
-                        dto.Id
+                        dto.Id.Value
                     );
 
                     return Ok(res);
@@ -317,7 +375,7 @@ namespace WebAPI.Controllers
                 {
                     var res = await _relativesService.ResultOfReviewRelativeByAdmin(
                         Guid.Parse(dto.UserId),
-                        dto.Id,
+                        dto.Id.Value,
                         dto.IsConfirmed
                     );
 
@@ -327,7 +385,7 @@ namespace WebAPI.Controllers
                 {
                     var res = await _relativesService.ResultOfReviewRelativeByCompany(
                         Guid.Parse(dto.UserId),
-                        dto.Id,
+                        dto.Id.Value,
                         dto.IsConfirmed
                     );
 

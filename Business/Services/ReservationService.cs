@@ -117,7 +117,7 @@ namespace Services.Services
                         new()
                         {
                             Id = Guid.NewGuid(),
-                            RelativeId = Share.Relative.Id,
+                            RelativeId = Share.Relative.Id.Value,
                             ReservationId = dto.Id.Value,
                             CreatedDate = DateTime.Now,
                         };

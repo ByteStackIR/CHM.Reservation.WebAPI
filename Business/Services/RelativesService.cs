@@ -402,9 +402,63 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
             model.IsConfirmed = false;
         }
 
+        model.IsDeleted = false;
+
         _repositoryManager.Relatives.Update(model);
         _repositoryManager.Save();
         return _mapper.Map<RelativeDto>(model);
+    }
+
+    public async Task<List<RelativeDto>> ManiuplateRelatives(ManiuplateRelativeDto dto)
+    {
+        List<RelativeDto> res = new();
+
+        foreach (var item in dto.Update)
+        {
+            if (item.IsDeleted == true)
+                continue;
+
+            try
+            {
+                res.Add(await this.UpdateByUser(item));
+            }
+            catch (Exception ex)
+            {
+                res.Add(item);
+            }
+        }
+
+        foreach (var item in dto.Create)
+        {
+            if (item.IsDeleted == true)
+                continue;
+
+            try
+            {
+                res.Add(await this.InsertByUser(item));
+            }
+            catch (Exception ex)
+            {
+                res.Add(item);
+            }
+        }
+
+        foreach (var item in dto.Delete)
+        {
+            if (item.Id == null)
+                continue;
+
+            try
+            {
+                res.Add(await ToggleByUser(item.Id.Value));
+            }
+            catch (Exception ex)
+            {
+                res.Add(item);
+            }
+        }
+
+        return res;
     }
 
     public async Task<RelativeDto> UpdateByCompany(RelativeDto dto)
@@ -456,6 +510,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         model.Gender = dto.Gender;
         model.IsChecked = true;
         model.IsConfirmed = true;
+        model.IsDeleted = false;
 
         _repositoryManager.Relatives.Update(model);
         _repositoryManager.Save();
@@ -505,6 +560,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         model.Gender = dto.Gender;
         model.IsChecked = true;
         model.IsConfirmed = true;
+        model.IsDeleted = false;
 
         _repositoryManager.Relatives.Update(model);
         _repositoryManager.Save();
@@ -590,6 +646,102 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         return _mapper.Map<RelativeDto>(model);
     }
 
+
+    public async Task<List<RelativeDto>> ManiuplateRelativesAsAdmin(ManiuplateRelativeDto dto)
+    {
+        List<RelativeDto> res = new();
+
+        foreach (var item in dto.Update)
+        {
+            if (item.IsDeleted == true)
+                continue;
+
+            item.UserId = dto.UserId.Value.ToString();
+
+            try
+            {
+                res.Add(await this.UpdateByAdmin(item));
+            }
+            catch (Exception ex)
+            {
+                res.Add(item);
+            }
+        }
+
+
+
+       res.AddRange(await this.BulkInsertByAdmin(new() { UserId = dto.UserId.Value, Relatives = dto.Create }));
+
+    
+
+        foreach (var item in dto.Delete)
+        {
+            if (item.Id == null)
+                continue;
+
+            try
+            {
+                res.Add(await ToggleByAdmin(dto.UserId.Value,item.Id.Value));
+            }
+            catch (Exception ex)
+            {
+                res.Add(item);
+            }
+        }
+
+        return res;
+    }
+    public async Task<List<RelativeDto>> ManiuplateRelativesAsCompany(ManiuplateRelativeDto dto)
+    {
+        List<RelativeDto> res = new();
+
+        foreach (var item in dto.Update)
+        {
+            if (item.IsDeleted == true)
+                continue;
+
+            item.UserId = dto.UserId.Value.ToString();
+
+            try
+            {
+                res.Add(await this.UpdateByCompany(item));
+            }
+            catch (Exception ex)
+            {
+                res.Add(item);
+            }
+        }
+
+
+
+        res.AddRange(await this.BulkInsertByCompany(new() { UserId = dto.UserId.Value, Relatives = dto.Create }));
+
+
+
+        foreach (var item in dto.Delete)
+        {
+            if (item.Id == null)
+                continue;
+
+            try
+            {
+                res.Add(await ToggleByCompany(dto.UserId.Value, item.Id.Value));
+            }
+            catch (Exception ex)
+            {
+                res.Add(item);
+            }
+        }
+
+        return res;
+    }
+
+
+
+
+
+
+
     public async Task<RelativeDto> ResultOfReviewRelativeByAdmin(Guid UserId, Guid Id, bool Accept)
     {
         var model = await _repositoryManager
@@ -630,6 +782,8 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         _repositoryManager.Save();
         return _mapper.Map<RelativeDto>(model);
     }
+
+
 
     #region [Self]
 

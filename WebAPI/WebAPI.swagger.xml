@@ -119,6 +119,22 @@
             <returns></returns>
             <exception cref="T:System.Exception"></exception>
         </member>
+        <member name="M:WebAPI.Controllers.RelativesController.ManiuplateRelative(Entities.DataTransferObjects.ManiuplateRelativeDto)">
+            <summary>
+            ویرایش نسبت ها برای کاربر درخواست دهنده
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:WebAPI.Controllers.RelativesController.ManiuplateUserRelative(Entities.DataTransferObjects.ManiuplateRelativeDto)">
+            <summary>
+            ویرایش نسبت ها برای کاربر درخواست دهنده
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
         <member name="M:WebAPI.Controllers.RelativesController.ToggleRelative(Entities.DataTransferObjects.Models.RelativeDto)">
             <summary>
             فعال و غیرفعال سازی نسبت برای کاربر درخواست دهنده

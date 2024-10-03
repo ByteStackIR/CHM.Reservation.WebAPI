@@ -13,7 +13,7 @@ namespace Entities.DataTransferObjects.Models
 {
     public class RelativeDto
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
         public Guid RelationId { get; set; }
         public string IdentityCode { get; set; }
         public DateTime BirthDate { get; set; }

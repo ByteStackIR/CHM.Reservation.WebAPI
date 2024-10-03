@@ -1,19 +1,17 @@
-﻿using Entities.DataTransferObjects.Internal;
-using Entities.DataTransferObjects.Models;
-using Entities.Models;
-using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using Entities.DataTransferObjects.Internal;
+using Entities.DataTransferObjects.Models;
+using Entities.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Entities.DataTransferObjects
 {
-
-
     public class Response
     {
         public string Status { get; set; }
@@ -21,8 +19,8 @@ namespace Entities.DataTransferObjects
         public List<string> Errors { get; set; }
     }
 
-
-    public class KeyItemsDto<T> where T : class
+    public class KeyItemsDto<T>
+        where T : class
     {
         public string ItemTitle { get; set; }
         public string ItemDescription { get; set; } = string.Empty;
@@ -30,24 +28,18 @@ namespace Entities.DataTransferObjects
         public List<T> Items { get; set; }
     }
 
-
     public class FileDto
     {
         public string Key { get; set; }
         public int DisplayOrder { get; set; }
         public string? FilePath { get; set; }
         public IFormFile? File { get; set; }
-
     }
+
     public class FilesDto
     {
-
         public List<FileDto> Files { get; set; }
-
     }
-
-
-
 
     public class UserRelativesDto
     {
@@ -56,11 +48,8 @@ namespace Entities.DataTransferObjects
 
         public string CompanyTitle { get; set; }
 
-
         public KeyItemsDto<RelativeDto> Relatives { get; set; }
-
     }
-
 
     public class UserRelativesCreationDto
     {
@@ -68,15 +57,11 @@ namespace Entities.DataTransferObjects
         public List<RelativeDto> Relatives { get; set; }
     }
 
-
     public class ReservationCreationDto
     {
         public Guid UserId { get; set; }
         public Guid SlotId { get; set; }
         public List<Guid> Relatives { get; set; }
-
-
-
     }
 
     public class TemporaryReservationBillDto
@@ -92,8 +77,6 @@ namespace Entities.DataTransferObjects
         public DateTime CreatedDate { get; set; }
 
         public List<TemporaryShareDto> Shares { get; set; }
-
-
     }
 
     public class TemporaryShareDto
@@ -101,8 +84,14 @@ namespace Entities.DataTransferObjects
         public RelativeDto Relative { get; set; }
         public Decimal CompanyShare { get; set; }
         public Decimal UserShare { get; set; }
-
-
     }
 
+    public class ManiuplateRelativeDto
+    {
+        public Guid? UserId { get; set; }
+
+        public List<RelativeDto> Create { get; set; }
+        public List<RelativeDto> Update { get; set; }
+        public List<RelativeDto> Delete { get; set; }
+    }
 }
