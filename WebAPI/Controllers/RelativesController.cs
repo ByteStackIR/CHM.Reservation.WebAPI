@@ -34,7 +34,7 @@ namespace WebAPI.Controllers
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-       
+
         [HttpGet("[action]")]
         public async Task<IActionResult> GetRelatives()
         {
@@ -59,7 +59,7 @@ namespace WebAPI.Controllers
         /// <param name="dto"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-       
+
         [HttpPost("[action]")]
         public async Task<IActionResult> AddRelative([FromBody] RelativeDto dto)
         {
@@ -80,7 +80,7 @@ namespace WebAPI.Controllers
         /// <param name="dto"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-       
+
         [HttpPost("[action]")]
         public async Task<IActionResult> AddRelatives([FromBody] List<RelativeDto> dto)
         {
@@ -101,7 +101,7 @@ namespace WebAPI.Controllers
         /// <param name="dto"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-       
+
         [HttpPut("[action]")]
         public async Task<IActionResult> UpdateRelative([FromBody] RelativeDto dto)
         {
@@ -115,8 +115,6 @@ namespace WebAPI.Controllers
                 throw new Exception("An error occured while updating User's Relatives!");
             }
         }
-
-
 
         /// <summary>
         /// ویرایش نسبت ها برای کاربر درخواست دهنده
@@ -139,7 +137,6 @@ namespace WebAPI.Controllers
             }
         }
 
-
         /// <summary>
         /// ویرایش نسبت ها برای کاربر درخواست دهنده
         /// </summary>
@@ -148,7 +145,9 @@ namespace WebAPI.Controllers
         /// <exception cref="Exception"></exception>
         [Authorize(Roles = $"{RolesNamesConstant.Administrator},{RolesNamesConstant.Manager}")]
         [HttpPost("[action]")]
-        public async Task<IActionResult> ManiuplateUserRelative([FromBody] ManiuplateRelativeDto dto)
+        public async Task<IActionResult> ManiuplateUserRelative(
+            [FromBody] ManiuplateRelativeDto dto
+        )
         {
             try
             {
@@ -163,7 +162,6 @@ namespace WebAPI.Controllers
                     return Ok(res);
                 }
 
-
                 return Forbid();
             }
             catch (Exception ex)
@@ -171,7 +169,6 @@ namespace WebAPI.Controllers
                 throw new Exception("An error occured while updating User's Relatives!");
             }
         }
-
 
         /// <summary>
         /// فعال و غیرفعال سازی نسبت برای کاربر درخواست دهنده
@@ -199,7 +196,7 @@ namespace WebAPI.Controllers
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-       
+
         [HttpGet("[action]")]
         public async Task<IActionResult> GetConfirmedRelatives()
         {
@@ -217,7 +214,6 @@ namespace WebAPI.Controllers
                 throw new Exception("An error occured while retrieving User's Relatives!");
             }
         }
-
 
         /// <summary>
         /// افزودن نسبت ها برای کاربر -- در سطح شرکت و ادمین
@@ -250,8 +246,6 @@ namespace WebAPI.Controllers
                 throw new Exception("An error occured while inserting User's Relatives!");
             }
         }
-
-
 
         /// <summary>
         /// ویرایش نسبت ها برای کاربر -- در سطح شرکت و ادمین
@@ -286,7 +280,25 @@ namespace WebAPI.Controllers
             }
         }
 
-
+        /// <summary>
+        /// گرفتن اطلاعات ثبت شده برای کاربر درخواست دهنده
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        [Authorize(Roles = $"{RolesNamesConstant.Administrator},{RolesNamesConstant.Manager}")]
+        [HttpGet("admin/[action]/{UserId}")]
+        public async Task<IActionResult> GetUserRelatives(Guid UserId)
+        {
+            try
+            {
+                var res = await _relativesService.GetbyUserId(UserId);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured while retrieving User's Relatives!");
+            }
+        }
 
         /// <summary>
         /// فعال و غیرفعال سازی نسبت برای کاربر -- در سطح شرکت و ادمین
@@ -303,7 +315,10 @@ namespace WebAPI.Controllers
             {
                 if (base.User.IsInRoles(new() { RolesNamesConstant.Administrator }))
                 {
-                    var res = await _relativesService.ToggleByAdmin(Guid.Parse(dto.UserId), dto.Id.Value);
+                    var res = await _relativesService.ToggleByAdmin(
+                        Guid.Parse(dto.UserId),
+                        dto.Id.Value
+                    );
                     return Ok(res);
                 }
                 else if (base.User.IsInRoles(new() { RolesNamesConstant.Manager }))
@@ -323,7 +338,6 @@ namespace WebAPI.Controllers
                 throw new Exception("An error occured while toggling User's Relatives!");
             }
         }
-
 
         /// <summary>
         /// گرفتن اطلاعات نسبت های بررسی نشده - سطح ادمین
@@ -376,7 +390,7 @@ namespace WebAPI.Controllers
                     var res = await _relativesService.ResultOfReviewRelativeByAdmin(
                         Guid.Parse(dto.UserId),
                         dto.Id.Value,
-                        dto.IsConfirmed
+                        dto.IsConfirmed.Value
                     );
 
                     return Ok(res);
@@ -386,7 +400,7 @@ namespace WebAPI.Controllers
                     var res = await _relativesService.ResultOfReviewRelativeByCompany(
                         Guid.Parse(dto.UserId),
                         dto.Id.Value,
-                        dto.IsConfirmed
+                        dto.IsConfirmed.Value
                     );
 
                     return Ok(res);

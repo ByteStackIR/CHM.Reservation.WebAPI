@@ -98,18 +98,8 @@ public class PeriodService : ServiceBase, IPeriodService, IScopeMarker
         try
         {
             dto.Id = Guid.NewGuid();
-            //var periodModel = _mapper.Map<Period>(dto);
-            Period periodModel = new Period
-            {
-                Title = dto.Title,
-                Id = dto.Id,
-                StartDate = dto.StartDate,
-                EndDate = dto.EndDate,
-                Stipend = dto.Stipend,
-                IsDeleted = false,
-                CreatedDate = DateTime.Now,
-            };
-
+            var periodModel = _mapper.Map<Period>(dto);
+            periodModel.IsDeleted = false;
 
             foreach (var share in dto.CouponShare)
             {
@@ -141,11 +131,11 @@ public class PeriodService : ServiceBase, IPeriodService, IScopeMarker
             Period? periodModel = await _repositoryManager.Period.GetByIdAsync(dto.Id);
             if (periodModel is not null && periodModel.IsDeleted is false)
             {
-                periodModel.StartDate = dto.StartDate;
-                periodModel.EndDate = dto.EndDate;
-                periodModel.Stipend = dto.Stipend;
 
+                _mapper.Map(dto, periodModel);
+                periodModel.IsDeleted = false;
 
+                periodModel.CouponShare = null;
                 foreach (var share in dto.CouponShare)
                 {
 

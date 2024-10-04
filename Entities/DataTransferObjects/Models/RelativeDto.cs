@@ -23,13 +23,13 @@ namespace Entities.DataTransferObjects.Models
         public GenderType Gender { get; set; }
 
         [NotMapped]
-        public string GenderTitle { get; set; }
+        public string? GenderTitle { get; set; }
         public string UserId { get; set; }
 
-        public bool IsChecked { get; set; }
-        public bool IsConfirmed { get; set; }
+        public bool? IsChecked { get; set; }
+        public bool? IsConfirmed { get; set; }
 
-        public bool IsDeleted { get; set; }
+        public bool? IsDeleted { get; set; }
     
     
     }

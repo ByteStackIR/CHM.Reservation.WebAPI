@@ -166,6 +166,13 @@
             <returns></returns>
             <exception cref="T:System.Exception"></exception>
         </member>
+        <member name="M:WebAPI.Controllers.RelativesController.GetUserRelatives(System.Guid)">
+            <summary>
+            گرفتن اطلاعات ثبت شده برای کاربر درخواست دهنده
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
         <member name="M:WebAPI.Controllers.RelativesController.ToggleUserRelative(Entities.DataTransferObjects.Models.RelativeDto)">
             <summary>
             فعال و غیرفعال سازی نسبت برای کاربر -- در سطح شرکت و ادمین
