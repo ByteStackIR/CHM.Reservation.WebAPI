@@ -12,7 +12,7 @@ namespace Contracts.IService
     {
 
         Task<Tx_CouponDto> AddTransaction(Internal_TransactionDto dto);
-
+        Task<Decimal> GetRemainingCoupon();
 
     }
 }

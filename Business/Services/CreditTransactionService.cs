@@ -3,8 +3,10 @@ using Contracts.IContext;
 using Contracts.IMarker;
 using Contracts.IRepository;
 using Contracts.IService;
+using Entities.DataTransferObjects;
 using Entities.DataTransferObjects.Internal;
 using Entities.DataTransferObjects.Models;
+using Entities.IdentityExtensions;
 using Entities.Models;
 using LoggerService;
 using Microsoft.AspNetCore.Http;
@@ -38,6 +40,33 @@ namespace Services.Services
 
             _repositoryManager.Save();
             return resDto;
+        }
+
+        public async Task<Tx_CreditDto> AddTransaction(AddToCreditDto dto)
+        {
+            Tx_CreditDto resDto = new()
+            {
+                Amount = dto.Amount,
+                ReservationId = null,
+                CreatedDate = DateTime.Now,
+                CreatorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                Description = dto.Description,
+                PeriodId = _systemContext.Period.Id,
+                UserId = dto.UserId.ToString()
+            };
+            resDto.Id = Guid.NewGuid();
+            resDto.CreatedDate = DateTime.Now;
+
+            var model = _mapper.Map<Tx_Credit>(resDto);
+            _repositoryManager.Tx_Credit.Create(model);
+
+            _repositoryManager.Save();
+            return resDto;
+        }
+
+        public async Task<decimal> GetRemainingCredit()
+        {
+            return _systemContext.RemainingCredit;
         }
     }
 }

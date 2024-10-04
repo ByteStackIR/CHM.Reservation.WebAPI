@@ -104,4 +104,11 @@ namespace Entities.DataTransferObjects
 
         public TransactionMode? Mode { get; set; }
     }
+
+    public class AddToCreditDto
+    {
+        public Guid UserId { get; set; }
+        public decimal Amount { get; set; }
+        public string Description { get; set; }
+    }
 }

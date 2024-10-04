@@ -13,5 +13,10 @@ namespace Contracts.IService
 
         Task<Tx_UserDto> AddTransaction(Internal_TransactionDto dto);
 
+
+
+
+
+
     }
 }

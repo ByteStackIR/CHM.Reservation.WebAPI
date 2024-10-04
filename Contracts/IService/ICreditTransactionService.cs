@@ -1,4 +1,5 @@
-﻿using Entities.DataTransferObjects.Internal;
+﻿using Entities.DataTransferObjects;
+using Entities.DataTransferObjects.Internal;
 using Entities.DataTransferObjects.Models;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,9 @@ namespace Contracts.IService
     {
 
         Task<Tx_CreditDto> AddTransaction(Internal_TransactionDto dto);
+        Task<Tx_CreditDto> AddTransaction(AddToCreditDto dto);
 
+
+        Task<Decimal> GetRemainingCredit();
     }
 }

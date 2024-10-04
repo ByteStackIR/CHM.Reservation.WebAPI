@@ -39,5 +39,10 @@ namespace Services.Services
             _repositoryManager.Save();
             return resDto;
         }
+
+        public async Task<decimal> GetRemainingCoupon()
+        {
+            return _systemContext.RemainingCoupon;
+        }
     }
 }

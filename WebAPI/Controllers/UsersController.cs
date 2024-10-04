@@ -15,12 +15,16 @@
     public class UsersController : ControllerBase
     {
         private readonly IUsersService _UserService;
-
+        ICreditTransactionService _creditTransactionService;
         private readonly IConfiguration _configuration;
 
-        public UsersController(IUsersService UserService)
+        public UsersController(
+            IUsersService UserService,
+            ICreditTransactionService creditTransactionService
+        )
         {
             _UserService = UserService;
+            _creditTransactionService = creditTransactionService;
         }
 
         /// <summary>
@@ -45,7 +49,7 @@
         /// <returns></returns>
         [HttpPost("[action]")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        //[Authorize(Roles = RolesNamesConstant.Administrator)]
+        [Authorize(Roles = RolesNamesConstant.Administrator)]
         public async Task<IActionResult> RegisterUser(
             [FromBody] UserForRegistrationDto userForRegistration
         )
@@ -90,6 +94,21 @@
                 await _UserService.UpdateUserAsCompany(dto);
 
             return NoContent();
+        }
+
+        /// <summary>
+        /// شارژ حساب
+        /// + افزایش
+        /// - کاهش
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        [Authorize(Roles = RolesNamesConstant.Administrator)]
+        [HttpPut("[action]")]
+        public async Task<IActionResult> AddCredit([FromBody] AddToCreditDto dto)
+        {
+            var res = await _creditTransactionService.AddTransaction(dto);
+            return Ok(res);
         }
     }
 }

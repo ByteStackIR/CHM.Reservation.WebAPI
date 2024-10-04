@@ -167,7 +167,15 @@ namespace Services.Services
             var interResult = await InitReservation(dto);
 
             //NOTE: محل بررسی اینکه آیا کاربر اعتبار برای رزرو موقت دارد یا خیر
-            if (!(_systemContext.RemainingCoupon >= (interResult.Amount - interResult.BillAmount)))
+            //TODO: محل بررسی اعتبار در حین رزرو موقت
+            //TODO: تغییر یافته برای بی اثر شدن محاسبات
+            //if (!(_systemContext.RemainingCoupon >= (interResult.Amount - interResult.BillAmount)))
+            if (
+                !(
+                    _systemContext.RemainingCoupon >= 1
+                    || _systemContext.RemainingCredit >= interResult.Amount
+                )
+            )
                 throw new Exception("You does not have enough credit to reserve the hotel/tour!");
 
             var res = await CreateTemporaryReservation(interResult);
@@ -189,7 +197,9 @@ namespace Services.Services
                     new()
                     {
                         Amount = share.CompanyShare + share.UserShare,
-                        BillAmount = share.UserShare,
+                        BillAmount = 0,
+                        //TODO: تغییر یافته برای بی اثر شدن محاسبات
+                        //BillAmount = share.UserShare,
                         FirstName = share.Relative.FirstName,
                         LastName = share.Relative.FamilyName,
                         RelationTitle = AllRelations
@@ -206,7 +216,6 @@ namespace Services.Services
         {
             if (!dto.Mode.HasValue)
                 throw new Exception("Mode must have value");
-
 
             var ReservationModel = await _repositoryManager.Reservation.GetByIdAsync(
                 dto.TempoReservationId
@@ -228,31 +237,26 @@ namespace Services.Services
                 throw new Exception("has expired");
             }
 
+            //TODO: محل بررسی اعتبار در حین رزرو اصلی
+            //TODO: تغییر یافته برای بی اثر شدن محاسبات
+
             if (dto.Mode == TransactionMode.UserMode)
             {
-                if (
-                    !(
-                        _systemContext.RemainingCoupon
-                        >= (ReservationModel.Amount - ReservationModel.BillAmount)
-                    )
-                )
+                //     !(_systemContext.RemainingCoupon>= (ReservationModel.Amount - ReservationModel.BillAmount))
+                if (!(_systemContext.RemainingCoupon >= 1))
                     throw new Exception("user does not have enough coupon to pay");
             }
             else
             {
-                if (
-                    !(
-                        _systemContext.RemainingCoupon
-                            >= (ReservationModel.Amount - ReservationModel.BillAmount)
-                        || _systemContext.RemainingCredit >= ReservationModel.BillAmount
-                    )
-                )
+                //!(_systemContext.RemainingCoupon >= (ReservationModel.Amount - ReservationModel.BillAmount)|| _systemContext.RemainingCredit >= ReservationModel.BillAmount )
+                if (!(_systemContext.RemainingCredit >= ReservationModel.BillAmount))
                     throw new Exception(
                         "You does not have enough credit to reserve the hotel/tour!"
                     );
             }
 
             ReservationModel.IsFinalized = true;
+            ReservationModel.TransactionMode = dto.Mode;
 
             _repositoryManager.ReservationStates.Create(
                 new ReservationStates()
@@ -289,27 +293,43 @@ namespace Services.Services
             ReservationModel.ObjectStateId = NextState.Id;
             _repositoryManager.Save();
 
+            //TODO: تغییر یافته برای بی اثر شدن محاسبات
+            // Decimal UserShare = ReservationModel.BillAmount;
+            // Decimal CreditShare = ReservationModel.BillAmount;
             Decimal UserShare = ReservationModel.BillAmount;
-            Decimal CreditShare = ReservationModel.BillAmount;
+            Decimal CreditShare = ReservationModel.Amount;
+            Decimal CouponShare = 1;
 
             if (dto.Mode == TransactionMode.UserMode)
             {
                 CreditShare = 0;
+                UserShare = 0;
             }
             else if (dto.Mode == TransactionMode.CreditMode)
             {
+                CouponShare = 0;
                 UserShare = 0;
+            }
+            else
+            {
+                throw new Exception("Invalid Transaction mode");
             }
 
             await _couponTxService.AddTransaction(
                 new()
                 {
-                    Amount = ReservationModel.Amount - ReservationModel.BillAmount,
+                    //TODO: تغییر یافته برای بی اثر شدن محاسبات
+                    //Amount = ReservationModel.Amount - ReservationModel.BillAmount,
+                    Amount = CouponShare,
                     CreatedDate = DateTime.Now,
                     Id = Guid.NewGuid(),
                     PeriodId = _systemContext.Period.Id,
                     ReservationId = ReservationModel.Id,
                     UserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                    CreatorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                    Description =
+                        DateTime.Now.ToString("yyyy.MM.dd")
+                        + " استفاده از سرانه بابت رزرو در تاریخ ",
                 }
             );
 
@@ -322,11 +342,16 @@ namespace Services.Services
                     PeriodId = _systemContext.Period.Id,
                     ReservationId = ReservationModel.Id,
                     UserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                    CreatorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                    Description =
+                        " پرداختی به عهده کاربر نمیباشد! "
+                        + DateTime.Now.ToString("yyyy.MM.dd")
+                        + " به علت استفاده از سرانه، بابت رزرو در تاریخ ",
                 }
             );
 
             await _creditTxService.AddTransaction(
-                new()
+                new Internal_TransactionDto()
                 {
                     Amount = CreditShare,
                     CreatedDate = DateTime.Now,
@@ -334,6 +359,9 @@ namespace Services.Services
                     PeriodId = _systemContext.Period.Id,
                     ReservationId = ReservationModel.Id,
                     UserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                    CreatorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                    Description =
+                        DateTime.Now.ToString("yyyy.MM.dd") + " استفاده از اعتبار برای رزرو ",
                 }
             );
             _repositoryManager.Reservation.Update(ReservationModel);
@@ -457,7 +485,9 @@ namespace Services.Services
 
                 if (age >= Entity.MinAge)
                 {
-                    Decimal CompanyShare = Entity.PerPerson * share.Entitlement / 100;
+                    //TODO: تغییر یافته برای بی اثر شدن محاسبات
+                    Decimal CompanyShare = Entity.PerPerson * 100 / 100;
+                    //Decimal CompanyShare = Entity.PerPerson * share.Entitlement / 100;
 
                     res.Add(
                         new()
