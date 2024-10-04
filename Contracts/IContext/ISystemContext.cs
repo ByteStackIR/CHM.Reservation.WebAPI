@@ -19,7 +19,8 @@ namespace Contracts.IContext
         public CompanyDto UserCompany { get; set; }
 
         public PeriodDto Period { get; set; }
-
+        public Decimal RemainingCoupon { get; set; } 
+        public Decimal RemainingCredit { get; set; }
         Task InitializeSystemContext(IRepositoryManager repositoryManager, IHttpContextAccessor httpContextAccessor, IMapper mapper);
     }
 }

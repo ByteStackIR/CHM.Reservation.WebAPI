@@ -121,15 +121,15 @@ namespace WebAPI.Controllers
 
         [Authorize]
         [HttpPost("[action]")]
-        public async Task<IActionResult> FinalizeReservation([FromBody] test dto)
+        public async Task<IActionResult> FinalizeReservation([FromBody] FinalizeReservationDto dto)
         {
-            var res = await _reservationService.FinalizeReservation(dto.TempoReservationId);
+            var res = await _reservationService.FinalizeReservation(dto);
             return Ok(res);
         }
 
         [Authorize]
         [HttpPost("[action]")]
-        public async Task<IActionResult> CancelTemporaryReservation([FromBody] test dto)
+        public async Task<IActionResult> CancelTemporaryReservation([FromBody] FinalizeReservationDto dto)
         {
              await _reservationService.CancelTemporaryReservation(dto.TempoReservationId);
             return NoContent();
@@ -137,8 +137,5 @@ namespace WebAPI.Controllers
 
     }
 
-    public class test
-    {
-        public Guid TempoReservationId { get; set; }
-    }
+ 
 }

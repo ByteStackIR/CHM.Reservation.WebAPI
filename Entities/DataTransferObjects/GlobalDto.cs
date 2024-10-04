@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Entities.DataTransferObjects.Internal;
 using Entities.DataTransferObjects.Models;
+using Entities.Enum;
 using Entities.Models;
 using Microsoft.AspNetCore.Http;
 
@@ -93,5 +94,14 @@ namespace Entities.DataTransferObjects
         public List<RelativeDto> Create { get; set; }
         public List<RelativeDto> Update { get; set; }
         public List<RelativeDto> Delete { get; set; }
+    }
+
+
+
+    public class FinalizeReservationDto
+    {
+        public Guid TempoReservationId { get; set; }
+
+        public TransactionMode? Mode { get; set; }
     }
 }

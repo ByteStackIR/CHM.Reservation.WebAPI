@@ -1,5 +1,4 @@
-﻿
-using AutoMapper;
+﻿using AutoMapper;
 using Contracts.IContext;
 using Contracts.IRepository;
 using Contracts.IService;
@@ -7,6 +6,7 @@ using Entities.DataTransferObjects;
 using Entities.DataTransferObjects.External;
 using Entities.DataTransferObjects.Internal;
 using Entities.DataTransferObjects.Models;
+using Entities.Enum;
 using Entities.IdentityExtensions;
 using Entities.Models;
 using Entities.QueryExtensions;
@@ -15,7 +15,7 @@ using Features.RequestFeatures;
 using LoggerService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-
+using NLog.Filters;
 
 namespace Services.Services
 {
@@ -26,6 +26,7 @@ namespace Services.Services
         private IRelationsService _relationsService;
         private IUserTransactionService _userTxService;
         private ICouponTransactionService _couponTxService;
+        private ICreditTransactionService _creditTxService;
 
         public ReservationService(
             IMapper mapper,
@@ -37,7 +38,8 @@ namespace Services.Services
             IObjectStateService ObjectStateService,
             IRelationsService RelationsService,
             IUserTransactionService userTx,
-            ICouponTransactionService couponTx
+            ICouponTransactionService couponTx,
+            ICreditTransactionService creditTxService
         )
             : base(repoManger, mapper, httpContextAccessor, systemContext, logger)
         {
@@ -46,6 +48,7 @@ namespace Services.Services
             _relationsService = RelationsService;
             _userTxService = userTx;
             _couponTxService = couponTx;
+            _creditTxService = creditTxService;
         }
 
         public async Task<Internal_ReservationDto> InitReservation(ReservationCreationDto dto)
@@ -163,6 +166,10 @@ namespace Services.Services
 
             var interResult = await InitReservation(dto);
 
+            //NOTE: محل بررسی اینکه آیا کاربر اعتبار برای رزرو موقت دارد یا خیر
+            if (!(_systemContext.RemainingCoupon >= (interResult.Amount - interResult.BillAmount)))
+                throw new Exception("You does not have enough credit to reserve the hotel/tour!");
+
             var res = await CreateTemporaryReservation(interResult);
 
             External_TempReservationDto result =
@@ -195,9 +202,15 @@ namespace Services.Services
             return result;
         }
 
-        public async Task<bool> FinalizeReservation(Guid Id)
+        public async Task<bool> FinalizeReservation(FinalizeReservationDto dto)
         {
-            var ReservationModel = await _repositoryManager.Reservation.GetByIdAsync(Id);
+            if (!dto.Mode.HasValue)
+                throw new Exception("Mode must have value");
+
+
+            var ReservationModel = await _repositoryManager.Reservation.GetByIdAsync(
+                dto.TempoReservationId
+            );
 
             if (ReservationModel == null)
                 throw new Exception("Not found");
@@ -213,6 +226,30 @@ namespace Services.Services
                 _repositoryManager.Reservation.Delete(ReservationModel);
                 _repositoryManager.Save();
                 throw new Exception("has expired");
+            }
+
+            if (dto.Mode == TransactionMode.UserMode)
+            {
+                if (
+                    !(
+                        _systemContext.RemainingCoupon
+                        >= (ReservationModel.Amount - ReservationModel.BillAmount)
+                    )
+                )
+                    throw new Exception("user does not have enough coupon to pay");
+            }
+            else
+            {
+                if (
+                    !(
+                        _systemContext.RemainingCoupon
+                            >= (ReservationModel.Amount - ReservationModel.BillAmount)
+                        || _systemContext.RemainingCredit >= ReservationModel.BillAmount
+                    )
+                )
+                    throw new Exception(
+                        "You does not have enough credit to reserve the hotel/tour!"
+                    );
             }
 
             ReservationModel.IsFinalized = true;
@@ -251,6 +288,19 @@ namespace Services.Services
 
             ReservationModel.ObjectStateId = NextState.Id;
             _repositoryManager.Save();
+
+            Decimal UserShare = ReservationModel.BillAmount;
+            Decimal CreditShare = ReservationModel.BillAmount;
+
+            if (dto.Mode == TransactionMode.UserMode)
+            {
+                CreditShare = 0;
+            }
+            else if (dto.Mode == TransactionMode.CreditMode)
+            {
+                UserShare = 0;
+            }
+
             await _couponTxService.AddTransaction(
                 new()
                 {
@@ -266,7 +316,19 @@ namespace Services.Services
             await _userTxService.AddTransaction(
                 new()
                 {
-                    Amount = ReservationModel.BillAmount,
+                    Amount = UserShare,
+                    CreatedDate = DateTime.Now,
+                    Id = Guid.NewGuid(),
+                    PeriodId = _systemContext.Period.Id,
+                    ReservationId = ReservationModel.Id,
+                    UserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                }
+            );
+
+            await _creditTxService.AddTransaction(
+                new()
+                {
+                    Amount = CreditShare,
                     CreatedDate = DateTime.Now,
                     Id = Guid.NewGuid(),
                     PeriodId = _systemContext.Period.Id,
