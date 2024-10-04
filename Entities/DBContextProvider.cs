@@ -59,6 +59,8 @@ namespace Entities
         public DbSet<Tx_Coupon> Tx_Coupons { get; set; }
 
         public DbSet<Tx_User> Tx_Users { get; set; }
+        public DbSet<Tx_Credit> Tx_Credit { get; set; }
+
 
         public DbSet<UserCompany> UserCompanies { get; set; }
         public DbSet<ParameterValues> ParameterValues { get; set; }

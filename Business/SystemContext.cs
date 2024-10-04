@@ -16,35 +16,53 @@ using System.Threading.Tasks;
 
 namespace Services
 {
-    public class SystemContext : ISystemContext,IScopeMarker
-    { 
+    public class SystemContext : ISystemContext, IScopeMarker
+    {
 
         public ClaimsPrincipal CurrentUser { get; set; }
 
         public CompanyDto UserCompany { get; set; } = null;
         public PeriodDto Period { get; set; } = null;
 
-        public async Task InitializeSystemContext(IRepositoryManager repositoryManager,IHttpContextAccessor httpContextAccessor,IMapper mapper)
+        public Decimal RemainingCoupon { get; set; } = 0;
+        public Decimal RemainingCredit { get; set; } = 0;
+
+
+
+        public async Task InitializeSystemContext(IRepositoryManager repositoryManager, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
 
             CurrentUser = httpContextAccessor.HttpContext.User;
 
+
+            var periodModel = repositoryManager.Period.FindByCondition(x => !x.IsDeleted && (x.StartDate <= DateTime.Now && x.EndDate >= DateTime.Now), false).OrderByDescending(x => x.CreatedDate).FirstOrDefault();
+            if (periodModel != null)
+                this.Period = mapper.Map<PeriodDto>(periodModel);
+
+
             if (CurrentUser.Identity.IsAuthenticated)
             {
                 var userCompany = repositoryManager.UserCompany.FindByCondition(x => x.IsActive && x.UserId == CurrentUser.GetUserId().Value.ToString(), false).Include(x => x.Company).FirstOrDefault();
-                if(userCompany!=null)
-                UserCompany = mapper.Map<CompanyDto>(userCompany.Company);
+                if (userCompany != null)
+                {
+                    this.UserCompany = mapper.Map<CompanyDto>(userCompany.Company);
+
+
+                    this.RemainingCoupon = (this.Period.Stipend - await repositoryManager.Tx_Coupon.FindByCondition(tc => tc.PeriodId == this.Period.Id && tc.UserId == CurrentUser.GetUserId().Value.ToString(), false)
+                                              .SumAsync(tc => tc.Amount));
+
+                    this.RemainingCredit = (this.Period.Credit - await repositoryManager.Tx_Credit.FindByCondition(tc => tc.PeriodId == this.Period.Id && tc.UserId == CurrentUser.GetUserId().Value.ToString(), false)
+                                              .SumAsync(tc => tc.Amount));
+
+                }
             }
 
 
-            var periodModel = repositoryManager.Period.FindByCondition(x => !x.IsDeleted && (x.StartDate <= DateTime.Now && x.EndDate >= DateTime.Now), false).OrderByDescending(x=>x.CreatedDate).FirstOrDefault();
-            if(periodModel != null)
-                this.Period = mapper.Map<PeriodDto>(periodModel);
 
             return;
         }
 
-       
+
 
     }
 }

@@ -18,6 +18,7 @@ namespace Repositories
 
         private readonly Lazy<ITransactionRepository> _ITransactionRepository;
         private readonly Lazy<IDefinitionsRepository> _IDefinitionsRepository;
+        private readonly Lazy<ITx_CreditRepository> _ITx_CreditRepository;
 
         private readonly Lazy<ICategoryRepository> _categoryRepository;
         private readonly Lazy<ICompanyRepository> _companyRepository;
@@ -66,6 +67,7 @@ namespace Repositories
             _tx_UserRepository = new Lazy<ITx_UserRepository>(() => new Tx_UserRepository(context));
             _userCompanyRepository = new Lazy<IUserCompanyRepository>(() => new UserCompanyRepository(context));
             _IAttachmentsRepository = new Lazy<IAttachmentsRepository>(() => new AttachmentsRepository(context));
+            _ITx_CreditRepository = new Lazy<ITx_CreditRepository>(() => new Tx_CreditRepository(_context));
 
         }
 
@@ -91,6 +93,9 @@ namespace Repositories
         public ITx_UserRepository Tx_User => _tx_UserRepository.Value;
         public IUserCompanyRepository UserCompany => _userCompanyRepository.Value;
         public IAttachmentsRepository AttachmentsRepository => _IAttachmentsRepository.Value;
+
+
+        public ITx_CreditRepository Tx_Credit => _ITx_CreditRepository.Value;
 
         public void Save() => _context.SaveChanges();
     }

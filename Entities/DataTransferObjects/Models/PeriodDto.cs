@@ -14,6 +14,8 @@ namespace Entities.DataTransferObjects.Models
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public decimal Stipend { get; set; }
+        public decimal Credit { get; set; }
+
 
         public List<CouponShareDto> CouponShare { get; set; }
     }
