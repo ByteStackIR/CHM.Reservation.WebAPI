@@ -25,6 +25,7 @@ namespace WebAPI.Controllers
             _couponTransactionService = couponTransactionService;
         }
 
+        [HttpGet("[action]")]
         public async Task<IActionResult> GetCredit()
         {
             return Ok(
