@@ -450,7 +450,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
 
             try
             {
-                res.Add(await ToggleByUser(item.Id.Value));
+                res.Add(await DeleteByUser(item.Id.Value));
             }
             catch (Exception ex)
             {
@@ -646,6 +646,74 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         return _mapper.Map<RelativeDto>(model);
     }
 
+    public async Task<RelativeDto> DeleteByUser(Guid Id)
+    {
+        var model = await _repositoryManager
+            .Relatives.FindByCondition(
+                x =>
+                    x.Id == Id
+                    && x.UserId == _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                false
+            )
+            .FirstOrDefaultAsync();
+        if (model is null)
+            throw new Exception($"Relation with Id {Id} was not found!");
+
+        if (!(await _relationsService.CanBeDeleted(model.RelationId)))
+            throw new Exception($"This Item can be deleted!");
+
+        model.IsDeleted = true;
+
+        _repositoryManager.Relatives.Update(model);
+        _repositoryManager.Save();
+        return _mapper.Map<RelativeDto>(model);
+    }
+
+    public async Task<RelativeDto> DeleteByCompany(Guid UserId, Guid Id)
+    {
+        var EndUserCompany = await _repositoryManager
+            .UserCompany.FindByCondition(x => x.UserId == UserId.ToString() && x.IsActive, false)
+            .FirstOrDefaultAsync();
+
+        if (EndUserCompany == null || EndUserCompany.CompanyId != _systemContext.UserCompany.Id)
+            throw new Exception("You are not allowed!");
+
+        var model = await _repositoryManager
+            .Relatives.FindByCondition(x => x.Id == Id && x.UserId == UserId.ToString(), false)
+            .FirstOrDefaultAsync();
+        if (model is null)
+            throw new Exception($"Relation with Id {Id} was not found!");
+
+        if (!(await _relationsService.CanBeDeleted(model.RelationId)))
+            throw new Exception($"This Item can be deleted!");
+
+        model.IsDeleted = true;
+        _repositoryManager.Relatives.Update(model);
+        _repositoryManager.Save();
+        return _mapper.Map<RelativeDto>(model);
+    }
+
+    public async Task<RelativeDto> DeleteByAdmin(Guid UserId, Guid Id)
+    {
+        var model = await _repositoryManager
+            .Relatives.FindByCondition(x => x.Id == Id && x.UserId == UserId.ToString(), false)
+            .FirstOrDefaultAsync();
+
+        if (model is null)
+            throw new Exception($"Relation with Id {Id} was not found!");
+
+        if (!(await _relationsService.CanBeDeleted(model.RelationId)))
+            throw new Exception($"This Item can be deleted!");
+
+        if (!(await _relationsService.CanBeDeleted(model.RelationId)))
+            throw new Exception($"This Item can be deleted!");
+
+        model.IsDeleted = true;
+        _repositoryManager.Relatives.Update(model);
+        _repositoryManager.Save();
+        return _mapper.Map<RelativeDto>(model);
+    }
+
 
     public async Task<List<RelativeDto>> ManiuplateRelativesAsAdmin(ManiuplateRelativeDto dto)
     {
@@ -681,7 +749,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
 
             try
             {
-                res.Add(await ToggleByAdmin(dto.UserId.Value,item.Id.Value));
+                res.Add(await DeleteByAdmin(dto.UserId.Value,item.Id.Value));
             }
             catch (Exception ex)
             {
@@ -725,7 +793,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
 
             try
             {
-                res.Add(await ToggleByCompany(dto.UserId.Value, item.Id.Value));
+                res.Add(await DeleteByCompany(dto.UserId.Value, item.Id.Value));
             }
             catch (Exception ex)
             {
