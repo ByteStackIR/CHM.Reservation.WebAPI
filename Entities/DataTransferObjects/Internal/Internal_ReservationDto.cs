@@ -1,9 +1,11 @@
 ﻿using Entities.DataTransferObjects.Models;
+using Entities.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Entities.DataTransferObjects.Internal
 {
@@ -23,7 +25,7 @@ namespace Entities.DataTransferObjects.Internal
         public bool IsFinalized { get; set; } = false;
         public DateTime ExpirationDate { get; set; }
 
-
+        public TransactionMode TransactionMode { get; set; }
         public List<Internal_ShareDto> Shares {  get; set; } 
     }
 }

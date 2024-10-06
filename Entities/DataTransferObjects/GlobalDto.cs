@@ -62,6 +62,7 @@ namespace Entities.DataTransferObjects
     {
         public Guid UserId { get; set; }
         public Guid SlotId { get; set; }
+        public TransactionMode Mode { get; set; }
         public List<Guid> Relatives { get; set; }
     }
 
@@ -102,7 +103,7 @@ namespace Entities.DataTransferObjects
     {
         public Guid TempoReservationId { get; set; }
 
-        public TransactionMode? Mode { get; set; }
+        public TransactionMode Mode { get; set; }
     }
 
     public class AddToCreditDto

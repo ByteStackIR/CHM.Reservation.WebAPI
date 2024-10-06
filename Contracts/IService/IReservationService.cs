@@ -2,6 +2,7 @@
 using Entities.DataTransferObjects.External;
 using Entities.DataTransferObjects.Internal;
 using Entities.DataTransferObjects.Models;
+using Entities.Enum;
 using Features.CustomRequest;
 using Features.RequestFeatures;
 
@@ -21,7 +22,8 @@ namespace Contracts.IService
         Task<List<Internal_ShareDto>> CalculateShares(
             List<RelativeDto> Relatives,
             EntityDto Entity,
-            SlotDto slot
+            SlotDto slot,
+            TransactionMode mode
         );
         Task<External_TempReservationDto> AddReservation(ReservationCreationDto dto);
         Task<bool> FinalizeReservation(FinalizeReservationDto dto);

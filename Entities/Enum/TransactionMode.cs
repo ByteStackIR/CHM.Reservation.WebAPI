@@ -10,13 +10,18 @@ namespace Entities.Enum
     public enum TransactionMode : sbyte
     {
         /// <summary>
-        /// بر عهده کاربر
+        /// بر عهده سرانه
         /// </summary>
-        UserMode = 0,
+        CouponMode = 0,
         /// <summary>
         /// از طریق اعتبار
         /// </summary>
-        CreditMode = 1
+        CreditMode = 1,
+        /// <summary>
+        /// هر دو باهم
+        /// </summary>
+        CouponAndCreditMode = 2
+
 
     }
 }

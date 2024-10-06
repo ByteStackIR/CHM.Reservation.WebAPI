@@ -36,7 +36,7 @@ namespace Entities.Models
         public bool IsFinalized { get; set; } = false;
         public DateTime ExpirationDate { get; set; }
         
-        public TransactionMode? TransactionMode { get; set; } 
+        public TransactionMode TransactionMode { get; set; } 
 
         public Slot Slot { get; set; } 
         public User User { get; set; } 

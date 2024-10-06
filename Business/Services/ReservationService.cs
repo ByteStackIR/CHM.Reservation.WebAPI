@@ -15,7 +15,6 @@ using Features.RequestFeatures;
 using LoggerService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using NLog.Filters;
 
 namespace Services.Services
 {
@@ -84,7 +83,8 @@ namespace Services.Services
             var Shares = await CalculateShares(
                 _mapper.Map<List<RelativeDto>>(relatives),
                 Entity,
-                SlotItem
+                SlotItem,
+                dto.Mode
             );
 
             Internal_ReservationDto result = new Internal_ReservationDto()
@@ -98,6 +98,7 @@ namespace Services.Services
                 SlotId = SlotItem.Id.Value,
                 CategoryId = Entity.CategoryId,
                 EntityId = Entity.Id.Value,
+
                 UserId = _systemContext.CurrentUser.GetUserId().ToString(),
             };
 
@@ -197,9 +198,9 @@ namespace Services.Services
                     new()
                     {
                         Amount = share.CompanyShare + share.UserShare,
-                        BillAmount = 0,
+                        //BillAmount = 0,
                         //TODO: تغییر یافته برای بی اثر شدن محاسبات
-                        //BillAmount = share.UserShare,
+                        BillAmount = share.UserShare,
                         FirstName = share.Relative.FirstName,
                         LastName = share.Relative.FamilyName,
                         RelationTitle = AllRelations
@@ -214,7 +215,7 @@ namespace Services.Services
 
         public async Task<bool> FinalizeReservation(FinalizeReservationDto dto)
         {
-            if (!dto.Mode.HasValue)
+            if (dto.Mode==null)
                 throw new Exception("Mode must have value");
 
             var ReservationModel = await _repositoryManager.Reservation.GetByIdAsync(
@@ -237,18 +238,42 @@ namespace Services.Services
                 throw new Exception("has expired");
             }
 
+
+            if(ReservationModel.TransactionMode != dto.Mode)
+            {
+                if(!(ReservationModel.TransactionMode == TransactionMode.CouponMode && dto.Mode == TransactionMode.CouponAndCreditMode))
+                    throw new Exception("Invalid Transaction");
+
+            }
+
+
             //TODO: محل بررسی اعتبار در حین رزرو اصلی
             //TODO: تغییر یافته برای بی اثر شدن محاسبات
 
-            if (dto.Mode == TransactionMode.UserMode)
+            if (dto.Mode == TransactionMode.CouponMode)
             {
                 //     !(_systemContext.RemainingCoupon>= (ReservationModel.Amount - ReservationModel.BillAmount))
                 if (!(_systemContext.RemainingCoupon >= 1))
                     throw new Exception("user does not have enough coupon to pay");
+
+                if ((ReservationModel.BillAmount != 0))
+                    throw new Exception(
+                        "you can not pay bill Amount for All crew member by coupon"
+                    );
             }
-            else
+            else if (dto.Mode == TransactionMode.CreditMode)
             {
                 //!(_systemContext.RemainingCoupon >= (ReservationModel.Amount - ReservationModel.BillAmount)|| _systemContext.RemainingCredit >= ReservationModel.BillAmount )
+                if (!(_systemContext.RemainingCredit >= ReservationModel.BillAmount))
+                    throw new Exception(
+                        "You does not have enough credit to reserve the hotel/tour!"
+                    );
+            }
+            else if (dto.Mode == TransactionMode.CouponAndCreditMode)
+            {
+                if (!(_systemContext.RemainingCoupon >= 1))
+                    throw new Exception("user does not have enough coupon to pay");
+
                 if (!(_systemContext.RemainingCredit >= ReservationModel.BillAmount))
                     throw new Exception(
                         "You does not have enough credit to reserve the hotel/tour!"
@@ -300,19 +325,39 @@ namespace Services.Services
             Decimal CreditShare = ReservationModel.Amount;
             Decimal CouponShare = 1;
 
-            if (dto.Mode == TransactionMode.UserMode)
+            if (dto.Mode == TransactionMode.CouponMode)
             {
+                //**
+                //در حالت صرفا سرانه
+                // سهم پرداختی برای کاربر 0
+                // سهم سرانه 1
+                // سهم اعتبار 0
+                //*//
                 CreditShare = 0;
                 UserShare = 0;
             }
             else if (dto.Mode == TransactionMode.CreditMode)
             {
+                //**
+                //در حالت صرفا اعتبار
+                // سهم پرداختی برای کاربر 0
+                // سهم سرانه 0
+                // سهم اعتبار = به اندازه کل هزینه
+                //*//
                 CouponShare = 0;
                 UserShare = 0;
             }
-            else
+            else if (dto.Mode == TransactionMode.CouponAndCreditMode)
             {
-                throw new Exception("Invalid Transaction mode");
+                //**
+                //در حالت ترکیبی سرانه و اعتبار
+                // سهم پرداختی برای کاربر 0
+                // سهم سرانه 1
+                // سهم اعتبار = به اندازه باقی هزینه
+                //*//
+                UserShare = 0;
+                CreditShare = ReservationModel.BillAmount;
+                CouponShare = 1;
             }
 
             await _couponTxService.AddTransaction(
@@ -414,7 +459,8 @@ namespace Services.Services
                     tempoReservation.SelectedRelatives.Select(x => x.Relative).ToList()
                 ),
                 _mapper.Map<EntityDto>(tempoReservation.Slot.Entity),
-                _mapper.Map<SlotDto>(tempoReservation.Slot)
+                _mapper.Map<SlotDto>(tempoReservation.Slot),
+                tempoReservation.TransactionMode
             );
 
             var AllRelations = await _relationsService.GetRelations();
@@ -464,7 +510,8 @@ namespace Services.Services
         public async Task<List<Internal_ShareDto>> CalculateShares(
             List<RelativeDto> Relatives,
             EntityDto Entity,
-            SlotDto slot
+            SlotDto slot,
+            TransactionMode TxMode
         )
         {
             var Shares = await _repositoryManager.CouponShare.GetRelationSharesInPeriod(
@@ -473,6 +520,13 @@ namespace Services.Services
             );
 
             List<Internal_ShareDto> res = new List<Internal_ShareDto>();
+
+            List<RelationType> SelectedRelations = new();
+
+            bool CouponShouldBe = (
+                TxMode == TransactionMode.CouponMode
+                || TxMode == TransactionMode.CouponAndCreditMode
+            );
 
             foreach (var Relative in Relatives)
             {
@@ -485,8 +539,41 @@ namespace Services.Services
 
                 if (age >= Entity.MinAge)
                 {
+                    Decimal CompanyShare = 0;
+                    //TODO: موارد جدیدا اضافه شده اند
+                    //اگر از اون فامیلای درجه یک بود هیچی نخواد
+                    if (
+                        CouponShouldBe && await _relationsService.NeedConfirmation(share.RelationId)
+                    )
+                    {
+                        if (
+                            (
+                                share.Relation.Type == RelationType.PEDAR
+                                && SelectedRelations.Contains(RelationType.PEDAR2)
+                            )
+                            || (
+                                share.Relation.Type == RelationType.PEDAR2
+                                && SelectedRelations.Contains(RelationType.PEDAR)
+                            )
+                            || (
+                                share.Relation.Type == RelationType.MADAR
+                                && SelectedRelations.Contains(RelationType.MADAR2)
+                            )
+                            || (
+                                share.Relation.Type == RelationType.MADAR2
+                                && SelectedRelations.Contains(RelationType.MADAR)
+                            )
+                        )
+                        {
+                            CompanyShare = 0;
+                        }
+                        else
+                        {
+                            CompanyShare = Entity.PerPerson * 100 / 100;
+                        }
+                    }
+
                     //TODO: تغییر یافته برای بی اثر شدن محاسبات
-                    Decimal CompanyShare = Entity.PerPerson * 100 / 100;
                     //Decimal CompanyShare = Entity.PerPerson * share.Entitlement / 100;
 
                     res.Add(
@@ -511,6 +598,8 @@ namespace Services.Services
                         }
                     );
                 }
+
+                SelectedRelations.Add(share.Relation.Type);
             }
 
             return res;

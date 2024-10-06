@@ -255,8 +255,9 @@
         <member name="M:WebAPI.Controllers.UsersController.AddCredit(Entities.DataTransferObjects.AddToCreditDto)">
             <summary>
             شارژ حساب
-            + افزایش
-            - کاهش
+            - افزایش
+            + کاهش
+            علامتا اشتباه نیست
             </summary>
             <param name="dto"></param>
             <returns></returns>
