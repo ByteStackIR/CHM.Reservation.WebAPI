@@ -92,9 +92,8 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     )
     {
         var query = _repositoryManager
-            .UserCompany.FindByCondition(x => x.IsActive, false)
-            .Include(y => y.User)
-            .ThenInclude(z => z.Relatives.Where(x => !x.IsChecked && !x.IsDeleted))
+            .UserCompany.FindByCondition(x => x.IsActive == true, false)
+  .Include(y => y.User.Relatives.Where(r => r.IsChecked == false && r.IsDeleted == false)).Where(x=>x.User.Relatives.Any(r => r.IsChecked == false && r.IsDeleted == false))
             .Include(x => x.Company)
             .OrderByDescending(x => x.CreatedDate);
 
@@ -714,7 +713,6 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         return _mapper.Map<RelativeDto>(model);
     }
 
-
     public async Task<List<RelativeDto>> ManiuplateRelativesAsAdmin(ManiuplateRelativeDto dto)
     {
         List<RelativeDto> res = new();
@@ -736,11 +734,11 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
             }
         }
 
-
-
-       res.AddRange(await this.BulkInsertByAdmin(new() { UserId = dto.UserId.Value, Relatives = dto.Create }));
-
-    
+        res.AddRange(
+            await this.BulkInsertByAdmin(
+                new() { UserId = dto.UserId.Value, Relatives = dto.Create }
+            )
+        );
 
         foreach (var item in dto.Delete)
         {
@@ -749,7 +747,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
 
             try
             {
-                res.Add(await DeleteByAdmin(dto.UserId.Value,item.Id.Value));
+                res.Add(await DeleteByAdmin(dto.UserId.Value, item.Id.Value));
             }
             catch (Exception ex)
             {
@@ -759,6 +757,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
 
         return res;
     }
+
     public async Task<List<RelativeDto>> ManiuplateRelativesAsCompany(ManiuplateRelativeDto dto)
     {
         List<RelativeDto> res = new();
@@ -780,11 +779,11 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
             }
         }
 
-
-
-        res.AddRange(await this.BulkInsertByCompany(new() { UserId = dto.UserId.Value, Relatives = dto.Create }));
-
-
+        res.AddRange(
+            await this.BulkInsertByCompany(
+                new() { UserId = dto.UserId.Value, Relatives = dto.Create }
+            )
+        );
 
         foreach (var item in dto.Delete)
         {
@@ -803,12 +802,6 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
 
         return res;
     }
-
-
-
-
-
-
 
     public async Task<RelativeDto> ResultOfReviewRelativeByAdmin(Guid UserId, Guid Id, bool Accept)
     {
@@ -850,8 +843,6 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         _repositoryManager.Save();
         return _mapper.Map<RelativeDto>(model);
     }
-
-
 
     #region [Self]
 
