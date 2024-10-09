@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Contracts.IContext;
+using Contracts.IMarker;
 using Contracts.IRepository;
 using Contracts.IService;
 using Entities.IdentityExtensions;
@@ -13,7 +14,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Services.Services
 {
-    public class ReservationStateService : ServiceBase, IReservationStateService
+    public class ReservationStateService : ServiceBase, IReservationStateService ,IScopeMarker
     {
         private IObjectStateService _objectStateService;
 
@@ -150,6 +151,27 @@ namespace Services.Services
             return false;
         }
 
+        public async Task<bool> CancelObject(Guid ReservationId, Guid ObjectStateId)
+        {
+            _repositoryManager.ReservationStates.Create(
+                new()
+                {
+                    ActorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                    IsDone = true,
+                    CreatedDate = DateTime.Now,
+                    Id = Guid.NewGuid(),
+                    IsCancelled = false,
+                    ReservationId = ReservationId,
+                    ToForward = false,
+                    ObjectStateId = ObjectStateId,
+                    CreatorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                }
+            );
+
+            _repositoryManager.Save();
+
+            return true;
+        }
         //private async Task<bool> SatisfyTheRequirements(ReservationStatusDto dto)
         //{
 

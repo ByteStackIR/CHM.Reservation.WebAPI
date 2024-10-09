@@ -105,7 +105,11 @@ namespace Entities.DataTransferObjects
 
         public TransactionMode Mode { get; set; }
     }
+    public class CancelReservationDto
+    {
+        public Guid ReservationId { get; set; }
 
+    }
     public class AddToCreditDto
     {
         public Guid UserId { get; set; }

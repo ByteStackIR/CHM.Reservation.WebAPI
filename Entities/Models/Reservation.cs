@@ -49,6 +49,8 @@ namespace Entities.Models
         public ICollection<SelectedRelatives> SelectedRelatives { get; set; }
         public ICollection<Tx_Coupon> TxCoupons { get; set; } 
         public ICollection<Tx_User> TxUsers { get; set; }
+        public ICollection<Tx_Credit> TxCredit { get; set; }
+
         public ICollection<ReservationStates> ReservationStates { get; set; }
     }
 }

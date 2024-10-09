@@ -4,6 +4,13 @@
         <name>WebAPI</name>
     </assembly>
     <members>
+        <member name="M:WebAPI.Controllers.AccountController.MyReservation(Features.CustomRequest.ReservationRequest_User)">
+            <summary>
+            کارتابل مربوط به گرفتن تمام رزرو های یک کاربر با صفحه بندی
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
         <member name="M:WebAPI.Controllers.BaseInfoController.GetCompaniesAsync(Features.CustomRequest.CompanyRequest)">
             <summary>
             گرفتن تمام شرکت ها به صورت صفحه بندی شده
@@ -195,13 +202,6 @@
             <param name="dto">userId - Id - IsConfirmed</param>
             <returns></returns>
             <exception cref="T:System.Exception"></exception>
-        </member>
-        <member name="M:WebAPI.Controllers.ReservationController.GetPagedReservationsOfUser(Features.CustomRequest.ReservationRequest_User)">
-            <summary>
-            کارتابل مربوط به گرفتن تمام رزرو های یک کاربر با صفحه بندی
-            </summary>
-            <param name="request"></param>
-            <returns></returns>
         </member>
         <member name="M:WebAPI.Controllers.ReservationController.GetPagedReservationsOfHotel(Features.CustomRequest.ReservationRequest_Hotel)">
             <summary>

@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using AutoMapper;
 using Contracts.IContext;
 using Contracts.IRepository;
 using Contracts.IService;
@@ -14,6 +15,7 @@ using Features.CustomRequest;
 using Features.RequestFeatures;
 using LoggerService;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Services.Services
@@ -26,6 +28,7 @@ namespace Services.Services
         private IUserTransactionService _userTxService;
         private ICouponTransactionService _couponTxService;
         private ICreditTransactionService _creditTxService;
+        private IReservationStateService _reservationStateService;
 
         public ReservationService(
             IMapper mapper,
@@ -38,7 +41,8 @@ namespace Services.Services
             IRelationsService RelationsService,
             IUserTransactionService userTx,
             ICouponTransactionService couponTx,
-            ICreditTransactionService creditTxService
+            ICreditTransactionService creditTxService,
+            IReservationStateService reservationStateService
         )
             : base(repoManger, mapper, httpContextAccessor, systemContext, logger)
         {
@@ -48,6 +52,7 @@ namespace Services.Services
             _userTxService = userTx;
             _couponTxService = couponTx;
             _creditTxService = creditTxService;
+            _reservationStateService = reservationStateService;
         }
 
         public async Task<Internal_ReservationDto> InitReservation(ReservationCreationDto dto)
@@ -215,7 +220,7 @@ namespace Services.Services
 
         public async Task<bool> FinalizeReservation(FinalizeReservationDto dto)
         {
-            if (dto.Mode==null)
+            if (dto.Mode == null)
                 throw new Exception("Mode must have value");
 
             var ReservationModel = await _repositoryManager.Reservation.GetByIdAsync(
@@ -238,14 +243,16 @@ namespace Services.Services
                 throw new Exception("has expired");
             }
 
-
-            if(ReservationModel.TransactionMode != dto.Mode)
+            if (ReservationModel.TransactionMode != dto.Mode)
             {
-                if(!(ReservationModel.TransactionMode == TransactionMode.CouponMode && dto.Mode == TransactionMode.CouponAndCreditMode))
+                if (
+                    !(
+                        ReservationModel.TransactionMode == TransactionMode.CouponMode
+                        && dto.Mode == TransactionMode.CouponAndCreditMode
+                    )
+                )
                     throw new Exception("Invalid Transaction");
-
             }
-
 
             //TODO: محل بررسی اعتبار در حین رزرو اصلی
             //TODO: تغییر یافته برای بی اثر شدن محاسبات
@@ -605,19 +612,67 @@ namespace Services.Services
             return res;
         }
 
-        public async Task<PagedData<List<ReservationDto>>> GetPagedReservationsOfUserAsync(
+        public async Task<PagedData<List<External_ReservationDto>>> GetPagedReservationsOfUserAsync(
             ReservationRequest_User request
         )
         {
             var currentUser = _systemContext.CurrentUser.GetUserId().Value.ToString();
             var query = _repositoryManager
                 .Reservation.FindByCondition(r => r.UserId == currentUser, false)
-                .Include(r => r.Slot);
+                .Include(r => r.Slot.Entity.Category)
+                .Include(x => x.SelectedRelatives)
+                .ThenInclude(x => x.Relative.Relation)
+                .Include(x =>
+                    x.ReservationStates.OrderByDescending(y => y.CreatedDate).FirstOrDefault()
+                )
+                .ThenInclude(x => x.ObjectState)
+                .OrderByDescending(x => x.CreatedDate);
+
+            List<External_ReservationDto> result = new();
             var count = await query.CountAsync();
             var data = await query.GetPage(request).ToListAsync();
-            var dataDto = _mapper.Map<List<ReservationDto>>(data);
+            data.ForEach(item =>
+            {
+                result.Add(
+                    new()
+                    {
+                        Id = item.Id,
+                        Amount = item.Amount,
+                        BillAmount = item.BillAmount,
+                        ExpirationDate = item.ExpirationDate,
+                        IsFinalized = item.IsFinalized,
+                        ObjectStateTitle = item.ObjectState.Title,
+                        TransactionMode = item.TransactionMode,
+                        CreatedDate = item.CreatedDate,
+                        Entity = new()
+                        {
+                            Category = new()
+                            {
+                                Title = item.Slot.Entity.Category.Title,
+                                Description = item.Slot.Entity.Category.Description,
+                            },
+                            Title = item.Slot.Entity.Title,
+                            DaysToCancel = item.Slot.Entity.DaysToCancel,
+                        },
+                        Slot = new()
+                        {
+                            StartDate = item.Slot.StartDate,
+                            EndDate = item.Slot.EndDate,
+                        },
 
-            return new(new(count, request.PageNumber, request.PageSize), dataDto);
+                        Relatives = item
+                            .SelectedRelatives.Select(x => new External_SelectedRelativeDto()
+                            {
+                                FirstName = x.Relative.FirstName,
+                                LastName = x.Relative.FamilyName,
+                                RelationTitle = x.Relative.Relation.Title,
+                            })
+                            .ToList(),
+                    }
+                );
+            });
+
+            return new(new(count, request.PageNumber, request.PageSize), result);
         }
 
         public async Task<PagedData<List<ReservationDto>>> GetPagedReservationsOfHotelAsync(
@@ -670,6 +725,105 @@ namespace Services.Services
             _repositoryManager.Reservation.Delete(tempoReservation);
 
             _repositoryManager.Save();
+        }
+
+        public async Task CancelReservation(Guid UserId, Guid ReservationId)
+        {
+            var reservation = await _repositoryManager
+                .Reservation.FindByCondition(x => x.Id == ReservationId, false)
+                .Include(x => x.Slot.Entity)
+                .Include(y => y.ObjectState)
+                .Include(o => o.ReservationStates.OrderByDescending(t => t.CreatedDate))
+                .ThenInclude(x => x.ObjectState)
+                .Include(x => x.TxCoupons)
+                .Include(x => x.TxUsers)
+                .Include(x => x.TxCredit)
+                .FirstOrDefaultAsync();
+            var currentState = reservation.ReservationStates.FirstOrDefault().ObjectState;
+
+            if (currentState.Cancellable && currentState.CancelNode.HasValue)
+            {
+                DateTime startOfSlot = reservation.Slot.StartDate;
+
+                var diff = DateTime.Now.Subtract(startOfSlot);
+
+                if (reservation.Slot.Entity.DaysToCancel >= diff.TotalDays)
+                {
+                    var cancelNode = await _ObjectStateService.GetStateByCode(
+                        currentState.CategoryId,
+                        currentState.CancelNode.Value
+                    );
+                    reservation.ObjectStateId = cancelNode.Id;
+
+                    await _reservationStateService.CancelObject(ReservationId, cancelNode.Id);
+                    reservation.ObjectState = null;
+                    reservation.ReservationStates = null;
+                    reservation.Slot = null;
+                    reservation.SelectedRelatives = null;
+                    reservation.TxCredit = null;
+                    reservation.TxCoupons = null;
+                    reservation.TxUsers = null;
+
+                    _repositoryManager.Reservation.Update(reservation);
+
+                    await _couponTxService.AddTransaction(
+                        new()
+                        {
+                            //TODO: تغییر یافته برای بی اثر شدن محاسبات
+                            //Amount = ReservationModel.Amount - ReservationModel.BillAmount,
+                            Amount = -reservation
+                                .TxCoupons.OrderBy(x => x.CreatedDate)
+                                .FirstOrDefault()
+                                .Amount,
+                            CreatedDate = DateTime.Now,
+                            Id = Guid.NewGuid(),
+                            PeriodId = _systemContext.Period.Id,
+                            ReservationId = reservation.Id,
+                            UserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                            CreatorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                            Description =
+                                DateTime.Now.ToString("yyyy.MM.dd") + "  بابت لغو رزرو  در تاریخ ",
+                        }
+                    );
+
+                    await _userTxService.AddTransaction(
+                        new()
+                        {
+                            Amount = -reservation
+                                .TxUsers.OrderBy(x => x.CreatedDate)
+                                .FirstOrDefault()
+                                .Amount,
+                            CreatedDate = DateTime.Now,
+                            Id = Guid.NewGuid(),
+                            PeriodId = _systemContext.Period.Id,
+                            ReservationId = reservation.Id,
+                            UserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                            CreatorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                            Description =
+                                DateTime.Now.ToString("yyyy.MM.dd") + "  بابت لغو رزرو  در تاریخ ",
+                        }
+                    );
+
+                    await _creditTxService.AddTransaction(
+                        new Internal_TransactionDto()
+                        {
+                            Amount = -reservation
+                                .TxCredit.OrderBy(x => x.CreatedDate)
+                                .FirstOrDefault()
+                                .Amount,
+                            CreatedDate = DateTime.Now,
+                            Id = Guid.NewGuid(),
+                            PeriodId = _systemContext.Period.Id,
+                            ReservationId = reservation.Id,
+                            UserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                            CreatorUserId = _systemContext.CurrentUser.GetUserId().Value.ToString(),
+                            Description =
+                                DateTime.Now.ToString("yyyy.MM.dd") + "  بابت لغو رزرو  در تاریخ ",
+                        }
+                    );
+                    _repositoryManager.Save();
+                }
+            }
         }
     }
 }

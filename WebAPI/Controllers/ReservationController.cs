@@ -24,31 +24,6 @@ namespace WebAPI.Controllers
             _reservationService = reservationService;
         }
 
-        /// <summary>
-        /// کارتابل مربوط به گرفتن تمام رزرو های یک کاربر با صفحه بندی
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        [HttpPost("User/[action]")]
-        public async Task<IActionResult> GetPagedReservationsOfUser(ReservationRequest_User request)
-        {
-            try
-            {
-                var result = await _reservationService.GetPagedReservationsOfUserAsync(request);
-                if (result is not null)
-                {
-                    return Ok(result);
-                }
-                else
-                {
-                    return NotFound();
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
 
         /// <summary>
         /// کارتابل مربوط به گرفتن تمام رزرو های یک هتل با صفحه بندی
@@ -132,6 +107,15 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> CancelTemporaryReservation([FromBody] FinalizeReservationDto dto)
         {
              await _reservationService.CancelTemporaryReservation(dto.TempoReservationId);
+            return NoContent();
+        }
+
+
+        [Authorize]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> CancelReservation([FromBody] CancelReservationDto dto)
+        {
+            await _reservationService.CancelReservation(Guid.Parse(base.User.FindFirstValue(ClaimTypes.NameIdentifier)),dto.ReservationId);
             return NoContent();
         }
 

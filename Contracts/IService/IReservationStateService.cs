@@ -10,6 +10,7 @@ namespace Contracts.IService
     {
         Task<bool> GoToNextStep(Guid ReservationId);
         Task<bool> GoToPreviousStep(Guid ReservationId);
+        Task<bool> CancelObject(Guid ReservationId, Guid ObjectStateId);
 
     }
 }
