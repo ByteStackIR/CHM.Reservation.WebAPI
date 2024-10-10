@@ -11,6 +11,13 @@
             <param name="request"></param>
             <returns></returns>
         </member>
+        <member name="M:WebAPI.Controllers.AccountController.MyReservationById(System.Guid)">
+            <summary>
+            کارتابل مربوط به گرفتن یک رزرو به خصوص کاربر
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
         <member name="M:WebAPI.Controllers.BaseInfoController.GetCompaniesAsync(Features.CustomRequest.CompanyRequest)">
             <summary>
             گرفتن تمام شرکت ها به صورت صفحه بندی شده
