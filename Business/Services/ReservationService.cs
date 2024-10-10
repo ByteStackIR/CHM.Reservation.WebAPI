@@ -623,10 +623,12 @@ namespace Services.Services
                 .Include(x => x.SelectedRelatives)
                 .ThenInclude(x => x.Relative.Relation)
                 .Include(x =>
-                    x.ReservationStates.OrderByDescending(y => y.CreatedDate).FirstOrDefault()
+                    x.ReservationStates.OrderByDescending(y => y.CreatedDate).Take(1)
                 )
                 .ThenInclude(x => x.ObjectState)
                 .OrderByDescending(x => x.CreatedDate);
+
+            var asfdsadf = query.ToQueryString();
 
             List<External_ReservationDto> result = new();
             var count = await query.CountAsync();
@@ -641,7 +643,7 @@ namespace Services.Services
                         BillAmount = item.BillAmount,
                         ExpirationDate = item.ExpirationDate,
                         IsFinalized = item.IsFinalized,
-                        ObjectStateTitle = item.ObjectState.Title,
+                        ObjectStateTitle = item.ObjectState?.Title,
                         TransactionMode = item.TransactionMode,
                         CreatedDate = item.CreatedDate,
                         Entity = new()
@@ -673,6 +675,64 @@ namespace Services.Services
             });
 
             return new(new(count, request.PageNumber, request.PageSize), result);
+        }
+
+
+        public async Task<External_ReservationDto> GetReservationsOfUserByReservationIdAsync(
+            Guid Id
+        )
+        {
+            var currentUser = _systemContext.CurrentUser.GetUserId().Value.ToString();
+            var query = await _repositoryManager
+                .Reservation.FindByCondition(r => r.UserId == currentUser && r.Id == Id, false)
+                .Include(r => r.Slot.Entity.Category)
+                .Include(x => x.SelectedRelatives)
+                .ThenInclude(x => x.Relative.Relation)
+                .Include(x =>
+                    x.ReservationStates.OrderByDescending(y => y.CreatedDate).Take(1)
+                )
+                .ThenInclude(x => x.ObjectState)
+                .OrderByDescending(x => x.CreatedDate).FirstOrDefaultAsync();
+
+
+            External_ReservationDto result = new()
+            {
+                Id = query.Id,
+                Amount = query.Amount,
+                BillAmount = query.BillAmount,
+                ExpirationDate = query.ExpirationDate,
+                IsFinalized = query.IsFinalized,
+                ObjectStateTitle = query.ObjectState?.Title,
+                TransactionMode = query.TransactionMode,
+                CreatedDate = query.CreatedDate,
+                Entity = new()
+                {
+                    Category = new()
+                    {
+                        Title = query.Slot.Entity.Category.Title,
+                        Description = query.Slot.Entity.Category.Description,
+                    },
+                    Title = query.Slot.Entity.Title,
+                    DaysToCancel = query.Slot.Entity.DaysToCancel,
+                },
+                Slot = new()
+                {
+                    StartDate = query.Slot.StartDate,
+                    EndDate = query.Slot.EndDate,
+                },
+
+                Relatives = query
+                            .SelectedRelatives.Select(x => new External_SelectedRelativeDto()
+                            {
+                                FirstName = x.Relative.FirstName,
+                                LastName = x.Relative.FamilyName,
+                                RelationTitle = x.Relative.Relation.Title,
+                            })
+                            .ToList(),
+            };
+
+
+            return result;
         }
 
         public async Task<PagedData<List<ReservationDto>>> GetPagedReservationsOfHotelAsync(

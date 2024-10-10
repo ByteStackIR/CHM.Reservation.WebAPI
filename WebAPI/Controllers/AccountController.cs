@@ -67,5 +67,31 @@ namespace WebAPI.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// کارتابل مربوط به گرفتن یک رزرو به خصوص کاربر
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        [HttpGet("User/[action]/{Id}")]
+        public async Task<IActionResult> MyReservationById(Guid Id)
+        {
+            try
+            {
+                var result = await _reservationService.GetReservationsOfUserByReservationIdAsync(Id);
+                if (result is not null)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }
