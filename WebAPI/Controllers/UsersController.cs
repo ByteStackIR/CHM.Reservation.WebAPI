@@ -98,6 +98,19 @@
 
         /// <summary>
         /// شارژ حساب
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        [Authorize(Roles = RolesNamesConstant.Administrator)]
+        [HttpGet("[action]/{UserId}")]
+        public async Task<IActionResult> GetUserCredit(Guid UserId)
+        {
+            var res = await _creditTransactionService.GetUserRemainingCredit(UserId);
+            return Ok(new { Credit = res });
+        }
+
+        /// <summary>
+        /// شارژ حساب
         /// - افزایش
         /// + کاهش
         /// علامتا اشتباه نیست

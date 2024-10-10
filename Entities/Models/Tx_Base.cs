@@ -33,7 +33,7 @@ namespace Entities.Models
         public string Description { get; set; }
 
         [DeleteBehavior(DeleteBehavior.NoAction)]
-        public Reservation Reservation { get; set; }
+        public Reservation? Reservation { get; set; }
         public Period Period { get; set; }
         public User User { get; set; }
         public User CreatorUser { get; set; }

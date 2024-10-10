@@ -259,6 +259,13 @@
             <param name="dto"></param>
             <returns></returns>
         </member>
+        <member name="M:WebAPI.Controllers.UsersController.GetUserCredit(System.Guid)">
+            <summary>
+            شارژ حساب
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+        </member>
         <member name="M:WebAPI.Controllers.UsersController.AddCredit(Entities.DataTransferObjects.AddToCreditDto)">
             <summary>
             شارژ حساب
@@ -363,6 +370,30 @@
             <inheritdoc />
         </member>
         <member name="M:WebAPI.Migrations.Tx.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:WebAPI.Migrations.Tx_Credit">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.Tx_Credit.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.Tx_Credit.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.Tx_Credit.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:WebAPI.Migrations.Tx_Credit1">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.Tx_Credit1.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.Tx_Credit1.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebAPI.Migrations.Tx_Credit1.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
     </members>

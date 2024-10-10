@@ -83,26 +83,26 @@
 
                     this.RemainingCoupon = (
                         this.Period.Stipend
-                        - await repositoryManager
+                        - (await repositoryManager
                             .Tx_Coupon.FindByCondition(
                                 tc =>
                                     tc.PeriodId == this.Period.Id
                                     && tc.UserId == CurrentUser.GetUserId().Value.ToString(),
                                 false
                             )
-                            .SumAsync(tc => tc.Amount)
+                            .SumAsync(tc => tc.Amount))
                     );
 
                     this.RemainingCredit = (
                         this.Period.Credit
-                        - await repositoryManager
+                        - (await repositoryManager
                             .Tx_Credit.FindByCondition(
                                 tc =>
                                     tc.PeriodId == this.Period.Id
                                     && tc.UserId == CurrentUser.GetUserId().Value.ToString(),
                                 false
                             )
-                            .SumAsync(tc => tc.Amount)
+                            .SumAsync(tc => tc.Amount))
                     );
                 }
             }

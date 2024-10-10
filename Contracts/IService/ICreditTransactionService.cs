@@ -15,7 +15,7 @@ namespace Contracts.IService
         Task<Tx_CreditDto> AddTransaction(Internal_TransactionDto dto);
         Task<Tx_CreditDto> AddTransaction(AddToCreditDto dto);
 
-
+        Task<decimal> GetUserRemainingCredit(Guid UserId);
         Task<Decimal> GetRemainingCredit();
     }
 }
