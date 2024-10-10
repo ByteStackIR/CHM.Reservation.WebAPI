@@ -93,7 +93,8 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     {
         var query = _repositoryManager
             .UserCompany.FindByCondition(x => x.IsActive == true, false)
-  .Include(y => y.User.Relatives.Where(r => r.IsChecked == false && r.IsDeleted == false)).Where(x=>x.User.Relatives.Any(r => r.IsChecked == false && r.IsDeleted == false))
+            .Include(y => y.User.Relatives.Where(r => r.IsChecked == false && r.IsDeleted == false))
+            .Where(x => x.User.Relatives.Any(r => r.IsChecked == false && r.IsDeleted == false))
             .Include(x => x.Company)
             .OrderByDescending(x => x.CreatedDate);
 
@@ -108,6 +109,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
                     CompanyTitle = item.Company.Title,
                     FirstName = item.User.FirstName,
                     LastName = item.User.LastName,
+                    PersonnelCode = item.PersonnelCode,
                     Relatives = new()
                     {
                         Items = _mapper.Map<List<RelativeDto>>(item.User.Relatives),
@@ -152,6 +154,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
                     CompanyTitle = item.Company.Title,
                     FirstName = item.User.FirstName,
                     LastName = item.User.LastName,
+                    PersonnelCode = item.PersonnelCode,
                     Relatives = new()
                     {
                         Items = _mapper.Map<List<RelativeDto>>(item.User.Relatives),

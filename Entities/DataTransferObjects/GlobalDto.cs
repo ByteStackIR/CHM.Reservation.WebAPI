@@ -47,6 +47,7 @@ namespace Entities.DataTransferObjects
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
+        public string PersonnelCode { get; set; }
         public string CompanyTitle { get; set; }
 
         public KeyItemsDto<RelativeDto> Relatives { get; set; }
