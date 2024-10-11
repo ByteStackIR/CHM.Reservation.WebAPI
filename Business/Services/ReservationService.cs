@@ -712,6 +712,7 @@ namespace Services.Services
                         Title = query.Slot.Entity.Category.Title,
                         Description = query.Slot.Entity.Category.Description,
                     },
+                    Id = query.Slot.EntityId,
                     Title = query.Slot.Entity.Title,
                     DaysToCancel = query.Slot.Entity.DaysToCancel,
                 },
