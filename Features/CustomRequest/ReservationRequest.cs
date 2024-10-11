@@ -16,6 +16,11 @@ namespace Features.CustomRequest
         public Guid EntityId { get; set; }
     }
 
+    public class ReservationRequest : Features.RequestFeatures.RequestFeatures 
+    {
+        public Guid EntityId { get; set; }
+    }
+
     public class ReservationRequest_Executive : Features.RequestFeatures.RequestFeatures
     {
         //public string UserId { get; set; }

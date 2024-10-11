@@ -24,6 +24,31 @@ namespace WebAPI.Controllers
             _reservationService = reservationService;
         }
 
+        /// <summary>
+        /// گرفتن تمام رزرو های مربوط به یک انتیتی بدون در نظر گرفتن وضعیت
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("[action]")]
+        public async Task<IActionResult> GetPagedAllReservations(ReservationRequest request)
+        {
+            try
+            {
+                var result = await _reservationService.GetPagedAllReservationsAsync(request);
+                if (result is not null)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
 
         /// <summary>
         /// کارتابل مربوط به گرفتن تمام رزرو های یک هتل با صفحه بندی

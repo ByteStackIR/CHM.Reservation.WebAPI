@@ -612,6 +612,69 @@ namespace Services.Services
             return res;
         }
 
+        public async Task<PagedData<List<External_ReservationDto>>> GetPagedAllReservationsAsync(ReservationRequest request)
+        {
+            var currentUser = _systemContext.CurrentUser.GetUserId().Value.ToString();
+            var query = _repositoryManager
+                .Reservation.FindByCondition(r => r.Slot.EntityId == request.EntityId, false)
+                .Include(r => r.Slot.Entity.Category)
+                .Include(x => x.SelectedRelatives)
+                .ThenInclude(x => x.Relative.Relation)
+                .Include(x =>
+                    x.ReservationStates.OrderByDescending(y => y.CreatedDate).Take(1)
+                )
+                .ThenInclude(x => x.ObjectState)
+                .OrderByDescending(x => x.CreatedDate);
+
+            var asfdsadf = query.ToQueryString();
+
+            List<External_ReservationDto> result = new();
+            var count = await query.CountAsync();
+            var data = await query.GetPage(request).ToListAsync();
+            data.ForEach(item =>
+            {
+                result.Add(
+                    new()
+                    {
+                        Id = item.Id,
+                        Amount = item.Amount,
+                        BillAmount = item.BillAmount,
+                        ExpirationDate = item.ExpirationDate,
+                        IsFinalized = item.IsFinalized,
+                        ObjectStateTitle = item.ObjectState?.Title,
+                        TransactionMode = item.TransactionMode,
+                        CreatedDate = item.CreatedDate,
+                        Entity = new()
+                        {
+                            Category = new()
+                            {
+                                Title = item.Slot.Entity.Category.Title,
+                                Description = item.Slot.Entity.Category.Description,
+                            },
+                            Title = item.Slot.Entity.Title,
+                            DaysToCancel = item.Slot.Entity.DaysToCancel,
+                        },
+                        Slot = new()
+                        {
+                            StartDate = item.Slot.StartDate,
+                            EndDate = item.Slot.EndDate,
+                        },
+
+                        Relatives = item
+                            .SelectedRelatives.Select(x => new External_SelectedRelativeDto()
+                            {
+                                FirstName = x.Relative.FirstName,
+                                LastName = x.Relative.FamilyName,
+                                RelationTitle = x.Relative.Relation.Title,
+                            })
+                            .ToList(),
+                    }
+                );
+            });
+
+            return new(new(count, request.PageNumber, request.PageSize), result);
+        }
+
         public async Task<PagedData<List<External_ReservationDto>>> GetPagedReservationsOfUserAsync(
             ReservationRequest_User request
         )
