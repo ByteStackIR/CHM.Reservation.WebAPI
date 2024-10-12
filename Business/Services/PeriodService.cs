@@ -42,27 +42,26 @@ public class PeriodService : ServiceBase, IPeriodService, IScopeMarker
     )
         : base(repoManger, mapper, httpContextAccessor, systemContext, logger) { }
 
-
     public async Task<PagedData<List<PeriodDto>>> GetPagnationData(PeriodTableRequest request)
     {
         try
         {
-            var query =  _repositoryManager.Period.FindAll(false);
+            var query = _repositoryManager.Period.FindAll(false);
 
             int count = query.Count();
 
-            var data =await query.GetPage(request).ToListAsync();
+            var data = await query.GetPage(request).ToListAsync();
 
-
-            return new(new(count, request.PageNumber, request.PageSize)
-            , _mapper.Map<List<PeriodDto>>(data));
+            return new(
+                new(count, request.PageNumber, request.PageSize),
+                _mapper.Map<List<PeriodDto>>(data)
+            );
         }
         catch (Exception ex)
         {
             throw new Exception(ex.Message);
         }
     }
-
 
     public async Task<PeriodDto> GetById(Guid periodId)
     {
@@ -75,7 +74,7 @@ public class PeriodService : ServiceBase, IPeriodService, IScopeMarker
 
                 var CouponShares = await _repositoryManager
                     .CouponShare.FindByCondition(x => x.PeriodId == periodDto.Id, false)
-                   // .Include(x => x.Relation)
+                    // .Include(x => x.Relation)
                     .ToListAsync();
 
                 periodDto.CouponShare = _mapper.Map<List<CouponShareDto>>(CouponShares);
@@ -100,6 +99,13 @@ public class PeriodService : ServiceBase, IPeriodService, IScopeMarker
             dto.Id = Guid.NewGuid();
             var periodModel = _mapper.Map<Period>(dto);
             periodModel.IsDeleted = false;
+            periodModel.CreatedDate = DateTime.Now;
+
+            //! TODO should CouponShare add to periodModel.CouponShare an then insert to db BUT first periodModel.CouponShare must be empty on first. why it's full??
+            foreach (var shit in periodModel.CouponShare)
+            {
+                shit.CreatedDate = DateTime.Now;
+            }
 
             foreach (var share in dto.CouponShare)
             {
@@ -113,7 +119,7 @@ public class PeriodService : ServiceBase, IPeriodService, IScopeMarker
             _repositoryManager.Save();
             return true;
         }
-        catch
+        catch (Exception ex)
         {
             return false;
         }
@@ -131,15 +137,13 @@ public class PeriodService : ServiceBase, IPeriodService, IScopeMarker
             Period? periodModel = await _repositoryManager.Period.GetByIdAsync(dto.Id);
             if (periodModel is not null && periodModel.IsDeleted is false)
             {
-
                 _mapper.Map(dto, periodModel);
                 periodModel.IsDeleted = false;
 
                 periodModel.CouponShare = null;
                 foreach (var share in dto.CouponShare)
                 {
-
-                    if (share.Id== null || share.Id == Guid.Empty)
+                    if (share.Id == null || share.Id == Guid.Empty)
                     {
                         CouponShare model = _mapper.Map<CouponShare>(share);
                         model.Id = Guid.NewGuid();
@@ -149,20 +153,17 @@ public class PeriodService : ServiceBase, IPeriodService, IScopeMarker
                     }
                     else
                     {
-                        var model = await _repositoryManager.CouponShare.GetByIdAsync(share.Id.Value);
+                        var model = await _repositoryManager.CouponShare.GetByIdAsync(
+                            share.Id.Value
+                        );
 
-                        if(model != null)
+                        if (model != null)
                         {
                             model.Entitlement = share.Entitlement;
                             _repositoryManager.CouponShare.Update(model);
                         }
-
-
                     }
-
                 }
-               
-
 
                 _repositoryManager.Period.Update(periodModel);
                 _repositoryManager.Save();

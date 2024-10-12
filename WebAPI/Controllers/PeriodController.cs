@@ -22,27 +22,20 @@ namespace WebAPI.Controllers
             _periodService = periodService;
         }
 
-
-    
         [HttpPost("[action]")]
         public async Task<IActionResult> GetPeriods(PeriodTableRequest request)
         {
             try
             {
                 var result = await _periodService.GetPagnationData(request);
-              
-                    return Ok(result);
-                
-              
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-
-
-
 
         /// <summary>
         /// This Endpoint gets a single Period by its primary key periodId
@@ -107,7 +100,7 @@ namespace WebAPI.Controllers
             try
             {
                 var result = await _periodService.UpdatePeriod(dto);
-                if(result is not null)
+                if (result is not null)
                 {
                     return Ok(result);
                 }
@@ -134,7 +127,6 @@ namespace WebAPI.Controllers
             {
                 await _periodService.DeletePeriod(periodId);
                 return Ok("Period Deleted Successfully.");
-
             }
             catch (Exception ex)
             {

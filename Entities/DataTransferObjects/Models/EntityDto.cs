@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace Entities.DataTransferObjects.Models
 {
@@ -17,7 +17,7 @@ namespace Entities.DataTransferObjects.Models
         public CategoryDto? Category { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-     
+
         public Guid PeriodId { get; set; }
         public Decimal PerPerson { get; set; }
         public Decimal CompanyShare { get; set; }
@@ -28,7 +28,8 @@ namespace Entities.DataTransferObjects.Models
         public Int16 DaysToCancel { get; set; }
 
         public List<SlotDto> Slots { get; set; } = new List<SlotDto>();
-        public List<ParameterValuesDto> ParameterValues { get; set; } = new List<ParameterValuesDto>();
+        public List<ParameterValuesDto> ParameterValues { get; set; } =
+            new List<ParameterValuesDto>();
         public List<Guid> EntityManagers { set; get; }
 
         public List<ImageDto> Images { get; set; }
@@ -39,6 +40,5 @@ namespace Entities.DataTransferObjects.Models
         public string Key { get; set; }
         public int DisplayOrder { get; set; }
         public string FilePath { get; set; }
-
     }
 }

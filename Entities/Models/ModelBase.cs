@@ -12,7 +12,7 @@ namespace Entities.Models
     [PrimaryKey(nameof(Id))]
     public abstract class ModelBase
     {
-        
+
         public Guid Id { get; set; }
 
         [Column(TypeName = "datetime")]
