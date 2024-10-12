@@ -31,11 +31,16 @@ namespace WebAPI.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetCredit()
         {
+            var credit = await _creditTransactionService.GetRemainingCredit();
+
+            var couponAmount = await _couponTransactionService.GetRemainingCoupon();
+            var coupon = couponAmount > 0;
+
             return Ok(
                 new
                 {
-                    Credit = await _couponTransactionService.GetRemainingCoupon(),
-                    Coupon = (await _couponTransactionService.GetRemainingCoupon()) > 0,
+                    Credit = credit,
+                    Coupon = coupon
                 }
             );
         }

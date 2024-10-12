@@ -210,6 +210,13 @@
             <returns></returns>
             <exception cref="T:System.Exception"></exception>
         </member>
+        <member name="M:WebAPI.Controllers.ReservationController.GetPagedAllReservations(Features.CustomRequest.ReservationRequest)">
+            <summary>
+            گرفتن تمام رزرو های مربوط به یک انتیتی بدون در نظر گرفتن وضعیت
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
         <member name="M:WebAPI.Controllers.ReservationController.GetPagedReservationsOfHotel(Features.CustomRequest.ReservationRequest_Hotel)">
             <summary>
             کارتابل مربوط به گرفتن تمام رزرو های یک هتل با صفحه بندی

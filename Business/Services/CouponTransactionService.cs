@@ -42,7 +42,9 @@ namespace Services.Services
 
         public async Task<decimal> GetRemainingCoupon()
         {
-            return _systemContext.RemainingCoupon;
+
+            var rc = _systemContext.RemainingCoupon;
+            return rc;
         }
     }
 }

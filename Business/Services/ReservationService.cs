@@ -103,7 +103,7 @@ namespace Services.Services
                 SlotId = SlotItem.Id.Value,
                 CategoryId = Entity.CategoryId,
                 EntityId = Entity.Id.Value,
-
+                TransactionMode = dto.Mode,
                 UserId = _systemContext.CurrentUser.GetUserId().ToString(),
             };
 
@@ -614,7 +614,6 @@ namespace Services.Services
 
         public async Task<PagedData<List<External_ReservationDto>>> GetPagedAllReservationsAsync(ReservationRequest request)
         {
-            var currentUser = _systemContext.CurrentUser.GetUserId().Value.ToString();
             var query = _repositoryManager
                 .Reservation.FindByCondition(r => r.Slot.EntityId == request.EntityId, false)
                 .Include(r => r.Slot.Entity.Category)
@@ -626,7 +625,6 @@ namespace Services.Services
                 .ThenInclude(x => x.ObjectState)
                 .OrderByDescending(x => x.CreatedDate);
 
-            var asfdsadf = query.ToQueryString();
 
             List<External_ReservationDto> result = new();
             var count = await query.CountAsync();
