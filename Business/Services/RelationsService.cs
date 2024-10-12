@@ -29,7 +29,7 @@ namespace Services.Services
 
         public async Task<List<RelationDto>> GetRelations()
         {
-            var res = await _repositoryManager.Relation.FindAll(false).ToListAsync();
+            var res = await _repositoryManager.Relation.FindByCondition(x=>x.ParentId!=null,false).ToListAsync();
 
             // res.ForEach(r => { r.Maximum = null; });
 

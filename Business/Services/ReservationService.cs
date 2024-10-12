@@ -95,7 +95,7 @@ namespace Services.Services
             Internal_ReservationDto result = new Internal_ReservationDto()
             {
                 Id = null,
-                Amount = relatives.Count() * Entity.PerPerson,
+                Amount = relatives.Where(x=>CalculateAge(x.BirthDate,SlotItem.StartDate) >= Entity.MinAge ).Count() * Entity.PerPerson,
                 BillAmount = Shares.Select(x => x.UserShare).Sum(),
                 ObjectStateId = null,
                 CreatedDate = DateTime.Now,
@@ -210,7 +210,7 @@ namespace Services.Services
                         LastName = share.Relative.FamilyName,
                         RelationTitle = AllRelations
                             .FirstOrDefault(x => x.Id == share.Relative.RelationId)
-                            .Title,
+                            ?.Title,
                     }
                 );
             });
@@ -539,19 +539,15 @@ namespace Services.Services
             {
                 var share = Shares.FirstOrDefault(x => x.RelationId == x.RelationId);
                 //TODO : کمتر از دو سال کلا هزینه آن برای شرکت و کاربر صفر است یا چی؟
-                int age = 0;
-                age = slot.StartDate.Date.Year - Relative.BirthDate.Date.Year;
-                if (DateTime.Now.DayOfYear < Relative.BirthDate.Date.DayOfYear)
-                    age = age - 1;
-
+                int age = CalculateAge(Relative.BirthDate, slot.StartDate);
+               
                 if (age >= Entity.MinAge)
                 {
                     Decimal CompanyShare = 0;
+                    bool FirstDegOfFamily = await _relationsService.NeedConfirmation(share.RelationId);
                     //TODO: موارد جدیدا اضافه شده اند
                     //اگر از اون فامیلای درجه یک بود هیچی نخواد
-                    if (
-                        CouponShouldBe && await _relationsService.NeedConfirmation(share.RelationId)
-                    )
+                    if (CouponShouldBe && FirstDegOfFamily)
                     {
                         if (
                             (
@@ -946,6 +942,14 @@ namespace Services.Services
                     _repositoryManager.Save();
                 }
             }
+        }
+
+        public int CalculateAge(DateTime birthdate,DateTime Basis)
+        {
+            int age = Basis.Date.Year - birthdate.Date.Year;
+            if (Basis.DayOfYear < birthdate.Date.DayOfYear)
+                age = age - 1;
+            return age;
         }
     }
 }
