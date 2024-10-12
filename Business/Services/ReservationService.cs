@@ -537,7 +537,7 @@ namespace Services.Services
 
             foreach (var Relative in Relatives)
             {
-                var share = Shares.FirstOrDefault(x => x.RelationId == x.RelationId);
+                var share = Shares.FirstOrDefault(x => x.RelationId == Relative.RelationId);
                 //TODO : کمتر از دو سال کلا هزینه آن برای شرکت و کاربر صفر است یا چی؟
                 int age = CalculateAge(Relative.BirthDate, slot.StartDate);
                
