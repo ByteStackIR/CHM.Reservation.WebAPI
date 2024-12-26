@@ -80,7 +80,7 @@
                 if (userCompany != null)
                 {
                     this.UserCompany = mapper.Map<CompanyDto>(userCompany.Company);
-
+                    //TODO: null checking
                     this.RemainingCoupon = (
                         this.Period?.Stipend
                         - (await repositoryManager
