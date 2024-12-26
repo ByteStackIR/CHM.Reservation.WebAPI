@@ -82,7 +82,7 @@
                     this.UserCompany = mapper.Map<CompanyDto>(userCompany.Company);
 
                     this.RemainingCoupon = (
-                        this.Period.Stipend
+                        this.Period?.Stipend
                         - (await repositoryManager
                             .Tx_Coupon.FindByCondition(
                                 tc =>
@@ -91,10 +91,10 @@
                                 false
                             )
                             .SumAsync(tc => tc.Amount))
-                    );
+                    ) ?? 0;
 
                     this.RemainingCredit = (
-                        this.Period.Credit
+                        this.Period?.Credit
                         - (await repositoryManager
                             .Tx_Credit.FindByCondition(
                                 tc =>
@@ -102,7 +102,7 @@
                                     && tc.UserId == CurrentUser.GetUserId().Value.ToString(),
                                 false
                             )
-                            .SumAsync(tc => tc.Amount))
+                            .SumAsync(tc => tc.Amount)) ?? 0
                     );
                 }
             }
