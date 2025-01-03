@@ -1,4 +1,6 @@
-﻿namespace Services
+﻿using Entities.Models;
+
+namespace Services
 {
     using AutoMapper;
     using Contracts.IContext;
@@ -59,14 +61,20 @@
             CurrentUser = httpContextAccessor.HttpContext.User;
 
             var periodModel = repositoryManager
-                .Period.FindByCondition(
-                    x => !x.IsDeleted && (x.StartDate <= DateTime.Now && x.EndDate >= DateTime.Now),
-                    false
-                )
-                .OrderByDescending(x => x.CreatedDate)
-                .FirstOrDefault();
-            if (periodModel != null)
-                this.Period = mapper.Map<PeriodDto>(periodModel);
+                    .Period.FindByCondition(
+                        x => !x.IsDeleted && (x.StartDate <= DateTime.Now && x.EndDate >= DateTime.Now),
+                        false
+                    )
+                    .OrderByDescending(x => x.CreatedDate)
+                    .FirstOrDefault();
+
+
+            if (periodModel is null)
+            {
+                throw new Exception("No Period Found");
+            }
+
+            this.Period = mapper.Map<PeriodDto>(periodModel);
 
             if (CurrentUser.Identity.IsAuthenticated)
             {
@@ -81,6 +89,7 @@
                 {
                     this.UserCompany = mapper.Map<CompanyDto>(userCompany.Company);
                     //TODO: null checking
+
                     this.RemainingCoupon = (
                         this.Period?.Stipend
                         - (await repositoryManager
