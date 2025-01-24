@@ -42,10 +42,10 @@ public class Program
         // builder.Services.AddDbContext<DBContextProvider>(options =>
         //     options.UseSqlServer(connectionString, b => b.MigrationsAssembly("WebAPI"))
         // );
-
+        //Server=SQLLow04.centraldnserver.com;Database=TRIP;User Id=byte-YFDGy_sa;Password=11$Poc34w;Trusted_Connection=True;TrustServerCertificate=True;Integrated Security=False
         var connectionString = builder.Configuration.GetConnectionString("sqlConnection");
         builder.Services.AddDbContext<DBContextProvider>(options =>
-            options.UseSqlServer(connectionString, b => b.MigrationsAssembly("WebAPI"))
+            options.UseSqlServer("Server=SQLLow04.centraldnserver.com;Database=TRIP;User Id=byte-YFDGy_sa;Password=11$Poc34w;Trusted_Connection=True;TrustServerCertificate=True;Integrated Security=False", b => b.MigrationsAssembly("WebAPI"))
         );
 
         builder.Services.ConfigureIdentity();
