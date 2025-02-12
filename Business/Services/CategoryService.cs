@@ -38,8 +38,8 @@
         public async Task<List<CategoryDto>> GetAllCategories()
     {
             var res = await _repositoryManager
-                .Category.FindAll(false)
-                .ToListAsync();
+                .Category.FindAll(x=>true)
+                ;
 
             return _mapper.Map<List<CategoryDto>>(res);
         }

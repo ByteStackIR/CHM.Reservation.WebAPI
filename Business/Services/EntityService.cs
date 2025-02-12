@@ -49,59 +49,28 @@ namespace Services.Services
         )
         {
             var now = DateTime.Now;
-            var query = _repositoryManager
-                .Entity.FindByCondition(e => e.StartDate <= now && e.EndDate >= now, false)
-                .Include(e => e.Category)
-                .Include(e => e.ParameterValues);
+            var data = await _repositoryManager
+                .Entity.GetPagedCurrentEntities(request);
 
-            var count = await query.CountAsync();
-            var data = await query.GetPage(request).ToListAsync();
+     
             var dataDto = _mapper.Map<List<EntityDto>>(data);
 
-            for (int i = 0; i < data.Count; i++)
+            for (int i = 0; i < data.Data.Count; i++)
             {
-                dataDto[i].Category = _mapper.Map<CategoryDto>(data[i].Category);
+                dataDto[i].Category = _mapper.Map<CategoryDto>(data.Data[i].Category);
             }
-            return new(new(count, request.PageNumber, request.PageSize), dataDto);
+            return new(new(data.TotalCount, request.PageNumber, request.PageSize), dataDto);
         }
 
         public async Task<EntityDataDto> GetSpecifiedEntityAsync(Guid EntityId)
         {
-            //TODO: Add State Condition
-            //NOTE: NOTE
-            var now = DateTime.Now;
-            var query = _repositoryManager
-                .Entity.FindByCondition(e => e.Id == EntityId, false)
-                .Include(x => x.City)
-                .Include(e => e.Category)
-                .Include(e => e.ParameterValues.OrderBy(x => x.DisplayOrder))
-                .ThenInclude(x => x.Parameter)
-                .Include(e => e.Slots)
-                .ThenInclude(x =>
-                    x.Reservations.Where(reservation =>
-                        (
-                            reservation.IsFinalized
-                            && (
-                                reservation.ObjectStateId
-                                    != Guid.Parse(CancelStateConstant.HotelCancelState)
-                                && reservation.ObjectStateId
-                                    != Guid.Parse(CancelStateConstant.TourCancelState)
-                            )
-                        )
-                        || (
-                            reservation.IsFinalized == false
-                            && reservation.ExpirationDate >= DateTime.Now
-                        )
-                    )
-                )
-                .ThenInclude(x =>
-                    x.SelectedRelatives
-                );
+
+         
 
 
 
-
-            var data = await query.FirstOrDefaultAsync();
+            var data = await _repositoryManager
+                .Entity.GetSpecifiedEntityAsync(EntityId);
             var SLots = _mapper.Map<List<SlotDto>>(data.Slots).OrderBy(x => x.StartDate).ToList();
 
             foreach (var item in SLots)
@@ -111,7 +80,7 @@ namespace Services.Services
                     .Reservations.Select(x => x.SelectedRelatives.Count)
                     .Sum();
             }
-            var Images = _repositoryManager.AttachmentsRepository.FindByCondition(x => x.ObjectId == EntityId, true);
+            var Images = await _repositoryManager.AttachmentsRepository.FindAll(x => x.ObjectId == EntityId);
 
 
 
@@ -171,14 +140,12 @@ namespace Services.Services
             AdminEntitiesTableRequest request
         )
         {
-            var query = _repositoryManager
-                .Entity.FindAll(false)
-                .Include(x => x.Category)
-                .OrderByDescending(x => x.StartDate);
+            var query =await _repositoryManager
+                .Entity.GetPagedEntities_Admin(request);
 
-            var count = await query.CountAsync();
+            var count = query.TotalCount;
 
-            var data = await query.GetPage(request).ToListAsync();
+            var data = query.Data;
             var dataDto = _mapper.Map<List<EntityDto>>(data);
 
             for (int i = 0; i < data.Count; i++)
@@ -186,7 +153,7 @@ namespace Services.Services
                 dataDto[i].Category = _mapper.Map<CategoryDto>(data[i].Category);
 
                 // adding images to entity
-                var images = await _repositoryManager.AttachmentsRepository.FindByCondition(x => x.ObjectId == dataDto[i].Id, true).ToListAsync();
+                var images = await _repositoryManager.AttachmentsRepository.FindAll(x => x.ObjectId == dataDto[i].Id);
 
                 // TODO write a mapper to do the this
                 dataDto[i].Images = new();
@@ -210,13 +177,9 @@ namespace Services.Services
             try
             {
                 var entity = await _repositoryManager
-                    .Entity.FindByCondition(x => x.Id == entityId, false)
-                    .Include(x => x.Slots)
-                    .Include(x => x.ParameterValues.OrderBy(x => x.DisplayOrder))
-                    .Include(x => x.EntityManagers)
-                    .FirstOrDefaultAsync();
+                    .Entity.GetEntityById_Admin(entityId);
 
-                var images = await _repositoryManager.AttachmentsRepository.FindByCondition(x => x.ObjectId == entityId, true).ToListAsync();
+                var images = await _repositoryManager.AttachmentsRepository.FindAll(x => x.ObjectId == entityId);
 
                 if (entity is not null)
                 {
@@ -255,11 +218,7 @@ namespace Services.Services
             try
             {
                 var entity = await _repositoryManager
-                    .Entity.FindByCondition(x => x.Id == entityId, false)
-                    .Include(x => x.ParameterValues.OrderBy(x => x.DisplayOrder))
-                    .ThenInclude(x => x.Parameter)
-                    .Include(x => x.Slots)
-                    .FirstOrDefaultAsync();
+                    .Entity.GetEntityInformationByIdAsync(entityId);
 
                 if (entity is not null)
                 {
@@ -369,9 +328,9 @@ namespace Services.Services
             entity.ParameterValues = new List<ParameterValues>();
             _repositoryManager.Entity.Update(entity);
 
-            var entityManagers = _repositoryManager
-                .EntityManager.FindByCondition(tc => tc.EntityId == entity.Id, false)
-                .ToList();
+            var entityManagers = await _repositoryManager
+                .EntityManager.FindAll(tc => tc.EntityId == entity.Id)
+               ;
             foreach (var manager in entityManagers)
             {
                 _repositoryManager.EntityManager.Delete(manager);

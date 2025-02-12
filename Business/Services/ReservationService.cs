@@ -424,14 +424,12 @@ namespace Services.Services
         public async Task<Guid?> GetTemporaryReservationId(Guid UserId)
         {
             var tempoReservation = await _repositoryManager
-                .Reservation.FindByCondition(
+                .Reservation.FirstOrDefaultAsync(
                     x =>
                         x.UserId == UserId.ToString()
                         && x.IsFinalized == false
-                        && x.ExpirationDate > DateTime.Now,
-                    false
-                )
-                .FirstOrDefaultAsync();
+                        && x.ExpirationDate > DateTime.Now
+                    );
 
             return tempoReservation?.Id;
         }
@@ -439,17 +437,7 @@ namespace Services.Services
         public async Task<External_TempReservationDto> GetTemporaryReservation(Guid UserId)
         {
             var tempoReservation = await _repositoryManager
-                .Reservation.FindByCondition(
-                    x =>
-                        x.UserId == UserId.ToString()
-                        && x.IsFinalized == false
-                        && x.ExpirationDate > DateTime.Now,
-                    false
-                )
-                .Include(x => x.SelectedRelatives)
-                .ThenInclude(x => x.Relative)
-                .Include(x => x.Slot.Entity)
-                .FirstOrDefaultAsync();
+                .Reservation.GetTemporaryReservation(UserId);
 
             External_TempReservationDto result =
                 new()
@@ -610,21 +598,13 @@ namespace Services.Services
 
         public async Task<PagedData<List<External_ReservationDto>>> GetPagedAllReservationsAsync(ReservationRequest request)
         {
-            var query = _repositoryManager
-                .Reservation.FindByCondition(r => r.Slot.EntityId == request.EntityId, false)
-                .Include(r => r.Slot.Entity.Category)
-                .Include(x => x.SelectedRelatives)
-                .ThenInclude(x => x.Relative.Relation)
-                .Include(x =>
-                    x.ReservationStates.OrderByDescending(y => y.CreatedDate).Take(1)
-                )
-                .ThenInclude(x => x.ObjectState)
-                .OrderByDescending(x => x.CreatedDate);
+            var query = await _repositoryManager
+                .Reservation.GetAllReservationWithoutConsideringStates(request);
 
 
             List<External_ReservationDto> result = new();
-            var count = await query.CountAsync();
-            var data = await query.GetPage(request).ToListAsync();
+            var count = query.TotalCount;
+            var data = query.Data;
             data.ForEach(item =>
             {
                 result.Add(
@@ -673,23 +653,15 @@ namespace Services.Services
             ReservationRequest_User request
         )
         {
-            var currentUser = _systemContext.CurrentUser.GetUserId().Value.ToString();
-            var query = _repositoryManager
-                .Reservation.FindByCondition(r => r.UserId == currentUser, false)
-                .Include(r => r.Slot.Entity.Category)
-                .Include(x => x.SelectedRelatives)
-                .ThenInclude(x => x.Relative.Relation)
-                .Include(x =>
-                    x.ReservationStates.OrderByDescending(y => y.CreatedDate).Take(1)
-                )
-                .ThenInclude(x => x.ObjectState)
-                .OrderByDescending(x => x.CreatedDate);
+           
+            var query = await _repositoryManager
+                .Reservation.GetPagedReservationsOfUserAsync(request,_systemContext.CurrentUser.GetUserId().Value);
 
-            var asfdsadf = query.ToQueryString();
+           
 
             List<External_ReservationDto> result = new();
-            var count = await query.CountAsync();
-            var data = await query.GetPage(request).ToListAsync();
+            var count = query.TotalCount;
+            var data = query.Data;
             data.ForEach(item =>
             {
                 result.Add(
@@ -739,17 +711,9 @@ namespace Services.Services
             Guid Id
         )
         {
-            var currentUser = _systemContext.CurrentUser.GetUserId().Value.ToString();
+        
             var query = await _repositoryManager
-                .Reservation.FindByCondition(r => r.UserId == currentUser && r.Id == Id, false)
-                .Include(r => r.Slot.Entity.Category)
-                .Include(x => x.SelectedRelatives)
-                .ThenInclude(x => x.Relative.Relation)
-                .Include(x =>
-                    x.ReservationStates.OrderByDescending(y => y.CreatedDate).Take(1)
-                )
-                .ThenInclude(x => x.ObjectState)
-                .OrderByDescending(x => x.CreatedDate).FirstOrDefaultAsync();
+                .Reservation.GetReservationsOfUserByIdAsync(_systemContext.CurrentUser.GetUserId().Value,Id);
 
 
             External_ReservationDto result = new()
@@ -793,19 +757,17 @@ namespace Services.Services
             return result;
         }
 
-        public async Task<PagedData<List<ReservationDto>>> GetPagedReservationsOfHotelAsync(
+        public async Task<PagedData<List<ReservationDto>>> GetPagedReservationsOfEntityAsync(
             ReservationRequest_Hotel request
         )
         {
-            var query = _repositoryManager
-                .Reservation.FindByCondition(r => r.Slot.EntityId == request.EntityId, false)
-                .Include(r => r.Slot)
-                .Include(r => r.ReservationStates);
+            var query =await _repositoryManager
+                .Reservation.GetPagedReservationsOfEntityAsync(request);
 
-            var count = await query.CountAsync();
-            var data = await query.GetPage(request).ToListAsync();
-            var dataDto = _mapper.Map<List<ReservationDto>>(data);
-            return new(new(count, request.PageNumber, request.PageSize), dataDto);
+      
+    
+            var dataDto = _mapper.Map<List<ReservationDto>>(query.Data);
+            return new(new(query.TotalCount, request.PageNumber, request.PageSize), dataDto);
         }
 
         public async Task<PagedData<List<ReservationDto>>> GetPagedReservationOfExecutiveAsync(
@@ -813,29 +775,29 @@ namespace Services.Services
         )
         {
             var currentUser = _systemContext.CurrentUser.GetUserId().Value.ToString();
-            var query = _repositoryManager
-                .Reservation.FindByCondition(
-                    r =>
-                        _repositoryManager
-                            .EntityManager.FindByCondition(em => em.UserId == currentUser, false)
-                            .Select(em => em.EntityId)
-                            .Contains(r.Slot.EntityId),
-                    false
-                )
-                .Include(r => r.Slot);
 
-            var count = await query.CountAsync();
-            var data = await query.GetPage(request).ToListAsync();
-            var dataDto = _mapper.Map<List<ReservationDto>>(data);
-            return new(new(count, request.PageNumber, request.PageSize), dataDto);
+            var entityIds = (await _repositoryManager
+                            .EntityManager.FindAll(em => em.UserId == currentUser))
+                            .Select(em => em.EntityId);
+
+            var query =await _repositoryManager
+                .Reservation.GetPagedReservationOfExecutiveAsync(request,
+                    r =>
+
+                            entityIds.Contains(r.Slot.EntityId)
+                    
+                )
+                ;
+
+ 
+            var dataDto = _mapper.Map<List<ReservationDto>>(query.Data);
+            return new(new(query.TotalCount, request.PageNumber, request.PageSize), dataDto);
         }
 
         public async Task CancelTemporaryReservation(Guid ReservationId)
         {
             var tempoReservation = await _repositoryManager
-                .Reservation.FindByCondition(x => x.Id == ReservationId, false)
-                .Include(x => x.SelectedRelatives)
-                .FirstOrDefaultAsync();
+                .Reservation.GetTempoReservationForCancel(ReservationId);
 
             foreach (var item in tempoReservation.SelectedRelatives)
                 _repositoryManager.SelectedRelatives.Delete(item);
@@ -848,15 +810,7 @@ namespace Services.Services
         public async Task CancelReservation(Guid UserId, Guid ReservationId)
         {
             var reservation = await _repositoryManager
-                .Reservation.FindByCondition(x => x.Id == ReservationId, false)
-                .Include(x => x.Slot.Entity)
-                .Include(y => y.ObjectState)
-                .Include(o => o.ReservationStates.OrderByDescending(t => t.CreatedDate))
-                .ThenInclude(x => x.ObjectState)
-                .Include(x => x.TxCoupons)
-                .Include(x => x.TxUsers)
-                .Include(x => x.TxCredit)
-                .FirstOrDefaultAsync();
+                .Reservation.GetReservationForCancel(ReservationId);
             var currentState = reservation.ReservationStates.FirstOrDefault().ObjectState;
 
             if (currentState.Cancellable && currentState.CancelNode.HasValue)

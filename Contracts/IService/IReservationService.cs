@@ -33,7 +33,7 @@ namespace Contracts.IService
         //cartable services
         Task<PagedData<List<External_ReservationDto>>> GetPagedReservationsOfUserAsync(ReservationRequest_User request);
         Task<External_ReservationDto> GetReservationsOfUserByReservationIdAsync(Guid Id);
-        Task<PagedData<List<ReservationDto>>> GetPagedReservationsOfHotelAsync(ReservationRequest_Hotel request);
+        Task<PagedData<List<ReservationDto>>> GetPagedReservationsOfEntityAsync(ReservationRequest_Hotel request);
         Task<PagedData<List<ReservationDto>>> GetPagedReservationOfExecutiveAsync(ReservationRequest_Executive request);
         Task CancelReservation(Guid UserId, Guid ReservationId);
     }

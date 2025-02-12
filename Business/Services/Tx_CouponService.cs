@@ -29,8 +29,8 @@ namespace Services.Services
         {
             var currentPeriodId = _systemContext.Period.Id;
             var currentUserId = _systemContext.CurrentUser.GetUserId().Value.ToString();
-            var usedAmount = await _repositoryManager.Tx_Coupon.FindByCondition(tc => tc.PeriodId == currentPeriodId && tc.UserId == currentUserId, false)
-                                               .SumAsync(tc => tc.Amount);
+            var usedAmount = await _repositoryManager.Tx_Coupon.GetUsedByUser(tc => tc.PeriodId == currentPeriodId && tc.UserId == currentUserId)
+                                               ;
             return usedAmount;
         }
     }

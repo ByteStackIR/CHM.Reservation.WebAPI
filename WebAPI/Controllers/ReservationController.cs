@@ -60,7 +60,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                var result = await _reservationService.GetPagedReservationsOfHotelAsync(request);
+                var result = await _reservationService.GetPagedReservationsOfEntityAsync(request);
                 if (result is not null)
                 {
                     return Ok(result);

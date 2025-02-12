@@ -17,6 +17,22 @@ namespace Repositories.Repositories
         {
 
         }
+
+        public async Task<IEnumerable<Relatives>> GetConfirmedRelatives(Guid UserId)
+        {
+            return await _dbSet.Where(
+                    x =>
+                        x.UserId == UserId.ToString()
+                        && x.IsChecked
+                        && x.IsConfirmed
+                        && !x.IsDeleted
+                    
+                )
+                .Include(x => x.Relation)
+                .ToListAsync();
+
+        }
+
         public async Task<IEnumerable<Relatives>> GetRelatives(List<Guid> Ids)
         {
             return await _dbSet.Where(x => Ids.Contains(x.Id) && x.IsChecked && x.IsConfirmed && !x.IsDeleted).ToListAsync();

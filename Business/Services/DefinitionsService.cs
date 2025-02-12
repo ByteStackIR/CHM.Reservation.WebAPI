@@ -32,7 +32,7 @@ namespace Services.Services
 
         public async Task<List<DefinitionsDto>> GetDefinitionsAsync(Guid parentId)
         {
-            var cities = _repositoryManager.IDefinitionsRepository.FindByCondition(d => d.ParentId == parentId,false).ToList();
+            var cities = await _repositoryManager.IDefinitionsRepository.FindAll(d => d.ParentId == parentId);
             var citiesDto = _mapper.Map<List<DefinitionsDto>>(cities);
             return citiesDto;
         }

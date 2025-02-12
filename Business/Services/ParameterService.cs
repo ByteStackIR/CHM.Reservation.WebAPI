@@ -37,8 +37,7 @@
         public async Task<List<ParameterDto>> ParametersByCategoryId(Guid CategoryId)
         {
             var res = await _repositoryManager
-                .Parameter.FindByCondition(x => x.CategoryId == CategoryId, false)
-                .ToListAsync();
+                .Parameter.FindAll(x => x.CategoryId == CategoryId);
 
             return _mapper.Map<List<ParameterDto>>(res);
         }

@@ -46,11 +46,11 @@ public class PeriodService : ServiceBase, IPeriodService, IScopeMarker
     {
         try
         {
-            var query = _repositoryManager.Period.FindAll(false);
+            var query = await _repositoryManager.Period.GetAllPeriods(request);
 
-            int count = query.Count();
+            int count = query.TotalCount;
 
-            var data = await query.GetPage(request).ToListAsync();
+            var data = query.Data;
 
             return new(
                 new(count, request.PageNumber, request.PageSize),
@@ -73,9 +73,9 @@ public class PeriodService : ServiceBase, IPeriodService, IScopeMarker
                 var periodDto = _mapper.Map<PeriodDto>(periodModel);
 
                 var CouponShares = await _repositoryManager
-                    .CouponShare.FindByCondition(x => x.PeriodId == periodDto.Id, false)
+                    .CouponShare.FindAll(x => x.PeriodId == periodDto.Id)
                     // .Include(x => x.Relation)
-                    .ToListAsync();
+                   ;
 
                 periodDto.CouponShare = _mapper.Map<List<CouponShareDto>>(CouponShares);
 

@@ -29,7 +29,7 @@ namespace Services.Services
 
         public async Task<List<ObjectStateDto>> GetByCategoryId(Guid CategoryId)
         {
-            var States =await _repositoryManager.ObjectStates.FindByCondition(x => x.CategoryId == CategoryId, false).ToListAsync();
+            var States =await _repositoryManager.ObjectStates.FindAll(x => x.CategoryId == CategoryId);
 
             var res = _mapper.Map<List<ObjectStateDto>>(States);
             return res;
@@ -40,7 +40,7 @@ namespace Services.Services
             if (dto.NextNode == null)
                 return null;
 
-            var State = await _repositoryManager.ObjectStates.FindByCondition(x => x.CategoryId == dto.CategoryId && x.Code == dto.NextNode, false).FirstOrDefaultAsync();
+            var State = await _repositoryManager.ObjectStates.FirstOrDefaultAsync(x => x.CategoryId == dto.CategoryId && x.Code == dto.NextNode);
 
             var res = _mapper.Map<ObjectStateDto>(State);
             return res;
@@ -51,7 +51,7 @@ namespace Services.Services
             if (dto.PreviousNode == null)
                 return null;
 
-            var State = await _repositoryManager.ObjectStates.FindByCondition(x => x.CategoryId == dto.CategoryId && x.Code == dto.PreviousNode, false).FirstOrDefaultAsync();
+            var State = await _repositoryManager.ObjectStates.FirstOrDefaultAsync(x => x.CategoryId == dto.CategoryId && x.Code == dto.PreviousNode);
 
             var res = _mapper.Map<ObjectStateDto>(State);
             return res;
@@ -61,7 +61,7 @@ namespace Services.Services
         {
           
 
-            var State = await _repositoryManager.ObjectStates.FindByCondition(x => x.CategoryId == CategoryId && x.Code == Code, false).FirstOrDefaultAsync();
+            var State = await _repositoryManager.ObjectStates.FirstOrDefaultAsync(x => x.CategoryId == CategoryId && x.Code == Code);
 
             var res = _mapper.Map<ObjectStateDto>(State);
             return res;
@@ -69,7 +69,7 @@ namespace Services.Services
 
         public async Task<ObjectStateDto> GetStateById(Guid Id)
         {
-            var State = await _repositoryManager.ObjectStates.FindByCondition(x => x.Id==Id, false).FirstOrDefaultAsync();
+            var State = await _repositoryManager.ObjectStates.FirstOrDefaultAsync(x => x.Id==Id);
 
             var res = _mapper.Map<ObjectStateDto>(State);
             return res;
@@ -77,7 +77,7 @@ namespace Services.Services
 
         public async Task<ObjectStateDto> GetStartStateByCategoryId(Guid CategoryId)
         {
-            var State = await _repositoryManager.ObjectStates.FindByCondition(x => x.CategoryId== CategoryId && x.IsStartNode, false).FirstOrDefaultAsync();
+            var State = await _repositoryManager.ObjectStates.FirstOrDefaultAsync(x => x.CategoryId== CategoryId && x.IsStartNode);
 
             var res = _mapper.Map<ObjectStateDto>(State);
             return res;

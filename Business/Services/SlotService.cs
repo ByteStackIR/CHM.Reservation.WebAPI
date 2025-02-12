@@ -57,41 +57,21 @@
         /// <returns>The <see cref="Task{PagedData{List{SlotDto}}}"/></returns>
         public async Task<PagedData<List<SlotDto>>> GetPagedAvailableSlotsAsync(SlotRequest request)
         {
-            var query = _repositoryManager.Slot.FindByCondition(
-                s => s.EntityId == request.EntityId,
-                false
-            );
-            var count = await query.CountAsync();
-            var data = await query.GetPage(request).ToListAsync();
-            var dataDto = _mapper.Map<List<SlotDto>>(data);
+            var query = await _repositoryManager.Slot.GetPagedSlotByEntityId(request);
+
+      
+
+            var dataDto = _mapper.Map<List<SlotDto>>(query.Data);
 
             foreach (var slot in dataDto)
             {
                 //TODO: a condtion for states should be added too
                 //FIX: test
-                var reserves = _repositoryManager
-                    .Reservation.FindByCondition(
-                        y =>
-                            (
-                                y.IsFinalized
-                                && (
-                                    y.ObjectStateId
-                                        != Guid.Parse(CancelStateConstant.HotelCancelState)
-                                    && y.ObjectStateId
-                                        != Guid.Parse(CancelStateConstant.TourCancelState)
-                                )
-                            ) || (y.IsFinalized == false && y.ExpirationDate >= DateTime.Now),
-                        false
-                    )
-                    .Include(x => x.SelectedRelatives)
-                //.Include(r => r.ObjectState)
-                ; //TODO: condition to be added!!! filter only on those that are final
-
-                var occupancy = await reserves.Select(x => x.SelectedRelatives.Count()).SumAsync();
-                slot.Occupancy = occupancy;
+                
+                slot.Occupancy = await _repositoryManager.Reservation.GetOccupancyBySlotId(slot.Id.Value);
             }
 
-            return new(new(count, request.PageNumber, request.PageSize), dataDto);
+            return new(new(query.TotalCount, request.PageNumber, request.PageSize), dataDto);
         }
 
         /// <summary>
@@ -103,12 +83,7 @@
         {
             //TODO: a condtion for states should be added too
             var count = await _repositoryManager
-                .Reservation.FindByCondition(r => r.SlotId == Id, false)
-                .Include(r => r.ObjectState)
-                .ThenInclude(o => o.ReservationStates)
-                .Include(x => x.SelectedRelatives)
-                .SelectMany(x => x.SelectedRelatives)
-                .CountAsync();
+                .Reservation.GetOccupancyBySlotId(Id);
 
             return (int)count;
         }

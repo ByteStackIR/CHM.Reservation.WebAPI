@@ -77,16 +77,16 @@ namespace Services.Services
         public async Task<Attachments> GetFromStore(Guid AttachId)
         {
             return await _repositoryManager
-                .AttachmentsRepository.FindByCondition(x => x.Id == AttachId, false)
-                .FirstOrDefaultAsync();
+                .AttachmentsRepository.FirstOrDefaultAsync(x => x.Id == AttachId)
+               ;
         }
 
         public async Task RemoveFromStore(Guid AttachId)
         {
             _repositoryManager.AttachmentsRepository.Delete(
-                _repositoryManager
-                    .AttachmentsRepository.FindByCondition(x => x.Id == AttachId, false)
-                    .FirstOrDefault()
+                await _repositoryManager
+                    .AttachmentsRepository.FirstOrDefaultAsync(x => x.Id == AttachId)
+                   
             );
         }
     }

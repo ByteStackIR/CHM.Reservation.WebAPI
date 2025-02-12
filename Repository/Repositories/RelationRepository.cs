@@ -2,6 +2,7 @@
 using Contracts.IRepository;
 using Entities;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,11 @@ namespace Repositories.Repositories
 
         }
 
-       
+        public async Task<Relation> GetFullById(Guid RelationId)
+        {
+            return await _dbSet.Where(x => x.Id == RelationId && x.ParentId != null)
+                .Include(x => x.Parent)
+                .FirstOrDefaultAsync();
+        }
     }
 }

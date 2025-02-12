@@ -44,8 +44,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<List<RelativeDto>> GetbyUserId(Guid UserId)
     {
         var userRelatives = await _repositoryManager
-            .Relatives.FindByCondition(x => x.UserId == UserId.ToString(), false)
-            .ToListAsync();
+            .Relatives.FindAll(x => x.UserId == UserId.ToString());
 
         return _mapper.Map<List<RelativeDto>>(userRelatives);
     }
@@ -53,8 +52,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<RelativeDto> GetById(Guid Id)
     {
         var userRelatives = await _repositoryManager
-            .Relatives.FindByCondition(x => x.Id == Id, false)
-            .ToListAsync();
+            .Relatives.FirstOrDefaultAsync(x => x.Id == Id);
 
         return _mapper.Map<RelativeDto>(userRelatives);
     }
@@ -64,16 +62,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         try
         {
             var userRelatives = await _repositoryManager
-                .Relatives.FindByCondition(
-                    x =>
-                        x.UserId == UserId.ToString()
-                        && x.IsChecked
-                        && x.IsConfirmed
-                        && !x.IsDeleted,
-                    false
-                )
-                .Include(x => x.Relation)
-                .ToListAsync();
+                .Relatives.GetConfirmedRelatives(UserId);
 
             return _mapper.Map<List<RelativeOfUserDto>>(userRelatives);
         }
@@ -91,14 +80,10 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         ListNotCheckedRelativesRequest request
     )
     {
-        var query = _repositoryManager
-            .UserCompany.FindByCondition(x => x.IsActive == true, false)
-            .Include(y => y.User.Relatives.Where(r => r.IsChecked == false && r.IsDeleted == false))
-            .Where(x => x.User.Relatives.Any(r => r.IsChecked == false && r.IsDeleted == false))
-            .Include(x => x.Company)
-            .OrderByDescending(x => x.CreatedDate);
+        var query = await _repositoryManager
+            .UserCompany.GetNotCheckedRelativesAsAdmin(request);
 
-        var data = await query.GetPage(request).ToListAsync();
+        var data = query.Data;
         List<UserRelativesDto> res = new();
 
         foreach (var item in data)
@@ -119,7 +104,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         }
 
         PagedData<List<UserRelativesDto>> result =
-            new(new(query.Count(), request.PageNumber, request.PageSize), res);
+            new(new(query.TotalCount, request.PageNumber, request.PageSize), res);
 
         return result;
     }
@@ -133,17 +118,10 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         ListNotCheckedRelativesRequest request
     )
     {
-        var query = _repositoryManager
-            .UserCompany.FindByCondition(
-                x => x.IsActive && x.CompanyId == _systemContext.UserCompany.Id,
-                false
-            )
-            .Include(y => y.User)
-            .ThenInclude(z => z.Relatives.Where(x => !x.IsChecked && !x.IsDeleted))
-            .Include(x => x.Company)
-            .OrderByDescending(x => x.CreatedDate);
+        var query = await _repositoryManager
+            .UserCompany.GetNotCheckedRelativesAsCompany(request, _systemContext.UserCompany.Id);
 
-        var data = await query.GetPage(request).ToListAsync();
+        var data = query.Data;
         List<UserRelativesDto> res = new();
 
         foreach (var item in data)
@@ -164,7 +142,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         }
 
         PagedData<List<UserRelativesDto>> result =
-            new(new(query.Count(), request.PageNumber, request.PageSize), res);
+            new(new(query.TotalCount, request.PageNumber, request.PageSize), res);
 
         return result;
     }
@@ -182,13 +160,12 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
             throw new Exception("Cannot be inserted because of limit!");
 
         var oldModel = await _repositoryManager
-            .Relatives.FindByCondition(
+            .Relatives.FirstOrDefaultAsync(
                 x =>
                     x.IdentityCode == dto.IdentityCode
-                    && x.UserId == _systemContext.CurrentUser.GetUserId().Value.ToString(),
-                false
+                    && x.UserId == _systemContext.CurrentUser.GetUserId().Value.ToString()
             )
-            .FirstOrDefaultAsync();
+            ;
 
         if (oldModel != null)
             throw new Exception("There is person with this IdentityCode!");
@@ -231,13 +208,11 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
                 throw new Exception("Cannot be inserted because of limit!");
 
             var oldModel = await _repositoryManager
-                .Relatives.FindByCondition(
+                .Relatives.FirstOrDefaultAsync(
                     x =>
                         x.IdentityCode == item.IdentityCode
-                        && x.UserId == _systemContext.CurrentUser.GetUserId().Value.ToString(),
-                    false
-                )
-                .FirstOrDefaultAsync();
+                        && x.UserId == _systemContext.CurrentUser.GetUserId().Value.ToString()
+            );
 
             if (oldModel != null)
                 throw new Exception("There is person with this IdentityCode!");
@@ -272,11 +247,8 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
             throw new Exception();
 
         var EndUserCompany = await _repositoryManager
-            .UserCompany.FindByCondition(
-                x => x.UserId == dto.UserId.ToString() && x.IsActive,
-                false
-            )
-            .FirstOrDefaultAsync();
+            .UserCompany.FirstOrDefaultAsync(
+                x => x.UserId == dto.UserId.ToString() && x.IsActive);
 
         if (EndUserCompany == null || EndUserCompany.CompanyId != _systemContext.UserCompany.Id)
             throw new Exception("You are not allowed!");
@@ -288,11 +260,8 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
                 throw new Exception("Cannot be inserted because of limit!");
 
             var oldModel = await _repositoryManager
-                .Relatives.FindByCondition(
-                    x => x.IdentityCode == item.IdentityCode && x.UserId == dto.UserId.ToString(),
-                    false
-                )
-                .FirstOrDefaultAsync();
+                .Relatives.FirstOrDefaultAsync(
+                    x => x.IdentityCode == item.IdentityCode && x.UserId == dto.UserId.ToString());
 
             if (oldModel != null)
                 throw new Exception("There is person with this IdentityCode!");
@@ -325,11 +294,8 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
                 throw new Exception("Cannot be inserted because of limit!");
 
             var oldModel = await _repositoryManager
-                .Relatives.FindByCondition(
-                    x => x.IdentityCode == item.IdentityCode && x.UserId == dto.UserId.ToString(),
-                    false
-                )
-                .FirstOrDefaultAsync();
+                .Relatives.FirstOrDefaultAsync(
+                    x => x.IdentityCode == item.IdentityCode && x.UserId == dto.UserId.ToString());
 
             if (oldModel != null)
                 throw new Exception("There is person with this IdentityCode!");
@@ -353,8 +319,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<RelativeDto> UpdateByUser(RelativeDto dto)
     {
         var model = await _repositoryManager
-            .Relatives.FindByCondition(x => x.Id == dto.Id && x.UserId == dto.UserId, false)
-            .FirstOrDefaultAsync();
+            .Relatives.FirstOrDefaultAsync(x => x.Id == dto.Id && x.UserId == dto.UserId);
 
         if (model is null)
             throw new Exception($"Relation with Id {dto.Id} was not found!");
@@ -373,13 +338,10 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         if (model.IdentityCode != dto.IdentityCode)
         {
             var oldModel = await _repositoryManager
-                .Relatives.FindByCondition(
+                .Relatives.FirstOrDefaultAsync(
                     x =>
                         x.IdentityCode == dto.IdentityCode
-                        && x.UserId == _systemContext.CurrentUser.GetUserId().Value.ToString(),
-                    false
-                )
-                .FirstOrDefaultAsync();
+                        && x.UserId == _systemContext.CurrentUser.GetUserId().Value.ToString());
 
             if (oldModel != null)
                 throw new Exception("There is person with this IdentityCode!");
@@ -466,15 +428,13 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<RelativeDto> UpdateByCompany(RelativeDto dto)
     {
         var EndUserCompany = await _repositoryManager
-            .UserCompany.FindByCondition(x => x.UserId == dto.UserId && x.IsActive, false)
-            .FirstOrDefaultAsync();
+            .UserCompany.FirstOrDefaultAsync(x => x.UserId == dto.UserId && x.IsActive);
 
         if (EndUserCompany == null || EndUserCompany.CompanyId != _systemContext.UserCompany.Id)
             throw new Exception("You are not allowed!");
 
         var model = await _repositoryManager
-            .Relatives.FindByCondition(x => x.Id == dto.Id && x.UserId == dto.UserId, false)
-            .FirstOrDefaultAsync();
+            .Relatives.FirstOrDefaultAsync(x => x.Id == dto.Id && x.UserId == dto.UserId);
 
         if (model is null)
             throw new Exception($"Relation with Id {dto.Id} was not found!");
@@ -493,11 +453,9 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         if (model.IdentityCode != dto.IdentityCode)
         {
             var oldModel = await _repositoryManager
-                .Relatives.FindByCondition(
-                    x => x.IdentityCode == dto.IdentityCode && x.UserId == model.UserId.ToString(),
-                    false
-                )
-                .FirstOrDefaultAsync();
+                .Relatives.FirstOrDefaultAsync(
+                    x => x.IdentityCode == dto.IdentityCode && x.UserId == model.UserId.ToString()
+              );
 
             if (oldModel != null)
                 throw new Exception("There is person with this IdentityCode!");
@@ -522,8 +480,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<RelativeDto> UpdateByAdmin(RelativeDto dto)
     {
         var model = await _repositoryManager
-            .Relatives.FindByCondition(x => x.Id == dto.Id && x.UserId == dto.UserId, false)
-            .FirstOrDefaultAsync();
+            .Relatives.FirstOrDefaultAsync(x => x.Id == dto.Id && x.UserId == dto.UserId);
 
         if (model is null)
             throw new Exception($"Relation with Id {dto.Id} was not found!");
@@ -542,11 +499,8 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         if (model.IdentityCode != dto.IdentityCode)
         {
             var oldModel = await _repositoryManager
-                .Relatives.FindByCondition(
-                    x => x.IdentityCode == dto.IdentityCode && x.UserId == model.UserId.ToString(),
-                    false
-                )
-                .FirstOrDefaultAsync();
+                .Relatives.FirstOrDefaultAsync(
+                    x => x.IdentityCode == dto.IdentityCode && x.UserId == model.UserId.ToString());
 
             if (oldModel != null)
                 throw new Exception("There is person with this IdentityCode!");
@@ -572,13 +526,10 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<RelativeDto> ToggleByUser(Guid Id)
     {
         var model = await _repositoryManager
-            .Relatives.FindByCondition(
+            .Relatives.FirstOrDefaultAsync(
                 x =>
                     x.Id == Id
-                    && x.UserId == _systemContext.CurrentUser.GetUserId().Value.ToString(),
-                false
-            )
-            .FirstOrDefaultAsync();
+                    && x.UserId == _systemContext.CurrentUser.GetUserId().Value.ToString());
         if (model is null)
             throw new Exception($"Relation with Id {Id} was not found!");
 
@@ -606,15 +557,13 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<RelativeDto> ToggleByCompany(Guid UserId, Guid Id)
     {
         var EndUserCompany = await _repositoryManager
-            .UserCompany.FindByCondition(x => x.UserId == UserId.ToString() && x.IsActive, false)
-            .FirstOrDefaultAsync();
+            .UserCompany.FirstOrDefaultAsync(x => x.UserId == UserId.ToString() && x.IsActive);
 
         if (EndUserCompany == null || EndUserCompany.CompanyId != _systemContext.UserCompany.Id)
             throw new Exception("You are not allowed!");
 
         var model = await _repositoryManager
-            .Relatives.FindByCondition(x => x.Id == Id && x.UserId == UserId.ToString(), false)
-            .FirstOrDefaultAsync();
+            .Relatives.FirstOrDefaultAsync(x => x.Id == Id && x.UserId == UserId.ToString());
         if (model is null)
             throw new Exception($"Relation with Id {Id} was not found!");
 
@@ -630,8 +579,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<RelativeDto> ToggleByAdmin(Guid UserId, Guid Id)
     {
         var model = await _repositoryManager
-            .Relatives.FindByCondition(x => x.Id == Id && x.UserId == UserId.ToString(), false)
-            .FirstOrDefaultAsync();
+            .Relatives.FirstOrDefaultAsync(x => x.Id == Id && x.UserId == UserId.ToString());
 
         if (model is null)
             throw new Exception($"Relation with Id {Id} was not found!");
@@ -651,13 +599,10 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<RelativeDto> DeleteByUser(Guid Id)
     {
         var model = await _repositoryManager
-            .Relatives.FindByCondition(
+            .Relatives.FirstOrDefaultAsync(
                 x =>
                     x.Id == Id
-                    && x.UserId == _systemContext.CurrentUser.GetUserId().Value.ToString(),
-                false
-            )
-            .FirstOrDefaultAsync();
+                    && x.UserId == _systemContext.CurrentUser.GetUserId().Value.ToString());
         if (model is null)
             throw new Exception($"Relation with Id {Id} was not found!");
 
@@ -674,15 +619,13 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<RelativeDto> DeleteByCompany(Guid UserId, Guid Id)
     {
         var EndUserCompany = await _repositoryManager
-            .UserCompany.FindByCondition(x => x.UserId == UserId.ToString() && x.IsActive, false)
-            .FirstOrDefaultAsync();
+            .UserCompany.FirstOrDefaultAsync(x => x.UserId == UserId.ToString() && x.IsActive);
 
         if (EndUserCompany == null || EndUserCompany.CompanyId != _systemContext.UserCompany.Id)
             throw new Exception("You are not allowed!");
 
         var model = await _repositoryManager
-            .Relatives.FindByCondition(x => x.Id == Id && x.UserId == UserId.ToString(), false)
-            .FirstOrDefaultAsync();
+            .Relatives.FirstOrDefaultAsync(x => x.Id == Id && x.UserId == UserId.ToString());
         if (model is null)
             throw new Exception($"Relation with Id {Id} was not found!");
 
@@ -698,8 +641,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<RelativeDto> DeleteByAdmin(Guid UserId, Guid Id)
     {
         var model = await _repositoryManager
-            .Relatives.FindByCondition(x => x.Id == Id && x.UserId == UserId.ToString(), false)
-            .FirstOrDefaultAsync();
+            .Relatives.FirstOrDefaultAsync(x => x.Id == Id && x.UserId == UserId.ToString());
 
         if (model is null)
             throw new Exception($"Relation with Id {Id} was not found!");
@@ -809,8 +751,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     public async Task<RelativeDto> ResultOfReviewRelativeByAdmin(Guid UserId, Guid Id, bool Accept)
     {
         var model = await _repositoryManager
-            .Relatives.FindByCondition(x => x.Id == Id && x.UserId == UserId.ToString(), false)
-            .FirstOrDefaultAsync();
+            .Relatives.FirstOrDefaultAsync(x => x.Id == Id && x.UserId == UserId.ToString());
         if (model is null)
             throw new Exception($"Relation with Id {Id} was not found!");
 
@@ -828,15 +769,13 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
     )
     {
         var EndUserCompany = await _repositoryManager
-            .UserCompany.FindByCondition(x => x.UserId == UserId.ToString() && x.IsActive, false)
-            .FirstOrDefaultAsync();
+            .UserCompany.FirstOrDefaultAsync(x => x.UserId == UserId.ToString() && x.IsActive);
 
         if (EndUserCompany == null || EndUserCompany.CompanyId != _systemContext.UserCompany.Id)
             throw new Exception("You are not allowed!");
 
         var model = await _repositoryManager
-            .Relatives.FindByCondition(x => x.Id == Id && x.UserId == UserId.ToString(), false)
-            .FirstOrDefaultAsync();
+            .Relatives.FirstOrDefaultAsync(x => x.Id == Id && x.UserId == UserId.ToString());
         if (model is null)
             throw new Exception($"Relation with Id {Id} was not found!");
 
@@ -887,11 +826,9 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
             x.PhoneNumber == dto.PhoneNumber
         );
         var model = await _repositoryManager
-            .Relatives.FindByCondition(
-                x => x.UserId == userModel.Id && x.RelationId == relation.Id,
-                true
-            )
-            .FirstOrDefaultAsync();
+            .Relatives.FirstOrDefaultAsync(
+                x => x.UserId == userModel.Id && x.RelationId == relation.Id
+             );
 
         model.BirthDate = dto.BirthDate;
         model.FirstName = dto.FirstName;

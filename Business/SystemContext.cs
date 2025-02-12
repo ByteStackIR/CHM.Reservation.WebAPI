@@ -59,12 +59,11 @@
             CurrentUser = httpContextAccessor.HttpContext.User;
 
             var periodModel = repositoryManager
-                .Period.FindByCondition(
-                    x => !x.IsDeleted && (x.StartDate <= DateTime.Now && x.EndDate >= DateTime.Now),
-                    false
+                .Period.PickNewest(
+                    x => !x.IsDeleted && (x.StartDate <= DateTime.Now && x.EndDate >= DateTime.Now)
                 )
-                .OrderByDescending(x => x.CreatedDate)
-                .FirstOrDefault();
+               
+             ;
 
             if (periodModel is not null)
                 this.Period = mapper.Map<PeriodDto>(periodModel);
@@ -73,27 +72,24 @@
             {
                 string UserId = CurrentUser.GetUserId().Value.ToString();
 
-                var userCompany = repositoryManager
-                    .UserCompany.FindByCondition(x => x.IsActive && x.UserId == UserId, false)
-                    .Include(x => x.Company)
-                    .FirstOrDefault();
+                var userCompany =await repositoryManager
+                    .UserCompany.GetWithCompany(x => x.IsActive && x.UserId == UserId)
+                ;
                 this.UserCompany = mapper.Map<CompanyDto>(userCompany.Company);
 
                 if (this.Period is not null && this.UserCompany is not null)
                 {
                     decimal UsedCoupon = await repositoryManager
-                        .Tx_Coupon.FindByCondition(
-                            tc => tc.PeriodId == this.Period.Id && tc.UserId == UserId,
-                            false
+                        .Tx_Coupon.GetUsedByUser(
+                            tc => tc.PeriodId == this.Period.Id && tc.UserId == UserId
                         )
-                        .SumAsync(tc => tc.Amount);
+                    ;
 
                     decimal UsedCredit = await repositoryManager
-                        .Tx_Credit.FindByCondition(
-                            tc => tc.PeriodId == this.Period.Id && tc.UserId == UserId,
-                            false
+                        .Tx_Credit.GetUsedByUser(
+                            tc => tc.PeriodId == this.Period.Id && tc.UserId == UserId
                         )
-                        .SumAsync(tc => tc.Amount);
+                       ;
                     this.RemainingCoupon = this.Period.Stipend - UsedCoupon;
 
                     this.RemainingCredit = this.Period.Credit - UsedCredit;

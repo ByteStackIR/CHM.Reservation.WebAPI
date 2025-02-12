@@ -77,12 +77,11 @@ namespace Services.Services
             return
                  _systemContext.Period.Credit -
                 await _repositoryManager
-                .Tx_Credit.FindByCondition(
-                    x => x.PeriodId == _systemContext.Period.Id && x.UserId == UserId.ToString(),
-                    true
+                .Tx_Credit.GetUsedByUser(
+                    x => x.PeriodId == _systemContext.Period.Id && x.UserId == UserId.ToString()
+               
                 )
-                .Select(x => x.Amount)
-                .SumAsync();
+                ;
         }
     }
 }

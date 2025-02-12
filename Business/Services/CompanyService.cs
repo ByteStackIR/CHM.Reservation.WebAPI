@@ -34,11 +34,10 @@ namespace Services.Services
 
         public async Task<PagedData<List<CompanyDto>>> GetPagedAllCompanies(CompanyRequest request)
         {
-            var query = _repositoryManager.Company.FindAll(false);
-            var count = await query.CountAsync();
-            var data = await query.GetPage(request).ToListAsync();
+            var data =await _repositoryManager.Company.FindAll(x=>true);
+     
             var dataDto = _mapper.Map<List<CompanyDto>>(data);
-            return new(new(count, request.PageNumber, request.PageSize), dataDto);
+            return new(new(data.Count, request.PageNumber, request.PageSize), dataDto);
         }
 
     }

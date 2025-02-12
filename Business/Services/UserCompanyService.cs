@@ -73,21 +73,20 @@ namespace Services.Services
         )
         {
             var oldModel = await _repositoryManager
-                .UserCompany.FindByCondition(
-                    x => x.UserId == UserId.ToString() && x.CompanyId == CompanyId,
-                    false
+                .UserCompany.PickNewest(
+                    x => x.UserId == UserId.ToString() && x.CompanyId == CompanyId
+                 
                 )
-                .OrderByDescending(x => x.CreatedDate)
-                .FirstOrDefaultAsync();
+               
+              ;
 
             if (oldModel != null)
             {
                 var activeModel = await _repositoryManager
-                    .UserCompany.FindByCondition(
-                        x => x.UserId == UserId.ToString() && x.IsActive == true,
-                        false
+                    .UserCompany.FirstOrDefaultAsync(
+                        x => x.UserId == UserId.ToString() && x.IsActive == true
                     )
-                    .FirstOrDefaultAsync();
+                    ;
 
                 if (activeModel != null)
                 {
@@ -100,11 +99,10 @@ namespace Services.Services
                     }
 
                     var oldModels = await _repositoryManager
-                        .UserCompany.FindByCondition(
-                            x => x.UserId == UserId.ToString() && x.IsActive == true,
-                            false
+                        .UserCompany.FindAll(
+                            x => x.UserId == UserId.ToString() && x.IsActive == true
                         )
-                        .ToListAsync();
+                      ;
                     foreach (var item in oldModels)
                     {
                         item.IsActive = false;

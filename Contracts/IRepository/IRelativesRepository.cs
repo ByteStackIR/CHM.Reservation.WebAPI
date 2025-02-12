@@ -1,4 +1,6 @@
-﻿using Entities.Models;
+﻿using Entities.DataTransferObjects.Pagination;
+using Entities.Models;
+using Features.RequestFeatures;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -13,7 +15,9 @@ namespace Contracts.IRepository
     {
 
        Task<IEnumerable<Relatives>> GetRelatives(List<Guid> Ids);
-       //Task<IEnumerable<Relatives>> GetRelatives(List<Guid> Ids);
+        //Task<IEnumerable<Relatives>> GetRelatives(List<Guid> Ids);
+        Task<IEnumerable<Relatives>> GetConfirmedRelatives(Guid UserId);
+
 
 
 

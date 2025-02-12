@@ -29,7 +29,7 @@ namespace Services.Services
 
         public async Task<List<RelationDto>> GetRelations()
         {
-            var res = await _repositoryManager.Relation.FindByCondition(x=>x.ParentId!=null,false).ToListAsync();
+            var res = await _repositoryManager.Relation.FindAll(x=>x.ParentId!=null);
 
             // res.ForEach(r => { r.Maximum = null; });
 
@@ -39,8 +39,7 @@ namespace Services.Services
         public async Task<RelationDto> GetByType(RelationType type)
         {
             var model = await _repositoryManager
-                .Relation.FindByCondition(x => x.Type == type, false)
-                .FirstOrDefaultAsync();
+                .Relation.FirstOrDefaultAsync(x => x.Type == type);
 
             return _mapper.Map<RelationDto>(model);
         }
@@ -53,9 +52,7 @@ namespace Services.Services
         public async Task<bool> NeedConfirmation(Guid RelationId)
         {
             var Rel = await _repositoryManager
-                .Relation.FindByCondition(x => x.Id == RelationId && x.ParentId != null, false)
-                .Include(x => x.Parent)
-                .FirstOrDefaultAsync();
+                .Relation.GetFullById(RelationId);
 
             if (Rel is null)
                 throw new Exception("Invalid relation!");
@@ -71,23 +68,21 @@ namespace Services.Services
         public async Task<bool> CheckMaximumLimit(Guid RelationId, Guid UserId)
         {
             var Rel = await _repositoryManager
-                .Relation.FindByCondition(x => x.Id == RelationId && x.Maximum != null, false)
-                .FirstOrDefaultAsync();
+                .Relation.FirstOrDefaultAsync(x => x.Id == RelationId && x.Maximum != null);
 
             if (Rel is null)
                 return true;
             else
             {
-                int count = await _repositoryManager
-                    .Relatives.FindByCondition(
+                int count = (await _repositoryManager
+                    .Relatives.FindAll(
                         x =>
                             x.RelationId == RelationId
                             && x.IsDeleted != true
                             && x.UserId == UserId.ToString()
-                            && (x.IsChecked && x.IsConfirmed || !x.IsChecked),
-                        false
-                    )
-                    .CountAsync();
+                            && (x.IsChecked && x.IsConfirmed || !x.IsChecked)
+                    ))
+                    .Count();
 
                 if (Rel.Maximum <= count)
                     return false;
@@ -99,8 +94,7 @@ namespace Services.Services
         public async Task<bool> CanBeDeleted(Guid RelationId)
         {
             var Rel = await _repositoryManager
-                .Relation.FindByCondition(x => x.Id == RelationId, false)
-                .FirstOrDefaultAsync();
+                .Relation.FirstOrDefaultAsync(x => x.Id == RelationId);
 
             return Rel.Type != Entities.Enum.RelationType.SELF;
         }

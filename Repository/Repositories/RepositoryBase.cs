@@ -30,12 +30,12 @@ namespace Repositories.Repositories
             return await _dbContextProvider.Set<T>().FindAsync(Id);
         }
 
-        public IQueryable<T> FindAll(bool trackChanges)
+        private IQueryable<T> FindAll(bool trackChanges)
         {
             return !trackChanges ? _dbContextProvider.Set<T>().AsNoTracking() :
                 _dbContextProvider.Set<T>();
         }
-        public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression,
+        private IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression,
         bool trackChanges)
         {
             return !trackChanges ? _dbContextProvider.Set<T>().Where(expression).AsNoTracking() :
@@ -114,6 +114,22 @@ namespace Repositories.Repositories
 
             return query;
 
+        }
+
+
+        public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> expression)
+        {
+            return await _dbSet.FirstOrDefaultAsync(expression);
+        }
+
+        public T FirstOrDefault(Expression<Func<T, bool>> expression)
+        {
+            return _dbSet.FirstOrDefault(expression);
+        }
+
+        public async Task<List<T>> FindAll(Expression<Func<T, bool>> expression)
+        {
+            return await _dbSet.Where(expression).ToListAsync();
         }
     }
 }
