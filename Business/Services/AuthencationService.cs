@@ -65,6 +65,7 @@ namespace Services.Services
 
         public async Task<IdentityResult> RegisterUser(UserForRegistrationDto userForRegistration)
         {
+            _repositoryManager.BeginTransaction();
             userForRegistration.Password = Guid.NewGuid().ToString();
 
             IdentityResult result = new();
@@ -96,6 +97,7 @@ namespace Services.Services
             }
             catch (Exception ex)
             {
+                _repositoryManager.Rollback();
                 return IdentityResult.Failed(
                     new IdentityError() { Code = "unexpctedError", Description = ex.Message }
                 );

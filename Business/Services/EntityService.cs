@@ -263,7 +263,7 @@ namespace Services.Services
                 entityManager.User = await _userManager.FindByIdAsync(entityManagerId.ToString());
                 entityManager.EntityId = entity.Id;
                 _repositoryManager.EntityManager.Create(entityManager);
-                _repositoryManager.EntityManager.SaveChanges();
+                _repositoryManager.Save();
             }
 
             foreach (var Slot in entityDto.Slots)
@@ -334,7 +334,7 @@ namespace Services.Services
             foreach (var manager in entityManagers)
             {
                 _repositoryManager.EntityManager.Delete(manager);
-                _repositoryManager.EntityManager.SaveChanges();
+                _repositoryManager.Save();
             }
 
             foreach (var entityManagerId in entityDto.EntityManagers)
@@ -345,7 +345,7 @@ namespace Services.Services
                 entityManager.User = await _userManager.FindByIdAsync(entityManagerId.ToString());
                 entityManager.EntityId = entity.Id;
                 _repositoryManager.EntityManager.Create(entityManager);
-                _repositoryManager.EntityManager.SaveChanges();
+                _repositoryManager.Save();
             }
 
             foreach (var Slot in entityDto.Slots)

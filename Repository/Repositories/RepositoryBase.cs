@@ -75,10 +75,7 @@ namespace Repositories.Repositories
             }
         }
 
-        public void SaveChanges()
-        {
-            _dbContextProvider.SaveChanges();
-        }
+       
 
         public IIncludableQueryable<T, TProperty> GetByWithIncludes<TProperty>(Expression<Func<T, bool>> expression, Expression<Func<T, TProperty>> include)
         {

@@ -3,11 +3,13 @@ using Contracts.IRepository;
 using Contracts.IRepository;
 using Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Repositories.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Repositories
@@ -15,6 +17,8 @@ namespace Repositories
     public sealed class RepositoryManager : IRepositoryManager, IScopeMarker
     {
         private readonly DBContextProvider _context;
+        private IDbContextTransaction _ObjTransaction = null;
+
 
         private readonly Lazy<ITransactionRepository> _ITransactionRepository;
         private readonly Lazy<IDefinitionsRepository> _IDefinitionsRepository;
@@ -98,6 +102,51 @@ namespace Repositories
         public ITx_CreditRepository Tx_Credit => _ITx_CreditRepository.Value;
 
         public void Save() => _context.SaveChanges();
+        public void BeginTransaction()
+        {
+            if(_ObjTransaction is null)
+                _ObjTransaction = _context.Database.BeginTransaction();
+
+
+        }
+        public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
+        {
+            if (_ObjTransaction is null)
+                _ObjTransaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+
+
+        }
+
+        public void Commit()
+        {
+            if (_ObjTransaction is not null)
+                _context.Database.CommitTransaction();
+            else
+                throw new Exception("No Transaction");
+        }
+        public async Task CommitAsync(CancellationToken cancellationToken = default)
+        {
+            if (_ObjTransaction is not null)
+                await _context.Database.CommitTransactionAsync(cancellationToken);
+            else
+                throw new Exception("No Transaction");
+        }
+
+        public void Rollback()
+        {
+            if (_ObjTransaction is not null)
+                _context.Database.RollbackTransaction();
+            else
+                throw new Exception("No Transaction");
+        }
+        public async Task RollbackAsync(CancellationToken cancellationToken=default)
+        {
+            if (_ObjTransaction is not null)
+                await _context.Database.RollbackTransactionAsync(cancellationToken);
+            else
+                throw new Exception("No Transaction");
+        }
+
     }
 }
 

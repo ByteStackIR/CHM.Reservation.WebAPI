@@ -841,7 +841,7 @@ public class RelativesService : ServiceBase, IRelativesService, IScopeMarker
         model.FatherName = dto.FatherName;
 
         _repositoryManager.Relatives.Update(model);
-        _repositoryManager.Relatives.SaveChanges();
+        _repositoryManager.Save();
 
         return _mapper.Map<RelativeDto>(model);
     }

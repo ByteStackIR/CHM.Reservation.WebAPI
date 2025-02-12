@@ -60,7 +60,7 @@ namespace Services.Services
                     DisplayOrder = DisplayOrder,
                 }
             );
-            _repositoryManager.AttachmentsRepository.SaveChanges();
+            _repositoryManager.Save();
             return RowId.ToString();
         }
 
@@ -70,7 +70,7 @@ namespace Services.Services
 
             model.DisplayOrder = DisplayOrder;
             _repositoryManager.AttachmentsRepository.Update(model);
-            _repositoryManager.AttachmentsRepository.SaveChanges();
+            _repositoryManager.Save();
             return;
         }
 

@@ -94,7 +94,7 @@ namespace Services.Services
                     {
                         activeModel.PersonnelCode = PersonnelCode;
                         _repositoryManager.UserCompany.Update(oldModel);
-                        _repositoryManager.UserCompany.SaveChanges();
+                        _repositoryManager.Save();
                         return _mapper.Map<UserCompanyDto>(activeModel);
                     }
 
@@ -108,7 +108,7 @@ namespace Services.Services
                         item.IsActive = false;
 
                         _repositoryManager.UserCompany.Update(item);
-                        _repositoryManager.UserCompany.SaveChanges();
+                        _repositoryManager.Save();
                     }
                 }
 
@@ -123,7 +123,7 @@ namespace Services.Services
                         CreatedDate = DateTime.Now,
                     }
                 );
-                _repositoryManager.UserCompany.SaveChanges();
+                _repositoryManager.Save();
 
                 return _mapper.Map<UserCompanyDto>(oldModel);
             }
@@ -141,7 +141,7 @@ namespace Services.Services
                     };
 
                 _repositoryManager.UserCompany.Create(newModel);
-                _repositoryManager.UserCompany.SaveChanges();
+                _repositoryManager.Save();
                 return _mapper.Map<UserCompanyDto>(oldModel);
             }
         }

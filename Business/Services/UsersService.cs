@@ -161,7 +161,11 @@
         /// <returns>The <see cref="Task{IdentityResult}"/></returns>
         public async Task<IdentityResult> RegisterUser(UserForRegistrationDto userForRegistration)
         {
+            _repositoryManager.BeginTransaction();
+
+
             IdentityResult result = new();
+
 
             if (_userManager.Users.Any(x => x.PhoneNumber == userForRegistration.PhoneNumber))
                 return IdentityResult.Failed(
@@ -187,11 +191,19 @@
                         userForRegistration.CompanyId,
                         userForRegistration.PersonnelCode
                     );
+                    _repositoryManager.Commit();
+
+                }
+                else
+                {
+                    _repositoryManager.Rollback();
+
                 }
                 return result;
             }
             catch (Exception ex)
             {
+                _repositoryManager.Rollback();
                 return IdentityResult.Failed(
                     new IdentityError() { Code = "unexpctedError", Description = ex.Message }
                 );
@@ -257,50 +269,60 @@
         /// <returns>The <see cref="Task{bool}"/></returns>
         public async Task<bool> UpdateUserAsAdmin(UserUpdateDto dto)
         {
-            var user = await _userManager.Users.Include(x => x.UserCompanies.Where(x => x.IsActive))
-                .Include(x => x.Relatives.Where(x => x.Relation.Type == Entities.Enum.RelationType.SELF))
-                .ThenInclude(x => x.Relation).FirstOrDefaultAsync(x => x.Id == dto.Id.ToString());
-
-            if (user == null)
-                throw new Exception($"User was not found by {dto.Id.ToString()}");
-
-            user.FirstName = dto.FirstName;
-            user.LastName = dto.LastName;
-            user.PhoneNumber = dto.PhoneNumber;
-            user.Gender = dto.Gender;
-            user.UserName = "U" + dto.PhoneNumber;
-
-            await _userManager.UpdateAsync(user);
-
-            var currentRoles = await _userManager.GetRolesAsync(user);
-            var currentRolesList = currentRoles.ToList();
-
-            // Determine roles to remove
-            var rolesToRemove = currentRolesList.Except(dto.Roles).ToList();
-
-            // Determine roles to add
-            var rolesToAdd = dto.Roles.Except(currentRolesList).ToList();
-
-            // Remove old roles that are not in the new list
-            if (rolesToRemove.Any())
+            try
             {
-                await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+                _repositoryManager.BeginTransaction();
+
+                var user = await _userManager.Users.Include(x => x.UserCompanies.Where(x => x.IsActive))
+                    .Include(x => x.Relatives.Where(x => x.Relation.Type == Entities.Enum.RelationType.SELF))
+                    .ThenInclude(x => x.Relation).FirstOrDefaultAsync(x => x.Id == dto.Id.ToString());
+
+                if (user == null)
+                    throw new Exception($"User was not found by {dto.Id.ToString()}");
+
+                user.FirstName = dto.FirstName;
+                user.LastName = dto.LastName;
+                user.PhoneNumber = dto.PhoneNumber;
+                user.Gender = dto.Gender;
+                user.UserName = "U" + dto.PhoneNumber;
+
+                await _userManager.UpdateAsync(user);
+
+                var currentRoles = await _userManager.GetRolesAsync(user);
+                var currentRolesList = currentRoles.ToList();
+
+                // Determine roles to remove
+                var rolesToRemove = currentRolesList.Except(dto.Roles).ToList();
+
+                // Determine roles to add
+                var rolesToAdd = dto.Roles.Except(currentRolesList).ToList();
+
+                // Remove old roles that are not in the new list
+                if (rolesToRemove.Any())
+                {
+                    await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+                }
+
+                // Add new roles that are not already assigned
+                if (rolesToAdd.Any())
+                {
+                    await _userManager.AddToRolesAsync(user, rolesToAdd);
+                }
+
+
+
+
+                var userCompany = user.UserCompanies.FirstOrDefault(x => x.IsActive);
+
+                await _userCompanyService.AddUserToCompany(Guid.Parse(user.Id), dto.CompanyId, dto.PersonnelCode);
+
+                await _relativesService.UpdateSelf(dto);
+                _repositoryManager.Commit();
             }
+            catch (Exception ex) { 
+                _repositoryManager.Rollback();
 
-            // Add new roles that are not already assigned
-            if (rolesToAdd.Any())
-            {
-                await _userManager.AddToRolesAsync(user, rolesToAdd);
             }
-
-
-
-
-            var userCompany = user.UserCompanies.FirstOrDefault(x => x.IsActive);
-
-            await _userCompanyService.AddUserToCompany(Guid.Parse(user.Id), dto.CompanyId, dto.PersonnelCode);
-
-            await _relativesService.UpdateSelf(dto);
             return true;
         }
 
@@ -311,7 +333,12 @@
         /// <returns>The <see cref="Task{bool}"/></returns>
         public async Task<bool> UpdateUserAsCompany(UserUpdateDto dto)
         {
-            var user = await _userManager.Users.Include(x => x.UserCompanies.Where(x => x.IsActive))
+            try
+
+            {
+                _repositoryManager.BeginTransaction();
+
+                var user = await _userManager.Users.Include(x => x.UserCompanies.Where(x => x.IsActive))
              .Include(x => x.Relatives.Where(x => x.Relation.Type == Entities.Enum.RelationType.SELF))
              .ThenInclude(x => x.Relation).FirstOrDefaultAsync(x => x.Id == dto.Id.ToString());
 
@@ -333,8 +360,16 @@
             await _userCompanyService.AddUserToCompany(Guid.Parse(user.Id), dto.CompanyId, dto.PersonnelCode);
 
             await _relativesService.UpdateSelf(dto);
+                _repositoryManager.Commit();
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _repositoryManager.Rollback();
+
+            }
+            return false;
         }
 
         public async Task<List<UserDto>> GetUsersByRoles(List<string> roles)
