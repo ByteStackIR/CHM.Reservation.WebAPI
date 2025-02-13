@@ -45,9 +45,10 @@ namespace WebAPI.Extensions
             }
             app.UseSwagger();
             app.UseSwaggerUI();
-
+            app.UseDefaultFiles();
             //app.UseHttpsRedirection();
             app.UseStaticFiles();
+           
             app.UseCors("CorsPolicy");
 
 
@@ -59,6 +60,7 @@ namespace WebAPI.Extensions
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+               
             });
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions
@@ -246,6 +248,11 @@ namespace WebAPI.Extensions
                         return Task.CompletedTask;
                     },
                     OnAuthenticationFailed = (ctx) =>
+                    {
+                        var t = ctx;
+                        return Task.CompletedTask;
+                    },
+                    OnForbidden = (ctx) =>
                     {
                         var t = ctx;
                         return Task.CompletedTask;

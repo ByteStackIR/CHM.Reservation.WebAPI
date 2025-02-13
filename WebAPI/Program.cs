@@ -36,6 +36,7 @@ public class Program
             string.Concat(Directory.GetCurrentDirectory(), "/nlog.config")
         );
 
+        LogManager.Setup();
 
         // ! PRODUCTION PUBLISH IN LIARA
         // var connectionString = builder.Configuration.GetConnectionString("productionSql");

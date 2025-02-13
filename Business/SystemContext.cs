@@ -58,7 +58,7 @@
         {
             CurrentUser = httpContextAccessor.HttpContext.User;
 
-            var periodModel = repositoryManager
+            var periodModel =await repositoryManager
                 .Period.PickNewest(
                     x => !x.IsDeleted && (x.StartDate <= DateTime.Now && x.EndDate >= DateTime.Now)
                 )

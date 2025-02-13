@@ -149,7 +149,7 @@ namespace Repositories.Repositories
         {
             //TODO: condition to be added!!! filter only on those that are final
 
-            return await _dbSet.Where(
+            return (await _dbSet.Where(
                         y =>
                             y.SlotId == SlotId && ((
                                 y.IsFinalized
@@ -163,7 +163,7 @@ namespace Repositories.Repositories
 
                     )
                     .Include(x => x.SelectedRelatives)
-              .Select(x => x.SelectedRelatives.Count()).SumAsync();
+              .Select(x => x.SelectedRelatives.Count()).ToListAsync()).Sum();
         }
     }
 }
